@@ -9,5 +9,8 @@ dependencies = [
   "openai>=1.30",
   "openai-agents>=0.0.16",
   "psycopg2-binary",
-  "python-dotenv"
+  "python-dotenv",
+  "ag-ui-protocol>=0.1.5",
+  "websockets>=11.0",
+  "python-multipart>=0.0.5",
 ] 

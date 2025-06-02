@@ -1,21 +1,30 @@
 """
-Minimal FastAPI backend exposing two endpoints:
- - POST /chat    : runs OpenAI Agents SDK multi-agent system and stores Q&A in Postgres
- - GET  /history : returns the last N messages
+Multi-Agent Expert Sourcing Backend with AG-UI Protocol Integration
+
+This FastAPI backend provides:
+ - POST /chat       : runs OpenAI Agents SDK multi-agent system and stores Q&A in Postgres
+ - GET  /history    : returns the last N messages
+ - WebSocket /ws    : AG-UI protocol real-time communication
+ - POST /upload     : file upload with AG-UI integration
+ - GET  /sessions   : active AG-UI sessions management
 """
 
 import os
 import datetime as dt
 import asyncio
+import uuid
 from typing import List
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
 import sqlalchemy as sa                              # SQLAlchemy 2.x
 from agents import Agent, InputGuardrail, GuardrailFunctionOutput, Runner  # openai-agents-python
+
+# Import our AG-UI adapter
+from ag_ui_adapter import AGUIAdapter
 
 # Load environment variables from .env file
 load_dotenv()
@@ -99,8 +108,13 @@ triage_agent = Agent(
     ],
 )
 
+# ---- AG-UI Integration ----------------------------------------------------
+
+# Initialize AG-UI adapter
+agui_adapter = AGUIAdapter(engine, messages)
+
 # ---- FastAPI application --------------------------------------------------
-app = FastAPI(title="Multi-Agent Expert Sourcing API")
+app = FastAPI(title="Multi-Agent Expert Sourcing API with AG-UI")
 
 # Add CORS middleware to allow frontend requests
 app.add_middleware(
@@ -119,6 +133,14 @@ class Msg(BaseModel):
     role: str
     content: str
     ts: dt.datetime
+
+class SessionInfo(BaseModel):
+    session_id: str
+    connected_at: str
+    files: List[dict]
+    context: dict
+
+# ---- Traditional Chat Endpoint (Backward Compatibility) ------------------
 
 @app.post("/chat")
 async def chat(req: ChatReq):
@@ -149,6 +171,96 @@ async def chat(req: ChatReq):
             return {"answer": "Sorry, I can only help with homework-related questions."}
         raise HTTPException(500, str(e))
 
+# ---- AG-UI Protocol Endpoints --------------------------------------------
+
+@app.websocket("/ws/{session_id}")
+async def websocket_endpoint(websocket: WebSocket, session_id: str):
+    """AG-UI WebSocket endpoint for real-time agent communication."""
+    await agui_adapter.connect_websocket(websocket, session_id)
+    
+    try:
+        while True:
+            # Receive message from client
+            message = await websocket.receive_text()
+            
+            # Handle message through AG-UI adapter
+            await agui_adapter.handle_websocket_message(session_id, message, triage_agent)
+            
+    except WebSocketDisconnect:
+        print(f"🔌 WebSocket disconnected: {session_id}")
+        await agui_adapter.disconnect_websocket(session_id)
+    except Exception as e:
+        print(f"❌ WebSocket error for {session_id}: {str(e)}")
+        await agui_adapter.disconnect_websocket(session_id)
+
+@app.post("/upload/{session_id}")
+async def upload_file(session_id: str, file: UploadFile = File(...)):
+    """Handle file uploads with AG-UI integration."""
+    try:
+        print(f"📁 File upload request: {file.filename} for session: {session_id}")
+        
+        # Handle file upload through AG-UI adapter
+        result = await agui_adapter.handle_file_upload(session_id, file)
+        
+        if result["status"] == "success":
+            print(f"✅ File uploaded successfully: {file.filename}")
+            return {
+                "message": "File uploaded successfully",
+                "file": result["file"],
+                "session_id": session_id
+            }
+        else:
+            print(f"❌ File upload failed: {result['message']}")
+            raise HTTPException(400, result["message"])
+            
+    except Exception as e:
+        print(f"❌ File upload error: {str(e)}")
+        raise HTTPException(500, f"File upload failed: {str(e)}")
+
+@app.get("/sessions", response_model=List[SessionInfo])
+async def get_active_sessions():
+    """Get list of active AG-UI sessions."""
+    try:
+        active_sessions = []
+        for session_id in agui_adapter.get_active_sessions():
+            session_info = agui_adapter.get_session_info(session_id)
+            if session_info:
+                active_sessions.append(SessionInfo(
+                    session_id=session_id,
+                    connected_at=session_info["connected_at"].isoformat(),
+                    files=session_info["files"],
+                    context=session_info["context"]
+                ))
+        
+        return active_sessions
+        
+    except Exception as e:
+        print(f"❌ Error getting sessions: {str(e)}")
+        raise HTTPException(500, str(e))
+
+@app.get("/sessions/{session_id}")
+async def get_session_info(session_id: str):
+    """Get information about a specific AG-UI session."""
+    try:
+        session_info = agui_adapter.get_session_info(session_id)
+        if not session_info:
+            raise HTTPException(404, f"Session {session_id} not found")
+        
+        return {
+            "session_id": session_id,
+            "connected_at": session_info["connected_at"].isoformat(),
+            "files": session_info["files"],
+            "context": session_info["context"]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Error getting session info: {str(e)}")
+        raise HTTPException(500, str(e))
+
+# ---- Traditional History Endpoint ----------------------------------------
+
 @app.get("/history", response_model=List[Msg])
 async def history(limit: int = 20):
     """Return the latest `limit` rows in ascending order."""
@@ -157,6 +269,24 @@ async def history(limit: int = 20):
             sa.select(messages).order_by(messages.c.id.desc()).limit(limit)
         )
         return [dict(r) for r in rows][::-1]
+
+# ---- Health Check Endpoint -----------------------------------------------
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for monitoring."""
+    return {
+        "status": "healthy",
+        "timestamp": dt.datetime.utcnow().isoformat(),
+        "features": [
+            "multi_agent_system",
+            "ag_ui_protocol",
+            "file_upload",
+            "real_time_streaming",
+            "websocket_support"
+        ],
+        "active_sessions": len(agui_adapter.get_active_sessions())
+    }
 
 # ---- Testing Function (for development/debugging) -------------------------
 async def test_multi_agent_system():
