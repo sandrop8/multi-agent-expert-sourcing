@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AGUIClient, FileInfo, generateSessionId } from "@/lib/agui-client";
-import { AlertCircle, CheckCircle, Loader2, Paperclip, Send, Upload } from "lucide-react";
+import { AlertCircle, CheckCircle, Loader2, Paperclip, Send, Upload, Wifi, WifiOff } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 interface Message {
@@ -235,176 +235,205 @@ export default function AGUIChat() {
         }
     };
 
-    const getStatusColor = (status?: string) => {
-        switch (status) {
-            case "thinking":
-            case "processing":
-                return "bg-blue-100 text-blue-800";
-            case "completed":
-                return "bg-green-100 text-green-800";
-            case "blocked":
-            case "error":
-                return "bg-red-100 text-red-800";
-            default:
-                return "bg-gray-100 text-gray-800";
-        }
-    };
-
     return (
-        <main className="mx-auto max-w-4xl p-4 space-y-4">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold">Multi-Agent Expert Sourcing</h1>
-                    <p className="text-sm text-gray-600">Enhanced with AG-UI Protocol</p>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+            <div className="mx-auto max-w-4xl space-y-6">
+                {/* Header */}
+                <div className="flex items-center justify-between bg-white rounded-lg shadow-sm p-6">
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900">Multi-Agent Expert Sourcing</h1>
+                        <p className="text-gray-600 mt-1">Enhanced with AG-UI Protocol</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <Badge
+                            variant={isConnected ? "default" : "destructive"}
+                            className="flex items-center gap-2"
+                        >
+                            {isConnected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+                            {isConnected ? "Connected" : "Disconnected"}
+                        </Badge>
+                        <Badge variant="outline" className="font-mono">
+                            {sessionId.slice(0, 8)}
+                        </Badge>
+                    </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Badge variant={isConnected ? "default" : "destructive"}>
-                        {isConnected ? "Connected" : "Disconnected"}
-                    </Badge>
-                    <Badge variant="outline">Session: {sessionId.slice(0, 8)}</Badge>
-                </div>
-            </div>
 
-            {/* Agent Status */}
-            {agentStatus.status !== "idle" && (
-                <Card className="border-l-4 border-l-blue-500">
-                    <CardContent className="p-3">
-                        <div className="flex items-center gap-2">
-                            {getStatusIcon(agentStatus.status)}
-                            <span className="text-sm font-medium">
-                                {agentStatus.agent && `${agentStatus.agent}: `}
-                                {agentStatus.message}
-                            </span>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
-            {/* Messages */}
-            <div className="flex flex-col gap-3 h-[60vh] overflow-y-auto border rounded-lg p-4 bg-gray-50">
-                {messages.map((message) => (
-                    <Card
-                        key={message.id}
-                        className={`${message.role === "user"
-                            ? "ml-auto bg-blue-50 border-blue-200"
-                            : message.role === "system"
-                                ? "mx-auto bg-yellow-50 border-yellow-200"
-                                : "mr-auto bg-white"
-                            } max-w-[80%]`}
-                    >
-                        <CardContent className="p-3">
-                            <div className="flex items-start justify-between gap-2">
-                                <div className="flex-1">
-                                    <div className="whitespace-pre-wrap">{message.content}</div>
-
-                                    {/* File attachments */}
-                                    {message.files && message.files.length > 0 && (
-                                        <div className="mt-2 space-y-1">
-                                            {message.files.map((file) => (
-                                                <div
-                                                    key={file.id}
-                                                    className="flex items-center gap-2 text-xs bg-gray-100 rounded p-1"
-                                                >
-                                                    <Paperclip className="h-3 w-3" />
-                                                    <span>{file.filename}</span>
-                                                    <span className="text-gray-500">
-                                                        ({Math.round(file.size / 1024)}KB)
-                                                    </span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+                {/* Agent Status */}
+                {agentStatus.status !== "idle" && (
+                    <Card className="border-l-4 border-l-blue-500 bg-blue-50">
+                        <CardContent className="p-4">
+                            <div className="flex items-center gap-3">
+                                {getStatusIcon(agentStatus.status)}
+                                <div>
+                                    <div className="font-medium text-blue-900">
+                                        {agentStatus.agent && `${agentStatus.agent}`}
+                                    </div>
+                                    <div className="text-sm text-blue-700">
+                                        {agentStatus.message}
+                                    </div>
                                 </div>
-
-                                <div className="flex flex-col items-end gap-1">
-                                    {getStatusIcon(message.status)}
-                                    {message.agent && (
-                                        <Badge variant="outline" className="text-xs">
-                                            {message.agent}
-                                        </Badge>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="mt-1 text-xs text-gray-500">
-                                {new Date(message.timestamp).toLocaleTimeString()}
                             </div>
                         </CardContent>
                     </Card>
-                ))}
-                <div ref={bottomRef} />
-            </div>
+                )}
 
-            {/* File Upload Preview */}
-            {uploadedFiles.length > 0 && (
-                <Card className="border-dashed">
-                    <CardContent className="p-3">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Upload className="h-4 w-4" />
-                            <span className="text-sm font-medium">Uploaded Files:</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                            {uploadedFiles.map((file) => (
-                                <Badge
-                                    key={file.id}
-                                    variant="secondary"
-                                    className="flex items-center gap-1"
+                {/* Messages */}
+                <Card className="shadow-lg">
+                    <CardContent className="p-0">
+                        <div className="h-[60vh] overflow-y-auto p-4 space-y-4">
+                            {messages.length === 0 && (
+                                <div className="text-center py-12 text-gray-500">
+                                    <div className="text-6xl mb-4">🤖</div>
+                                    <h3 className="text-lg font-medium mb-2">Welcome to Multi-Agent Expert Sourcing</h3>
+                                    <p className="text-sm">Ask me anything about homework - I'll route your question to the right specialist!</p>
+                                </div>
+                            )}
+
+                            {messages.map((message) => (
+                                <div
+                                    key={message.id}
+                                    className={`flex ${message.role === "user" ? "justify-end" :
+                                            message.role === "system" ? "justify-center" : "justify-start"
+                                        }`}
                                 >
-                                    {file.filename}
-                                    <button
-                                        onClick={() => removeFile(file.id)}
-                                        className="ml-1 text-red-500 hover:text-red-700"
+                                    <Card
+                                        className={`max-w-[80%] ${message.role === "user"
+                                                ? "bg-blue-500 text-white border-blue-500"
+                                                : message.role === "system"
+                                                    ? "bg-yellow-50 border-yellow-200 text-yellow-800"
+                                                    : "bg-white border-gray-200"
+                                            }`}
                                     >
-                                        ×
-                                    </button>
-                                </Badge>
+                                        <CardContent className="p-4">
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="flex-1">
+                                                    <div className="whitespace-pre-wrap">{message.content}</div>
+
+                                                    {/* File attachments */}
+                                                    {message.files && message.files.length > 0 && (
+                                                        <div className="mt-3 space-y-2">
+                                                            {message.files.map((file) => (
+                                                                <div
+                                                                    key={file.id}
+                                                                    className="flex items-center gap-2 text-xs bg-black/10 rounded-lg p-2"
+                                                                >
+                                                                    <Paperclip className="h-3 w-3" />
+                                                                    <span className="font-medium">{file.filename}</span>
+                                                                    <span className="text-black/60">
+                                                                        ({Math.round(file.size / 1024)}KB)
+                                                                    </span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="flex flex-col items-end gap-1">
+                                                    {getStatusIcon(message.status)}
+                                                    {message.agent && (
+                                                        <Badge variant="outline" className="text-xs">
+                                                            {message.agent}
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div className="mt-2 text-xs opacity-70">
+                                                {new Date(message.timestamp).toLocaleTimeString()}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
                             ))}
+                            <div ref={bottomRef} />
                         </div>
                     </CardContent>
                 </Card>
-            )}
 
-            {/* Input */}
-            <div className="flex gap-2">
-                <input
-                    ref={fileInputRef}
-                    type="file"
-                    multiple
-                    onChange={handleFileUpload}
-                    className="hidden"
-                    accept=".txt,.md,.json,.csv,.pdf"
-                />
+                {/* File Upload Preview */}
+                {uploadedFiles.length > 0 && (
+                    <Card className="border-dashed border-2 border-blue-300 bg-blue-50">
+                        <CardContent className="p-4">
+                            <div className="flex items-center gap-2 mb-3">
+                                <Upload className="h-4 w-4 text-blue-600" />
+                                <span className="text-sm font-medium text-blue-900">Uploaded Files:</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {uploadedFiles.map((file) => (
+                                    <Badge
+                                        key={file.id}
+                                        variant="secondary"
+                                        className="flex items-center gap-2 bg-blue-200 text-blue-800"
+                                    >
+                                        {file.filename}
+                                        <button
+                                            onClick={() => removeFile(file.id)}
+                                            className="ml-1 text-blue-600 hover:text-blue-800 font-bold"
+                                        >
+                                            ×
+                                        </button>
+                                    </Badge>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
 
-                <Button
-                    variant="outline"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={!isConnected}
-                >
-                    <Upload className="h-4 w-4" />
-                </Button>
+                {/* Input */}
+                <Card className="shadow-lg">
+                    <CardContent className="p-4">
+                        <div className="flex gap-3">
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                multiple
+                                onChange={handleFileUpload}
+                                className="hidden"
+                                accept=".txt,.md,.json,.csv,.pdf"
+                            />
 
-                <input
-                    className="flex-1 border rounded px-3 py-2"
-                    placeholder="Ask me anything about homework..."
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                    disabled={!isConnected || agentStatus.status !== "idle"}
-                />
+                            <Button
+                                variant="outline"
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={!isConnected}
+                                className="shrink-0"
+                            >
+                                <Upload className="h-4 w-4" />
+                            </Button>
 
-                <Button
-                    onClick={handleSend}
-                    disabled={!input.trim() || !isConnected || agentStatus.status !== "idle"}
-                >
-                    <Send className="h-4 w-4" />
-                </Button>
+                            <div className="flex-1 relative">
+                                <input
+                                    className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="Ask me anything about homework..."
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                                    disabled={!isConnected || agentStatus.status !== "idle"}
+                                />
+                            </div>
+
+                            <Button
+                                onClick={handleSend}
+                                disabled={!input.trim() || !isConnected || agentStatus.status !== "idle"}
+                                className="shrink-0"
+                            >
+                                <Send className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Footer */}
+                <div className="text-center text-sm text-gray-500 bg-white rounded-lg p-4">
+                    <div className="flex items-center justify-center gap-4">
+                        <span>AG-UI Protocol</span>
+                        <span>•</span>
+                        <span>Real-time Multi-Agent Communication</span>
+                        <span>•</span>
+                        <span>File Upload Enabled</span>
+                    </div>
+                </div>
             </div>
-
-            {/* Footer */}
-            <div className="text-center text-xs text-gray-500">
-                AG-UI Protocol • Real-time Multi-Agent Communication • File Upload Enabled
-            </div>
-        </main>
+        </div>
     );
 } 
