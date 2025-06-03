@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import getConfig from "next/config";
 import { useEffect, useRef, useState } from "react";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -29,9 +30,13 @@ export default function ChatPage() {
     setIsLoading(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      // Use runtime config instead of build-time environment variables
+      const { publicRuntimeConfig } = getConfig();
+      const apiUrl = process.env.API_URL || publicRuntimeConfig?.API_URL || 'http://localhost:8000';
+
       console.log('API Configuration:');
-      console.log('- NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
+      console.log('- API_URL (server):', process.env.API_URL);
+      console.log('- publicRuntimeConfig.API_URL:', publicRuntimeConfig?.API_URL);
       console.log('- Resolved API URL:', apiUrl);
       console.log('- Full request URL:', `${apiUrl}/chat`);
 
@@ -54,7 +59,7 @@ export default function ChatPage() {
       // More specific error handling
       let errorMessage = 'Failed to send message';
       if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-        errorMessage = 'Network error: Cannot connect to backend. Check if NEXT_PUBLIC_API_URL is correct and backend is running.';
+        errorMessage = 'Network error: Cannot connect to backend. Check if API_URL is correct and backend is running.';
       } else if (error instanceof Error) {
         errorMessage = error.message;
       }
