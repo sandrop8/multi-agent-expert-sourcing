@@ -1,4 +1,4 @@
-# Multi-Agent Expert Sourcing
+# Multi-Agent Expert Sourcing Demo 
 
 A modular, hierarchical multi-agent AI system that demonstrates intelligent expert sourcing workflows using OpenAI Agents SDK with FastAPI backend and Next.js frontend.
 
@@ -24,13 +24,13 @@ A modular, hierarchical multi-agent AI system that demonstrates intelligent expe
 
 ## OpenAI Agents SDK Framework
 
-This project showcases a sophisticated multi-agent system built with the OpenAI Agents SDK, featuring:
+This project showcases two different multi-agent systesm built with the OpenAI Agents SDK, featuring:
 
 ### 🎯 **Multi-Agent Architecture**
 
 This system demonstrates a sophisticated dual-track agent architecture supporting both **Project Owners** seeking experts and **Freelancers** building their profiles.
 
-## 🏢 **Project Submission Track** *(Currently Implemented)*
+## 🏢 **Project Submission Agentic Workflow** 
 
 ### **Visual Architecture**
 
@@ -85,11 +85,11 @@ graph TD
 
 ---
 
-## 👨‍💻 **Freelancer Profile Track** *(Partial Implementation)*
+## 👨‍💻 **Freelancer Profile Gen Agentic Workflow** 
 
 ### **Current Implementation Status**
 ✅ **CV Upload System** - Fully functional CV upload and storage system
-- File upload interface with drag & drop support
+- File upload interface
 - File validation (PDF, DOC, DOCX only, max 10MB)
 - Secure binary storage in PostgreSQL database
 - Upload status feedback and error handling

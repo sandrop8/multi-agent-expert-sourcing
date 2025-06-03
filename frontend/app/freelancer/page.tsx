@@ -72,7 +72,8 @@ export default function FreelancerPage() {
             const result = await response.json();
             console.log('Upload success result:', result);
 
-            setUploadStatus("CV uploaded successfully! Our AI will analyze it and provide feedback soon.");
+            // Use the dynamic message from the backend instead of hardcoded text
+            setUploadStatus(result.message || "CV uploaded successfully! Our AI will analyze it and provide feedback soon.");
             setSelectedFile(null);
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
@@ -151,10 +152,6 @@ export default function FreelancerPage() {
 
                             {/* CV Upload Section */}
                             <div className="bg-muted/50 p-6 rounded-lg">
-                                <h2 className="text-xl font-semibold text-primary mb-4">
-                                    Upload Your CV
-                                </h2>
-
                                 <div className="space-y-4">
                                     <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors">
                                         <svg
@@ -185,7 +182,7 @@ export default function FreelancerPage() {
                                             className="cursor-pointer"
                                         >
                                             <div className="text-sm text-muted-foreground">
-                                                <span className="text-primary hover:underline">Click to upload</span>
+                                                <span className="text-primary hover:underline">Click to upload CV</span>
                                             </div>
                                             <div className="text-xs text-muted-foreground mt-1">
                                                 PDF, DOC, DOCX (Max 10MB)
