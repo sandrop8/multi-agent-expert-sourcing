@@ -30,11 +30,11 @@ graph TD
     H --> I
     C --> I
     
-    style A fill:#e1f5fe
-    style C fill:#f3e5f5
-    style B fill:#fff3e0
-    style E fill:#e8f5e8
-    style F fill:#e8f5e8
+    style A fill:#e1f5fe,color:#000000
+    style C fill:#f3e5f5,color:#000000
+    style B fill:#fff3e0,color:#000000
+    style E fill:#e8f5e8,color:#000000
+    style F fill:#e8f5e8,color:#000000
 ```
 
 ### **Agent Roles & Responsibilities**
@@ -92,13 +92,13 @@ graph TD
     M --> N
     N --> O[📤 Complete Profile Response]
     
-    style A fill:#e1f5fe
-    style D fill:#f3e5f5
-    style C fill:#fff3e0
-    style F fill:#e8f5e8
-    style G fill:#e8f5e8
-    style H fill:#e8f5e8
-    style I fill:#e8f5e8
+    style A fill:#e1f5fe,color:#000000
+    style D fill:#f3e5f5,color:#000000
+    style C fill:#fff3e0,color:#000000
+    style F fill:#e8f5e8,color:#000000
+    style G fill:#e8f5e8,color:#000000
+    style H fill:#e8f5e8,color:#000000
+    style I fill:#e8f5e8,color:#000000
 ```
 
 ### **Planned Agent Roles & Responsibilities**
