@@ -20,11 +20,11 @@ graph TD
     B -->|✅ Valid Request| C[🎯 Expert Sourcing Supervisor]
     B -->|❌ Invalid Request| D[🚫 Rejection Response]
     
-    C -->|Project Requirements| E[🔍 Expert Search & Matchmaking Specialist]
-    C -->|CV Analysis Needed| F[📄 CV Parsing & Profile Enrichment Specialist]
+    C -->|Initial Requirements| E[📝 Project Requirements Assistant]
+    C -->|Refinement Needed| F[✨ Project Refinement Specialist]
     
-    E --> G[📋 Expert Recommendations]
-    F --> H[👥 Enhanced Profiles]
+    E --> G[📋 Detailed Project Description]
+    F --> H[🎯 Polished Project Requirements]
     
     G --> I[📤 Coordinated Response]
     H --> I
@@ -41,9 +41,9 @@ graph TD
 
 #### 🎯 **Expert Sourcing Supervisor** (Main Coordinator)
 - **Role**: Central orchestrator using OpenAI Agents SDK `handoffs` mechanism
-- **Function**: Routes requests to specialized agents based on client needs
+- **Function**: Routes requests between project description specialists based on client needs
 - **SDK Features**: Implements intelligent triage with `handoff_descriptions`
-- **Workflow**: Coordinates entire expert sourcing process and ensures response quality
+- **Workflow**: Coordinates project description creation process and ensures high-quality outputs
 
 #### 🛡️ **Expert Sourcing Validator** (Input Guardrail)
 - **Role**: Input validation using OpenAI Agents SDK `InputGuardrail`
@@ -51,17 +51,17 @@ graph TD
 - **SDK Features**: Uses `guardrail_function` with `tripwire_triggered` logic
 - **Protection**: First line of defense, filtering irrelevant queries
 
-#### 🔍 **Expert Search & Matchmaking Specialist**
-- **Role**: Specialized agent with domain-specific `instructions`
-- **Function**: Analyzes project requirements and provides intelligent expert recommendations
-- **SDK Features**: Uses structured `output_type` for consistent recommendation format
-- **Expertise**: Project-expert matching, skill analysis, availability assessment
+#### 📝 **Project Requirements Assistant**
+- **Role**: Requirements gathering specialist with domain-specific `instructions`
+- **Function**: Helps project owners articulate and develop comprehensive project descriptions
+- **SDK Features**: Uses conversational flows to guide requirement gathering
+- **Expertise**: Project scope definition, timeline planning, skill requirement identification
 
-#### 📄 **CV Parsing & Profile Enrichment Specialist**
-- **Role**: Document analysis specialist with custom `model_config`
-- **Function**: Extracts skills, experience, and qualifications from CVs
-- **SDK Features**: Implements structured data extraction with Pydantic models
-- **Output**: Enhanced talent profiles and enriched expert data
+#### ✨ **Project Refinement Specialist**
+- **Role**: Project description optimization specialist with custom `instructions`
+- **Function**: Finalizes and polishes project descriptions for maximum clarity and appeal
+- **SDK Features**: Implements structured analysis and improvement suggestions
+- **Output**: Complete, refined project descriptions ready for freelancer matching
 
 ---
 
@@ -144,8 +144,8 @@ graph TD
 #### **Project Submission Flow**
 1. **Input Validation** → Expert Sourcing Validator ensures project-related queries
 2. **Intelligent Routing** → Expert Sourcing Supervisor routes to appropriate specialist
-3. **Specialized Processing** → Expert Search or CV Parsing handles specific tasks
-4. **Response Coordination** → Supervisor provides unified, high-quality responses
+3. **Specialized Processing** → Requirements Assistant or Refinement Specialist guides project description creation
+4. **Response Coordination** → Supervisor provides unified, high-quality project descriptions ready for freelancer matching
 
 #### **Freelancer Profile Flow** *(Planned)*
 1. **File Validation** → CV Content Validator ensures valid CV uploads
@@ -271,7 +271,6 @@ cd backend && uv run pytest tests/test_simple.py -v
 📚 **Detailed Documentation:**
 - [🚀 Quick Start Testing Guide](QUICK_START_TESTING.md) - Ready to test immediately
 - [📖 Complete Testing Documentation](TESTING.md) - Comprehensive setup and best practices
-- [🎨 Tailwind CSS v4 Debug Guide](frontend/TAILWIND_DEBUG_GUIDE.md) - Styling framework troubleshooting
 
 ---
 

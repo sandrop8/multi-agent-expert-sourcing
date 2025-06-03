@@ -70,16 +70,16 @@ guardrail_agent = Agent(
     output_type=ExpertSourcingOutput,
 )
 
-expert_search_agent = Agent(
-    name="Expert Search & Matchmaking Specialist",
-    handoff_description="Specialist agent for finding and matching experts to project requirements",
-    instructions="You help find and match experts to specific project needs. Analyze requirements, search criteria, and provide recommendations for expert selection and matchmaking.",
+project_requirements_agent = Agent(
+    name="Project Requirements Assistant",
+    handoff_description="Specialist agent for helping project owners create comprehensive project descriptions",
+    instructions="You help project owners articulate and develop their project requirements. Guide them through defining scope, timeline, budget, required skills, and deliverables to create a complete project description.",
 )
 
-profile_enrichment_agent = Agent(
-    name="CV Parsing & Profile Enrichment Specialist",
-    handoff_description="Specialist agent for CV analysis and expert profile enhancement",
-    instructions="You analyze CVs, parse professional profiles, and enrich expert data. Extract key skills, experience, and qualifications to create comprehensive expert profiles.",
+project_refinement_agent = Agent(
+    name="Project Refinement Specialist",
+    handoff_description="Specialist agent for finalizing and polishing project descriptions",
+    instructions="You help project owners refine and finalize their project descriptions. Identify missing information, suggest improvements, and ensure the project description is clear, complete, and attractive to potential freelancers.",
 )
 
 async def expert_sourcing_guardrail(ctx, agent, input_data):
@@ -92,8 +92,8 @@ async def expert_sourcing_guardrail(ctx, agent, input_data):
 
 supervisor_agent = Agent(
     name="Expert Sourcing Supervisor",
-    instructions="You coordinate the expert sourcing workflow by determining which specialist agent to use based on the client's needs - expert search/matchmaking or CV parsing/profile enrichment.",
-    handoffs=[profile_enrichment_agent, expert_search_agent],
+    instructions="You coordinate the project submission workflow by determining which specialist agent to use based on the client's needs - helping create project requirements or refining and finalizing project descriptions.",
+    handoffs=[project_refinement_agent, project_requirements_agent],
     input_guardrails=[
         InputGuardrail(guardrail_function=expert_sourcing_guardrail),
     ],

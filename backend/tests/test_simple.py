@@ -84,11 +84,11 @@ def test_chat_request_validation():
 
 def test_agent_configuration():
     """Test that agents are configured correctly"""
-    from main import supervisor_agent, expert_search_agent, profile_enrichment_agent, guardrail_agent
+    from main import supervisor_agent, project_requirements_agent, project_refinement_agent, guardrail_agent
     
     assert supervisor_agent.name == "Expert Sourcing Supervisor"
-    assert expert_search_agent.name == "Expert Search & Matchmaking Specialist"
-    assert profile_enrichment_agent.name == "CV Parsing & Profile Enrichment Specialist"
+    assert project_requirements_agent.name == "Project Requirements Assistant"
+    assert project_refinement_agent.name == "Project Refinement Specialist"
     assert guardrail_agent.name == "Expert Sourcing Validator"
 
 @pytest.mark.asyncio
