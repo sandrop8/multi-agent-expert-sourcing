@@ -14,8 +14,8 @@ RUN uv sync --no-dev
 # Copy application code
 COPY . .
 
-# Expose port
+# Expose port (Railway will override this)
 EXPOSE 8000
 
-# Start command
-CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"] 
+# Start command - Railway sets PORT env var
+CMD ["sh", "-c", "uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"] 
