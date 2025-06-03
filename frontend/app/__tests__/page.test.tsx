@@ -132,7 +132,7 @@ describe('ChatPage', () => {
 
         it('shows loading state while waiting for response', async () => {
             // Create a promise that we can resolve manually
-            let resolvePromise: (value: any) => void
+            let resolvePromise: (value: { ok: boolean; json: () => Promise<{ answer: string }> }) => void
             const mockPromise = new Promise((resolve) => {
                 resolvePromise = resolve
             })

@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 export default function TestStylesPage() {
     return (
@@ -90,12 +91,12 @@ export default function TestStylesPage() {
                         If you can see proper colors, spacing, and responsive design,
                         <span className="font-semibold text-green-600"> Tailwind CSS is working correctly! ✅</span>
                     </p>
-                    <a
+                    <Link
                         href="/"
                         className="inline-block mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-6 rounded-lg transition-colors"
                     >
                         ← Back to Chat
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>
