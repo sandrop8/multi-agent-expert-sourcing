@@ -220,7 +220,7 @@ export default function HomePage() {
             <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent rounded-full opacity-60"></div>
           </div>
           <p className="text-black font-medium">
-            Powered by advanced AI technology for intelligent project-freelancer matching
+            Demo platform showcasing agentic workflows with Node.js
           </p>
         </div>
       </div>
