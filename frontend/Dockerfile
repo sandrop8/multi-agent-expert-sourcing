@@ -14,8 +14,12 @@ COPY . .
 # Build the application
 RUN bun run build
 
-# Expose port
+# Set environment variables for Next.js deployment
+ENV NODE_ENV=production
+ENV HOSTNAME="0.0.0.0"
+
+# Expose port (Railway will override this)
 EXPOSE 3000
 
-# Start command  
-CMD ["bun", "start"] 
+# Start command - Next.js will use HOSTNAME and PORT env vars
+CMD ["sh", "-c", "PORT=${PORT:-3000} HOSTNAME=0.0.0.0 bun start"] 
