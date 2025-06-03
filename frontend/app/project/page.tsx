@@ -72,62 +72,68 @@ export default function ProjectSubmissionPage() {
     }
 
     return (
-        <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6">
-            <Card className="w-full max-w-2xl h-full md:max-h-[90vh] flex flex-col shadow-xl bg-background">
-                <div className="p-4 border-b flex items-center justify-between">
-                    <Link
-                        href="/"
-                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                    >
-                        ← Back to Home
-                    </Link>
-                    <h1 className="text-xl font-semibold text-center text-primary flex-1">
-                        Project Submission Chat
-                    </h1>
-                    <div className="w-20"></div> {/* Spacer for centering */}
-                </div>
+        <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6 relative">
+            {/* Golden background overlay to match homepage */}
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-200/40"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-orange-200/20 via-transparent to-amber-100/15"></div>
 
-                <div className="px-4 py-2 bg-muted/50 border-b">
-                    <p className="text-sm text-muted-foreground text-center">
-                        Describe your project requirements and our AI will help match you with the right freelancers
-                    </p>
-                </div>
+            <div className="relative z-10 w-full h-full flex justify-center">
+                <Card className="w-full max-w-2xl h-full md:max-h-[90vh] flex flex-col shadow-xl bg-background">
+                    <div className="p-4 border-b flex items-center justify-between">
+                        <Link
+                            href="/"
+                            className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                        >
+                            ← Back to Home
+                        </Link>
+                        <h1 className="text-xl font-semibold text-center text-primary flex-1">
+                            Project Submission Chat
+                        </h1>
+                        <div className="w-20"></div> {/* Spacer for centering */}
+                    </div>
 
-                <ScrollArea className="flex-1 p-4 space-y-4">
-                    {history.map((m, i) => (
-                        <div
-                            key={i}
-                            className={cn(
-                                "p-3 rounded-lg shadow-sm max-w-[85%] whitespace-pre-wrap break-words",
-                                m.role === "user"
-                                    ? "ml-auto bg-primary text-primary-foreground"
-                                    : "mr-auto bg-muted text-muted-foreground"
-                            )}>
-                            {m.content}
-                        </div>
-                    ))}
-                    {isLoading && (
-                        <div className="mr-auto p-3 rounded-lg shadow-sm bg-muted text-muted-foreground max-w-[85%] animate-pulse">
-                            AI is analyzing your project requirements...
-                        </div>
-                    )}
-                    <div ref={bottomRef} />
-                </ScrollArea>
+                    <div className="px-4 py-2 bg-muted/50 border-b">
+                        <p className="text-sm text-muted-foreground text-center">
+                            Describe your project requirements and our AI will help match you with the right freelancers
+                        </p>
+                    </div>
 
-                <div className="p-4 border-t flex items-center gap-2">
-                    <Input
-                        placeholder="Describe your project, skills needed, timeline, budget..."
-                        value={input}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
-                        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && send()}
-                        disabled={isLoading}
-                        className="flex-1"
-                    />
-                    <Button onClick={send} disabled={isLoading}>
-                        {isLoading ? "Analyzing..." : "Submit"}
-                    </Button>
-                </div>
-            </Card>
+                    <ScrollArea className="flex-1 p-4 space-y-4">
+                        {history.map((m, i) => (
+                            <div
+                                key={i}
+                                className={cn(
+                                    "p-3 rounded-lg shadow-sm max-w-[85%] whitespace-pre-wrap break-words",
+                                    m.role === "user"
+                                        ? "ml-auto bg-primary text-primary-foreground"
+                                        : "mr-auto bg-muted text-muted-foreground"
+                                )}>
+                                {m.content}
+                            </div>
+                        ))}
+                        {isLoading && (
+                            <div className="mr-auto p-3 rounded-lg shadow-sm bg-muted text-muted-foreground max-w-[85%] animate-pulse">
+                                AI is analyzing your project requirements...
+                            </div>
+                        )}
+                        <div ref={bottomRef} />
+                    </ScrollArea>
+
+                    <div className="p-4 border-t flex items-center gap-2">
+                        <Input
+                            placeholder="Describe your project, skills needed, timeline, budget..."
+                            value={input}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
+                            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && send()}
+                            disabled={isLoading}
+                            className="flex-1"
+                        />
+                        <Button onClick={send} disabled={isLoading}>
+                            {isLoading ? "Analyzing..." : "Submit"}
+                        </Button>
+                    </div>
+                </Card>
+            </div>
         </main>
     );
 } 

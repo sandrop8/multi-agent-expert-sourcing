@@ -68,4 +68,62 @@
   .btn-primary:active {
     transform: translateY(0);
   }
+
+  /* Ensure title always visible - start from top for any constrained height */
+  @media (max-height: 1000px) {
+    .main-container {
+      justify-content: flex-start !important;
+    }
+  }
+
+  /* Responsive optimizations for smaller laptop screens (13-14 inch) */
+  @media (min-width: 1024px) and (max-height: 900px) {
+    .main-container {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      justify-content: flex-start !important;
+    }
+
+    .office-gallery {
+      margin-bottom: 1.5rem;
+    }
+
+    .header-section {
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  /* Additional optimization for very small laptop screens */
+  @media (min-width: 1024px) and (max-height: 700px) {
+    .main-container {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+      justify-content: flex-start !important;
+    }
+
+    .office-gallery {
+      margin-bottom: 1rem;
+    }
+
+    .header-section {
+      margin-bottom: 1rem;
+    }
+  }
+
+  /* Handle very constrained viewport heights - ensure content starts from top */
+  @media (max-height: 600px) {
+    .main-container {
+      justify-content: flex-start !important;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+
+    .header-section {
+      margin-bottom: 1rem;
+    }
+
+    .office-gallery {
+      margin-bottom: 0.75rem;
+    }
+  }
 }

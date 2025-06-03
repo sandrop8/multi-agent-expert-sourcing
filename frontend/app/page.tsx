@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6 relative overflow-hidden">
+    <main className="main-container flex-1 flex flex-col items-center justify-start p-3 md:p-4 xl:p-6 relative overflow-hidden min-h-screen">
       {/* Sophisticated wooden texture background overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-amber-100/80 via-orange-100/60 to-amber-200/80"></div>
       <div className="absolute inset-0 bg-gradient-to-t from-orange-200/30 via-transparent to-amber-100/20"></div>
@@ -17,20 +17,20 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-orange-800/3 via-transparent to-orange-800/3 transform -rotate-45"></div>
       </div>
 
-      <div className="w-full max-w-6xl relative z-10">
-        {/* Enhanced Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-6 drop-shadow-sm">
+      <div className="w-full max-w-6xl relative z-10 pt-4 lg:pt-8 xl:pt-12">
+        {/* Enhanced Header - Optimized for smaller laptops */}
+        <div className="header-section text-center mb-6 lg:mb-8 xl:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-bold text-black mb-3 lg:mb-4 xl:mb-6 drop-shadow-sm">
             Expert Sourcing Platform
           </h1>
-          <p className="text-lg md:text-xl text-black max-w-3xl mx-auto leading-relaxed font-medium">
+          <p className="text-base md:text-lg xl:text-xl text-black max-w-3xl mx-auto leading-relaxed font-medium">
             Connect projects with skilled freelancers through our AI-powered matching system.
             Choose your path below to get started.
           </p>
         </div>
 
         {/* Mobile Decorative Element - Shows on mobile/tablet instead of office images */}
-        <div className="lg:hidden mb-12">
+        <div className="lg:hidden mb-8">
           <div className="flex justify-center items-center space-x-4">
             <div className="w-3 h-3 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full animate-pulse"></div>
             <div className="w-16 h-0.5 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-400 rounded-full"></div>
@@ -38,10 +38,10 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Office Images Gallery - Desktop Only */}
-        <div className="hidden lg:block mb-16">
-          <div className="grid grid-cols-4 gap-6 max-w-4xl mx-auto">
-            <div className="group relative overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 w-52 h-52">
+        {/* Office Images Gallery - Desktop Only - Responsive sizing */}
+        <div className="office-gallery hidden lg:block mb-8 xl:mb-12 2xl:mb-16">
+          <div className="grid grid-cols-4 gap-4 xl:gap-6 max-w-3xl xl:max-w-4xl mx-auto">
+            <div className="group relative overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 w-40 h-40 xl:w-52 xl:h-52">
               <div className="absolute inset-0 bg-gradient-to-t from-amber-900/40 via-transparent to-transparent z-10"></div>
               <Image
                 src="/office1.png"
@@ -54,7 +54,7 @@ export default function HomePage() {
               <div className="absolute inset-0 bg-amber-200/10 group-hover:bg-transparent transition-colors duration-300"></div>
             </div>
 
-            <div className="group relative overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 mt-8 w-52 h-52">
+            <div className="group relative overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 mt-6 xl:mt-8 w-40 h-40 xl:w-52 xl:h-52">
               <div className="absolute inset-0 bg-gradient-to-t from-orange-900/40 via-transparent to-transparent z-10"></div>
               <Image
                 src="/office2.png"
@@ -66,7 +66,7 @@ export default function HomePage() {
               <div className="absolute inset-0 bg-orange-200/10 group-hover:bg-transparent transition-colors duration-300"></div>
             </div>
 
-            <div className="group relative overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 w-52 h-52">
+            <div className="group relative overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 w-40 h-40 xl:w-52 xl:h-52">
               <div className="absolute inset-0 bg-gradient-to-t from-amber-900/40 via-transparent to-transparent z-10"></div>
               <Image
                 src="/office3.png"
@@ -78,7 +78,7 @@ export default function HomePage() {
               <div className="absolute inset-0 bg-amber-200/10 group-hover:bg-transparent transition-colors duration-300"></div>
             </div>
 
-            <div className="group relative overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 mt-8 w-52 h-52">
+            <div className="group relative overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-105 mt-6 xl:mt-8 w-40 h-40 xl:w-52 xl:h-52">
               <div className="absolute inset-0 bg-gradient-to-t from-orange-900/40 via-transparent to-transparent z-10"></div>
               <Image
                 src="/office4.png"
@@ -92,16 +92,16 @@ export default function HomePage() {
           </div>
 
           {/* Decorative element below images */}
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-center mt-6 xl:mt-8">
             <div className="w-40 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent rounded-full opacity-60"></div>
           </div>
         </div>
 
         {/* Enhanced Two main options side by side */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
           {/* Project Submission Option */}
-          <Card className="p-8 shadow-2xl bg-white/95 backdrop-blur-sm border-0 hover:shadow-3xl hover:bg-white transition-all duration-500 h-full transform hover:-translate-y-2">
-            <div className="text-center space-y-6 flex flex-col h-full">
+          <Card className="p-6 lg:p-8 shadow-2xl bg-white/95 backdrop-blur-sm border-0 hover:shadow-3xl hover:bg-white transition-all duration-500 h-full transform hover:-translate-y-2">
+            <div className="text-center space-y-4 lg:space-y-6 flex flex-col h-full">
               <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center shadow-lg">
                 <svg
                   className="w-10 h-10 text-green-800"
@@ -157,8 +157,8 @@ export default function HomePage() {
           </Card>
 
           {/* Freelancer Option */}
-          <Card className="p-8 shadow-2xl bg-white/95 backdrop-blur-sm border-0 hover:shadow-3xl hover:bg-white transition-all duration-500 h-full transform hover:-translate-y-2">
-            <div className="text-center space-y-6 flex flex-col h-full">
+          <Card className="p-6 lg:p-8 shadow-2xl bg-white/95 backdrop-blur-sm border-0 hover:shadow-3xl hover:bg-white transition-all duration-500 h-full transform hover:-translate-y-2">
+            <div className="text-center space-y-4 lg:space-y-6 flex flex-col h-full">
               <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center shadow-lg">
                 <svg
                   className="w-10 h-10 text-green-800"
@@ -215,12 +215,12 @@ export default function HomePage() {
         </div>
 
         {/* Enhanced footer section */}
-        <div className="text-center mt-12">
-          <div className="flex justify-center mb-4">
+        <div className="text-center mt-8 lg:mt-10 xl:mt-12">
+          <div className="flex justify-center mb-3 lg:mb-4">
             <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent rounded-full opacity-60"></div>
           </div>
-          <p className="text-black font-medium">
-            Demo platform showcasing agentic workflows with Node.js
+          <p className="text-sm lg:text-base text-black font-medium">
+            Note: This is just a demo page showcasing agentic workflows with OpenAI Agents SDK
           </p>
         </div>
       </div>

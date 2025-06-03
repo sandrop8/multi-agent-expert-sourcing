@@ -103,121 +103,127 @@ export default function FreelancerPage() {
     };
 
     return (
-        <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6">
-            <Card className="w-full max-w-2xl p-8 shadow-xl bg-background">
-                <div className="text-center space-y-6">
-                    {/* Header with back navigation */}
-                    <div className="flex items-center justify-between mb-8">
-                        <Link
-                            href="/"
-                            className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                        >
-                            ← Back to Home
-                        </Link>
-                        <div className="flex-1"></div>
-                    </div>
+        <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6 relative">
+            {/* Golden background overlay to match homepage */}
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-200/40"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-orange-200/20 via-transparent to-amber-100/15"></div>
 
-                    {/* Main content */}
-                    <div className="space-y-6">
-                        <div className="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center">
-                            <svg
-                                className="w-10 h-10 text-green-600"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
+            <div className="relative z-10 w-full flex justify-center">
+                <Card className="w-full max-w-2xl p-8 shadow-xl bg-background">
+                    <div className="text-center space-y-6">
+                        {/* Header with back navigation */}
+                        <div className="flex items-center justify-between mb-8">
+                            <Link
+                                href="/"
+                                className="text-sm text-muted-foreground hover:text-primary transition-colors"
                             >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                />
-                            </svg>
+                                ← Back to Home
+                            </Link>
+                            <div className="flex-1"></div>
                         </div>
 
-                        <h1 className="text-3xl font-bold text-primary">
-                            Hello, Freelancer! 👋
-                        </h1>
-
-                        <p className="text-lg text-muted-foreground">
-                            Welcome to the freelancer portal. Upload your CV to get started with AI-powered feedback.
-                        </p>
-
-                        {/* CV Upload Section */}
-                        <div className="bg-muted/50 p-6 rounded-lg">
-                            <h2 className="text-xl font-semibold text-primary mb-4">
-                                Upload Your CV
-                            </h2>
-
-                            <div className="space-y-4">
-                                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors">
-                                    <svg
-                                        className="w-12 h-12 mx-auto mb-4 text-muted-foreground"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                                        />
-                                    </svg>
-
-                                    <Input
-                                        ref={fileInputRef}
-                                        type="file"
-                                        accept=".pdf,.doc,.docx"
-                                        onChange={handleFileSelect}
-                                        className="hidden"
-                                        id="cv-upload"
-                                    />
-
-                                    <label
-                                        htmlFor="cv-upload"
-                                        className="cursor-pointer"
-                                    >
-                                        <div className="text-sm text-muted-foreground">
-                                            <span className="text-primary hover:underline">Click to upload</span>
-                                        </div>
-                                        <div className="text-xs text-muted-foreground mt-1">
-                                            PDF, DOC, DOCX (Max 10MB)
-                                        </div>
-                                    </label>
-                                </div>
-
-                                {selectedFile && (
-                                    <div className="text-sm text-muted-foreground">
-                                        Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
-                                    </div>
-                                )}
-
-                                {uploadStatus && (
-                                    <div className={`text-sm p-3 rounded ${uploadStatus.includes('successfully') ? 'bg-green-100 text-green-700' : uploadStatus.includes('failed') || uploadStatus.includes('error') ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>
-                                        {uploadStatus}
-                                    </div>
-                                )}
-
-                                <Button
-                                    onClick={handleUpload}
-                                    disabled={!selectedFile || isUploading}
-                                    className="w-full"
+                        {/* Main content */}
+                        <div className="space-y-6">
+                            <div className="w-20 h-20 mx-auto bg-green-100 rounded-full flex items-center justify-center">
+                                <svg
+                                    className="w-10 h-10 text-green-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg"
                                 >
-                                    {isUploading ? "Uploading..." : "Upload CV"}
-                                </Button>
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                    />
+                                </svg>
+                            </div>
+
+                            <h1 className="text-3xl font-bold text-primary">
+                                Hello, Freelancer! 👋
+                            </h1>
+
+                            <p className="text-lg text-muted-foreground">
+                                Welcome to the freelancer portal. Upload your CV to get started with AI-powered feedback.
+                            </p>
+
+                            {/* CV Upload Section */}
+                            <div className="bg-muted/50 p-6 rounded-lg">
+                                <h2 className="text-xl font-semibold text-primary mb-4">
+                                    Upload Your CV
+                                </h2>
+
+                                <div className="space-y-4">
+                                    <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors">
+                                        <svg
+                                            className="w-12 h-12 mx-auto mb-4 text-muted-foreground"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                            />
+                                        </svg>
+
+                                        <Input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept=".pdf,.doc,.docx"
+                                            onChange={handleFileSelect}
+                                            className="hidden"
+                                            id="cv-upload"
+                                        />
+
+                                        <label
+                                            htmlFor="cv-upload"
+                                            className="cursor-pointer"
+                                        >
+                                            <div className="text-sm text-muted-foreground">
+                                                <span className="text-primary hover:underline">Click to upload</span>
+                                            </div>
+                                            <div className="text-xs text-muted-foreground mt-1">
+                                                PDF, DOC, DOCX (Max 10MB)
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    {selectedFile && (
+                                        <div className="text-sm text-muted-foreground">
+                                            Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                                        </div>
+                                    )}
+
+                                    {uploadStatus && (
+                                        <div className={`text-sm p-3 rounded ${uploadStatus.includes('successfully') ? 'bg-green-100 text-green-700' : uploadStatus.includes('failed') || uploadStatus.includes('error') ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>
+                                            {uploadStatus}
+                                        </div>
+                                    )}
+
+                                    <Button
+                                        onClick={handleUpload}
+                                        disabled={!selectedFile || isUploading}
+                                        className="w-full"
+                                    >
+                                        {isUploading ? "Uploading..." : "Upload CV"}
+                                    </Button>
+                                </div>
+                            </div>
+
+                            <div className="pt-4">
+                                <p className="text-sm text-muted-foreground mb-4">
+                                    Our AI will analyze your CV and provide personalized feedback to help you improve your profile.
+                                </p>
                             </div>
                         </div>
-
-                        <div className="pt-4">
-                            <p className="text-sm text-muted-foreground mb-4">
-                                Our AI will analyze your CV and provide personalized feedback to help you improve your profile.
-                            </p>
-                        </div>
                     </div>
-                </div>
-            </Card>
+                </Card>
+            </div>
         </main>
     );
 } 
