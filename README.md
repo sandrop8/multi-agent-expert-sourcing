@@ -6,40 +6,168 @@ A modular, hierarchical multi-agent AI system that demonstrates intelligent expe
 
 This project showcases a sophisticated multi-agent system built with the OpenAI Agents SDK, featuring:
 
-### 🎯 **Agent Architecture**
+### 🎯 **Multi-Agent Architecture**
 
-#### **Expert Sourcing Supervisor** (Main Coordinator)
-The central orchestrator that routes requests to specialized agents based on client needs. Uses intelligent triage to determine workflow paths and coordinates the entire expert sourcing process.
+This system demonstrates a sophisticated dual-track agent architecture supporting both **Project Owners** seeking experts and **Freelancers** building their profiles.
 
-#### **Expert Sourcing Validator** (Guardrail Agent)
-Validates incoming requests to ensure they relate to expert sourcing, matchmaking, or talent acquisition services. Acts as the first line of defense, filtering out irrelevant queries and maintaining system focus.
+## 🏢 **Project Submission Track** *(Currently Implemented)*
 
-#### **Expert Search & Matchmaking Specialist**
-Specialized agent for finding and matching experts to specific project requirements. Analyzes project needs, search criteria, and provides intelligent recommendations for expert selection and matchmaking.
+### **Visual Architecture**
 
-#### **CV Parsing & Profile Enrichment Specialist**
-Dedicated agent for CV analysis and expert profile enhancement. Extracts key skills, experience, and qualifications to create comprehensive expert profiles and enriched talent data.
+```mermaid
+graph TD
+    A[👤 Project Owner] --> B[🛡️ Expert Sourcing Validator]
+    B -->|✅ Valid Request| C[🎯 Expert Sourcing Supervisor]
+    B -->|❌ Invalid Request| D[🚫 Rejection Response]
+    
+    C -->|Project Requirements| E[🔍 Expert Search & Matchmaking Specialist]
+    C -->|CV Analysis Needed| F[📄 CV Parsing & Profile Enrichment Specialist]
+    
+    E --> G[📋 Expert Recommendations]
+    F --> H[👥 Enhanced Profiles]
+    
+    G --> I[📤 Coordinated Response]
+    H --> I
+    C --> I
+    
+    style A fill:#e1f5fe
+    style C fill:#f3e5f5
+    style B fill:#fff3e0
+    style E fill:#e8f5e8
+    style F fill:#e8f5e8
+```
 
-### 🔄 **Agent Workflow Logic**
+### **Agent Roles & Responsibilities**
 
-1. **Request Validation**: Expert Sourcing Validator checks if the request is within scope
-2. **Intelligent Routing**: Expert Sourcing Supervisor determines the appropriate specialist
-3. **Specialized Processing**: Either Expert Search or CV Parsing agent handles the specific task
-4. **Guardrail Protection**: Non-expert-sourcing requests are gracefully rejected
-5. **Response Coordination**: Supervisor ensures consistent, high-quality responses
+#### 🎯 **Expert Sourcing Supervisor** (Main Coordinator)
+- **Role**: Central orchestrator using OpenAI Agents SDK `handoffs` mechanism
+- **Function**: Routes requests to specialized agents based on client needs
+- **SDK Features**: Implements intelligent triage with `handoff_descriptions`
+- **Workflow**: Coordinates entire expert sourcing process and ensures response quality
 
-This demonstrates key agent framework concepts:
-- **Hierarchical Agent Structure** - Clear supervisor/specialist relationships
-- **Guardrail Implementation** - Input validation and scope protection  
-- **Intelligent Triage** - Smart routing based on request analysis
-- **Modular Specialization** - Dedicated agents for specific domains
-- **Extensible Architecture** - Easy to add new specialist agents
+#### 🛡️ **Expert Sourcing Validator** (Input Guardrail)
+- **Role**: Input validation using OpenAI Agents SDK `InputGuardrail`
+- **Function**: Ensures requests relate to expert sourcing, matchmaking, or talent acquisition
+- **SDK Features**: Uses `guardrail_function` with `tripwire_triggered` logic
+- **Protection**: First line of defense, filtering irrelevant queries
+
+#### 🔍 **Expert Search & Matchmaking Specialist**
+- **Role**: Specialized agent with domain-specific `instructions`
+- **Function**: Analyzes project requirements and provides intelligent expert recommendations
+- **SDK Features**: Uses structured `output_type` for consistent recommendation format
+- **Expertise**: Project-expert matching, skill analysis, availability assessment
+
+#### 📄 **CV Parsing & Profile Enrichment Specialist**
+- **Role**: Document analysis specialist with custom `model_config`
+- **Function**: Extracts skills, experience, and qualifications from CVs
+- **SDK Features**: Implements structured data extraction with Pydantic models
+- **Output**: Enhanced talent profiles and enriched expert data
+
+---
+
+## 👨‍💻 **Freelancer Profile Track** *(Planned Implementation)*
+
+### **Visual Architecture**
+
+```mermaid
+graph TD
+    A[👤 Freelancer] --> B[📎 CV Upload]
+    B --> C[🛡️ CV Content Validator]
+    C -->|✅ Valid CV| D[🎯 Freelancer Profile Manager]
+    C -->|❌ Invalid File| E[🚫 Upload Error]
+    
+    D -->|Document Processing| F[📄 CV Parser Agent]
+    D -->|Profile Building| G[👤 Profile Enrichment Agent]
+    D -->|Skill Analysis| H[🧠 Skills Extraction Agent]
+    D -->|Gap Assessment| I[🔍 Gap Analysis Agent]
+    
+    F --> J[📊 Structured CV Data]
+    G --> K[💼 Enhanced Profile]
+    H --> L[🏷️ Skill Tags & Levels]
+    I --> M[📋 Missing Information Requests]
+    
+    J --> N[🎯 Profile Manager]
+    K --> N
+    L --> N
+    M --> N
+    N --> O[📤 Complete Profile Response]
+    
+    style A fill:#e1f5fe
+    style D fill:#f3e5f5
+    style C fill:#fff3e0
+    style F fill:#e8f5e8
+    style G fill:#e8f5e8
+    style H fill:#e8f5e8
+    style I fill:#e8f5e8
+```
+
+### **Planned Agent Roles & Responsibilities**
+
+#### 🎯 **Freelancer Profile Manager** (Main Coordinator)
+- **Role**: Central orchestrator for freelancer profile creation workflow
+- **SDK Features**: Uses OpenAI Agents SDK `handoffs` to route between CV processing agents
+- **Function**: Coordinates CV parsing, profile enrichment, and gap analysis
+- **Workflow**: Ensures complete, high-quality freelancer profiles
+
+#### 🛡️ **CV Content Validator** (Input Guardrail)
+- **Role**: File and content validation using `InputGuardrail`
+- **Function**: Validates CV file format, content relevance, and completeness
+- **SDK Features**: Implements `guardrail_function` with file type and content checks
+- **Protection**: Ensures only valid CVs enter the processing pipeline
+
+#### 📄 **CV Parser Agent** (Document Specialist)
+- **Role**: Document extraction specialist with structured `output_type`
+- **Function**: Extracts work experience, education, certifications, and contact info
+- **SDK Features**: Uses Pydantic models for structured CV data extraction
+- **Output**: Clean, structured professional history data
+
+#### 👤 **Profile Enrichment Agent** (Enhancement Specialist)
+- **Role**: Profile optimization specialist with custom `instructions`
+- **Function**: Enhances basic CV data with professional summaries and achievements
+- **SDK Features**: Uses advanced prompt engineering for profile optimization
+- **Value-add**: Creates compelling professional narratives from raw CV data
+
+#### 🧠 **Skills Extraction Agent** (Technical Specialist)
+- **Role**: Skills analysis specialist with domain knowledge
+- **Function**: Identifies technical skills, tools, and proficiency levels
+- **SDK Features**: Implements skill taxonomy matching with confidence scoring
+- **Output**: Standardized skill tags with proficiency levels
+
+#### 🔍 **Gap Analysis Agent** (Assessment Specialist)
+- **Role**: Profile completeness specialist with interactive capabilities
+- **Function**: Identifies missing information crucial for project matching
+- **SDK Features**: Uses conversational flows to request additional details
+- **Interactive**: Generates targeted questions for profile completion
+
+### 🔄 **Dual-Track Workflow Logic**
+
+#### **Project Submission Flow**
+1. **Input Validation** → Expert Sourcing Validator ensures project-related queries
+2. **Intelligent Routing** → Expert Sourcing Supervisor routes to appropriate specialist
+3. **Specialized Processing** → Expert Search or CV Parsing handles specific tasks
+4. **Response Coordination** → Supervisor provides unified, high-quality responses
+
+#### **Freelancer Profile Flow** *(Planned)*
+1. **File Validation** → CV Content Validator ensures valid CV uploads
+2. **Workflow Orchestration** → Freelancer Profile Manager coordinates processing
+3. **Parallel Processing** → Multiple specialists extract different data aspects
+4. **Gap Analysis** → Interactive agent identifies missing profile elements
+5. **Profile Assembly** → Manager combines all data into complete freelancer profile
+
+### 🏗️ **OpenAI Agents SDK Implementation Patterns**
+
+Both tracks demonstrate key SDK concepts:
+- **🎯 Hierarchical Structure** - Clear supervisor/specialist relationships using `handoffs`
+- **🛡️ Guardrail Implementation** - Input validation with `InputGuardrail` and custom functions
+- **🔄 Intelligent Triage** - Smart routing based on request analysis with `handoff_descriptions`
+- **🎨 Modular Specialization** - Dedicated agents with specific `instructions` and `output_type`
+- **📈 Extensible Architecture** - Easy addition of new specialist agents to either track
 
 ### 💬 **Example Chat Interface**
 
 The system provides an intuitive chat interface where users can request expert sourcing services:
 
-![Example Chat](example_chat.png)
+![Example Chat](example_project_chat.png)
 
 *The Expert Sourcing Supervisor intelligently requests more details about project requirements when users ask for experts.*
 
@@ -312,11 +440,8 @@ multi-agent-expert-sourcing/
 
 ## Contributing
 
-1. Fork the repository
-2. Create feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push branch: `git push origin feature/amazing-feature`
-5. Open Pull Request
+This is just an exmaple repo to demonstrate the implementation of Agent Frameworks like Open AI's Agent SDK.
+It is not under active development.
 
 ## License
 

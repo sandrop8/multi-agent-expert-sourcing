@@ -27,10 +27,15 @@
         "./*"
       ]
     },
-    "target": "ES2017"
+    "target": "ES2017",
+    "types": [
+      "jest",
+      "@testing-library/jest-dom"
+    ]
   },
   "include": [
     "next-env.d.ts",
+    "types/**/*.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"

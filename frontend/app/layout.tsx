@@ -1,8 +1,8 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'Multi Agent Chat',
-  description: 'A modern chat interface for multi-agent interactions.',
+  title: 'Expert Sourcing Platform',
+  description: 'Connect projects with skilled freelancers through AI-powered matching. Submit projects or join as a freelancer.',
 }
 
 export default function RootLayout({

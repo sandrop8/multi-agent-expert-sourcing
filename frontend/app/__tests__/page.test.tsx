@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import ChatPage from '../page'
+import ProjectSubmissionPage from '../project/page'
 
 // Mock fetch globally
 const mockFetch = jest.fn()
@@ -13,7 +13,14 @@ Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
     writable: true,
 })
 
-describe('ChatPage', () => {
+// Mock next/link
+jest.mock('next/link', () => {
+    return ({ children, href, ...props }: any) => {
+        return <a href={href} {...props}>{children}</a>
+    }
+})
+
+describe('ProjectSubmissionPage', () => {
     beforeEach(() => {
         mockFetch.mockClear()
         mockScrollIntoView.mockClear()
@@ -22,40 +29,48 @@ describe('ChatPage', () => {
     })
 
     describe('Initial Render', () => {
-        it('renders the chat interface correctly', () => {
-            render(<ChatPage />)
+        it('renders the project submission interface correctly', () => {
+            render(<ProjectSubmissionPage />)
 
-            expect(screen.getByText('Multi Agent Chat')).toBeInTheDocument()
-            expect(screen.getByPlaceholderText('Ask me anything…')).toBeInTheDocument()
-            expect(screen.getByRole('button', { name: /send/i })).toBeInTheDocument()
+            expect(screen.getByText('Project Submission Chat')).toBeInTheDocument()
+            expect(screen.getByPlaceholderText('Describe your project, skills needed, timeline, budget...')).toBeInTheDocument()
+            expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument()
         })
 
         it('starts with empty chat history', () => {
-            render(<ChatPage />)
+            render(<ProjectSubmissionPage />)
 
             // Should not show any chat messages initially
-            expect(screen.queryByText(/AI is thinking.../)).not.toBeInTheDocument()
+            expect(screen.queryByText(/AI is analyzing your project requirements.../)).not.toBeInTheDocument()
         })
 
-        it('has input and send button enabled initially', () => {
-            render(<ChatPage />)
+        it('has input and submit button enabled initially', () => {
+            render(<ProjectSubmissionPage />)
 
-            const input = screen.getByPlaceholderText('Ask me anything…')
-            const sendButton = screen.getByRole('button', { name: /send/i })
+            const input = screen.getByPlaceholderText('Describe your project, skills needed, timeline, budget...')
+            const submitButton = screen.getByRole('button', { name: /submit/i })
 
             expect(input).not.toBeDisabled()
-            expect(sendButton).not.toBeDisabled()
+            expect(submitButton).not.toBeDisabled()
+        })
+
+        it('shows back to home link', () => {
+            render(<ProjectSubmissionPage />)
+
+            const backLink = screen.getByText('← Back to Home')
+            expect(backLink).toBeInTheDocument()
+            expect(backLink.closest('a')).toHaveAttribute('href', '/')
         })
     })
 
     describe('User Input Handling', () => {
         it('updates input value when user types', async () => {
-            render(<ChatPage />)
-            const input = screen.getByPlaceholderText('Ask me anything…')
+            render(<ProjectSubmissionPage />)
+            const input = screen.getByPlaceholderText('Describe your project, skills needed, timeline, budget...')
 
-            await userEvent.type(input, 'Hello, world!')
+            await userEvent.type(input, 'I need a React developer')
 
-            expect(input).toHaveValue('Hello, world!')
+            expect(input).toHaveValue('I need a React developer')
         })
 
         it('clears input after sending message', async () => {
@@ -64,12 +79,12 @@ describe('ChatPage', () => {
                 json: async () => ({ answer: 'Hello there!' }),
             })
 
-            render(<ChatPage />)
-            const input = screen.getByPlaceholderText('Ask me anything…')
-            const sendButton = screen.getByRole('button', { name: /send/i })
+            render(<ProjectSubmissionPage />)
+            const input = screen.getByPlaceholderText('Describe your project, skills needed, timeline, budget...')
+            const submitButton = screen.getByRole('button', { name: /submit/i })
 
-            await userEvent.type(input, 'Test message')
-            await userEvent.click(sendButton)
+            await userEvent.type(input, 'Test project description')
+            await userEvent.click(submitButton)
 
             expect(input).toHaveValue('')
         })
@@ -80,10 +95,10 @@ describe('ChatPage', () => {
                 json: async () => ({ answer: 'Response' }),
             })
 
-            render(<ChatPage />)
-            const input = screen.getByPlaceholderText('Ask me anything…')
+            render(<ProjectSubmissionPage />)
+            const input = screen.getByPlaceholderText('Describe your project, skills needed, timeline, budget...')
 
-            await userEvent.type(input, 'Test message')
+            await userEvent.type(input, 'Test project description')
             fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' })
 
             expect(mockFetch).toHaveBeenCalledWith(
@@ -91,23 +106,23 @@ describe('ChatPage', () => {
                 expect.objectContaining({
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: 'Test message' }),
+                    body: JSON.stringify({ prompt: 'Test project description' }),
                 })
             )
         })
 
         it('does not send empty or whitespace-only messages', async () => {
-            render(<ChatPage />)
-            const sendButton = screen.getByRole('button', { name: /send/i })
+            render(<ProjectSubmissionPage />)
+            const submitButton = screen.getByRole('button', { name: /submit/i })
 
             // Try sending empty message
-            await userEvent.click(sendButton)
+            await userEvent.click(submitButton)
             expect(mockFetch).not.toHaveBeenCalled()
 
             // Try sending whitespace-only message
-            const input = screen.getByPlaceholderText('Ask me anything…')
+            const input = screen.getByPlaceholderText('Describe your project, skills needed, timeline, budget...')
             await userEvent.type(input, '   ')
-            await userEvent.click(sendButton)
+            await userEvent.click(submitButton)
             expect(mockFetch).not.toHaveBeenCalled()
         })
     })
@@ -119,15 +134,15 @@ describe('ChatPage', () => {
                 json: async () => ({ answer: 'AI response' }),
             })
 
-            render(<ChatPage />)
-            const input = screen.getByPlaceholderText('Ask me anything…')
-            const sendButton = screen.getByRole('button', { name: /send/i })
+            render(<ProjectSubmissionPage />)
+            const input = screen.getByPlaceholderText('Describe your project, skills needed, timeline, budget...')
+            const submitButton = screen.getByRole('button', { name: /submit/i })
 
-            await userEvent.type(input, 'Hello AI')
-            await userEvent.click(sendButton)
+            await userEvent.type(input, 'Need a mobile app developer')
+            await userEvent.click(submitButton)
 
             // User message should appear immediately
-            expect(screen.getByText('Hello AI')).toBeInTheDocument()
+            expect(screen.getByText('Need a mobile app developer')).toBeInTheDocument()
         })
 
         it('shows loading state while waiting for response', async () => {
@@ -139,17 +154,17 @@ describe('ChatPage', () => {
 
             mockFetch.mockReturnValueOnce(mockPromise)
 
-            render(<ChatPage />)
-            const input = screen.getByPlaceholderText('Ask me anything…')
-            const sendButton = screen.getByRole('button', { name: /send/i })
+            render(<ProjectSubmissionPage />)
+            const input = screen.getByPlaceholderText('Describe your project, skills needed, timeline, budget...')
+            const submitButton = screen.getByRole('button', { name: /submit/i })
 
-            await userEvent.type(input, 'Test message')
-            await userEvent.click(sendButton)
+            await userEvent.type(input, 'Test project description')
+            await userEvent.click(submitButton)
 
             // Should show loading state
-            expect(screen.getByText('AI is thinking...')).toBeInTheDocument()
-            expect(screen.getByText('Sending...')).toBeInTheDocument()
-            expect(sendButton).toBeDisabled()
+            expect(screen.getByText('AI is analyzing your project requirements...')).toBeInTheDocument()
+            expect(screen.getByText('Analyzing...')).toBeInTheDocument()
+            expect(submitButton).toBeDisabled()
 
             // Resolve the promise
             resolvePromise!({
@@ -158,7 +173,7 @@ describe('ChatPage', () => {
             })
 
             await waitFor(() => {
-                expect(screen.queryByText('AI is thinking...')).not.toBeInTheDocument()
+                expect(screen.queryByText('AI is analyzing your project requirements...')).not.toBeInTheDocument()
             })
         })
 
@@ -168,12 +183,12 @@ describe('ChatPage', () => {
                 json: async () => ({ answer: 'This is the AI response' }),
             })
 
-            render(<ChatPage />)
-            const input = screen.getByPlaceholderText('Ask me anything…')
-            const sendButton = screen.getByRole('button', { name: /send/i })
+            render(<ProjectSubmissionPage />)
+            const input = screen.getByPlaceholderText('Describe your project, skills needed, timeline, budget...')
+            const submitButton = screen.getByRole('button', { name: /submit/i })
 
-            await userEvent.type(input, 'Test message')
-            await userEvent.click(sendButton)
+            await userEvent.type(input, 'Test project description')
+            await userEvent.click(submitButton)
 
             await waitFor(() => {
                 expect(screen.getByText('This is the AI response')).toBeInTheDocument()
@@ -185,14 +200,14 @@ describe('ChatPage', () => {
             const mockPromise = new Promise(() => { }) // Never resolves
             mockFetch.mockReturnValueOnce(mockPromise)
 
-            render(<ChatPage />)
-            const input = screen.getByPlaceholderText('Ask me anything…')
+            render(<ProjectSubmissionPage />)
+            const input = screen.getByPlaceholderText('Describe your project, skills needed, timeline, budget...')
 
-            await userEvent.type(input, 'First message')
+            await userEvent.type(input, 'First project description')
             fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' })
 
             // Try to send another message while first is loading
-            await userEvent.type(input, 'Second message')
+            await userEvent.type(input, 'Second project description')
             fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' })
 
             // Should only have called fetch once
@@ -204,12 +219,12 @@ describe('ChatPage', () => {
         it('handles network errors gracefully', async () => {
             mockFetch.mockRejectedValueOnce(new TypeError('Failed to fetch'))
 
-            render(<ChatPage />)
-            const input = screen.getByPlaceholderText('Ask me anything…')
-            const sendButton = screen.getByRole('button', { name: /send/i })
+            render(<ProjectSubmissionPage />)
+            const input = screen.getByPlaceholderText('Describe your project, skills needed, timeline, budget...')
+            const submitButton = screen.getByRole('button', { name: /submit/i })
 
-            await userEvent.type(input, 'Test message')
-            await userEvent.click(sendButton)
+            await userEvent.type(input, 'Test project description')
+            await userEvent.click(submitButton)
 
             await waitFor(() => {
                 expect(screen.getByText(/Network error: Cannot connect to backend/)).toBeInTheDocument()
@@ -222,12 +237,12 @@ describe('ChatPage', () => {
                 status: 500,
             })
 
-            render(<ChatPage />)
-            const input = screen.getByPlaceholderText('Ask me anything…')
-            const sendButton = screen.getByRole('button', { name: /send/i })
+            render(<ProjectSubmissionPage />)
+            const input = screen.getByPlaceholderText('Describe your project, skills needed, timeline, budget...')
+            const submitButton = screen.getByRole('button', { name: /submit/i })
 
-            await userEvent.type(input, 'Test message')
-            await userEvent.click(sendButton)
+            await userEvent.type(input, 'Test project description')
+            await userEvent.click(submitButton)
 
             await waitFor(() => {
                 expect(screen.getByText(/Error: HTTP error! status: 500/)).toBeInTheDocument()
@@ -237,17 +252,17 @@ describe('ChatPage', () => {
         it('resets loading state after error', async () => {
             mockFetch.mockRejectedValueOnce(new Error('Test error'))
 
-            render(<ChatPage />)
-            const input = screen.getByPlaceholderText('Ask me anything…')
-            const sendButton = screen.getByRole('button', { name: /send/i })
+            render(<ProjectSubmissionPage />)
+            const input = screen.getByPlaceholderText('Describe your project, skills needed, timeline, budget...')
+            const submitButton = screen.getByRole('button', { name: /submit/i })
 
-            await userEvent.type(input, 'Test message')
-            await userEvent.click(sendButton)
+            await userEvent.type(input, 'Test project description')
+            await userEvent.click(submitButton)
 
             await waitFor(() => {
-                expect(screen.queryByText('AI is thinking...')).not.toBeInTheDocument()
-                expect(screen.queryByText('Sending...')).not.toBeInTheDocument()
-                expect(sendButton).not.toBeDisabled()
+                expect(screen.queryByText('AI is analyzing your project requirements...')).not.toBeInTheDocument()
+                expect(screen.queryByText('Analyzing...')).not.toBeInTheDocument()
+                expect(submitButton).not.toBeDisabled()
             })
         })
     })
@@ -259,12 +274,12 @@ describe('ChatPage', () => {
                 json: async () => ({ answer: 'AI response' }),
             })
 
-            render(<ChatPage />)
-            const input = screen.getByPlaceholderText('Ask me anything…')
-            const sendButton = screen.getByRole('button', { name: /send/i })
+            render(<ProjectSubmissionPage />)
+            const input = screen.getByPlaceholderText('Describe your project, skills needed, timeline, budget...')
+            const submitButton = screen.getByRole('button', { name: /submit/i })
 
-            await userEvent.type(input, 'Test message')
-            await userEvent.click(sendButton)
+            await userEvent.type(input, 'Test project description')
+            await userEvent.click(submitButton)
 
             // Should scroll after user message
             expect(mockScrollIntoView).toHaveBeenCalled()
@@ -274,7 +289,7 @@ describe('ChatPage', () => {
             })
 
             // Should scroll again after AI response
-            expect(mockScrollIntoView).toHaveBeenCalledTimes(2)
+            expect(mockScrollIntoView).toHaveBeenCalledTimes(3)
         })
     })
 
@@ -285,12 +300,12 @@ describe('ChatPage', () => {
                 json: async () => ({ answer: 'Response' }),
             })
 
-            render(<ChatPage />)
-            const input = screen.getByPlaceholderText('Ask me anything…')
-            const sendButton = screen.getByRole('button', { name: /send/i })
+            render(<ProjectSubmissionPage />)
+            const input = screen.getByPlaceholderText('Describe your project, skills needed, timeline, budget...')
+            const submitButton = screen.getByRole('button', { name: /submit/i })
 
             await userEvent.type(input, 'Test')
-            await userEvent.click(sendButton)
+            await userEvent.click(submitButton)
 
             expect(mockFetch).toHaveBeenCalledWith(
                 'http://localhost:8000/chat',
@@ -304,12 +319,12 @@ describe('ChatPage', () => {
                 json: async () => ({ answer: 'Response' }),
             })
 
-            render(<ChatPage />)
-            const input = screen.getByPlaceholderText('Ask me anything…')
-            const sendButton = screen.getByRole('button', { name: /send/i })
+            render(<ProjectSubmissionPage />)
+            const input = screen.getByPlaceholderText('Describe your project, skills needed, timeline, budget...')
+            const submitButton = screen.getByRole('button', { name: /submit/i })
 
             await userEvent.type(input, 'Test')
-            await userEvent.click(sendButton)
+            await userEvent.click(submitButton)
 
             expect(console.log).toHaveBeenCalledWith('API Configuration:')
             expect(console.log).toHaveBeenCalledWith('- NEXT_PUBLIC_API_URL:', 'http://localhost:8000')
