@@ -60,42 +60,42 @@ meta.create_all(engine)                              # auto-create table
 
 # ---- Multi-Agent System Implementation -------------------------------------
 
-class HomeworkOutput(BaseModel):
-    is_homework: bool
+class ExpertSourcingOutput(BaseModel):
+    is_expert_sourcing: bool
     reasoning: str
 
 guardrail_agent = Agent(
-    name="Guardrail check",
-    instructions="Check if the user is asking about homework.",
-    output_type=HomeworkOutput,
+    name="Expert Sourcing Validator",
+    instructions="Check if the user is requesting expert sourcing, matchmaking, or talent acquisition services.",
+    output_type=ExpertSourcingOutput,
 )
 
-math_tutor_agent = Agent(
-    name="Math Tutor",
-    handoff_description="Specialist agent for math questions",
-    instructions="You provide help with math problems. Explain your reasoning at each step and include examples",
+expert_search_agent = Agent(
+    name="Expert Search & Matchmaking Specialist",
+    handoff_description="Specialist agent for finding and matching experts to project requirements",
+    instructions="You help find and match experts to specific project needs. Analyze requirements, search criteria, and provide recommendations for expert selection and matchmaking.",
 )
 
-history_tutor_agent = Agent(
-    name="History Tutor",
-    handoff_description="Specialist agent for historical questions",
-    instructions="You provide assistance with historical queries. Explain important events and context clearly.",
+profile_enrichment_agent = Agent(
+    name="CV Parsing & Profile Enrichment Specialist",
+    handoff_description="Specialist agent for CV analysis and expert profile enhancement",
+    instructions="You analyze CVs, parse professional profiles, and enrich expert data. Extract key skills, experience, and qualifications to create comprehensive expert profiles.",
 )
 
-async def homework_guardrail(ctx, agent, input_data):
+async def expert_sourcing_guardrail(ctx, agent, input_data):
     result = await Runner.run(guardrail_agent, input_data, context=ctx.context)
-    final_output = result.final_output_as(HomeworkOutput)
+    final_output = result.final_output_as(ExpertSourcingOutput)
     return GuardrailFunctionOutput(
         output_info=final_output,
-        tripwire_triggered=not final_output.is_homework,
+        tripwire_triggered=not final_output.is_expert_sourcing,
     )
 
-triage_agent = Agent(
-    name="Triage Agent",
-    instructions="You determine which agent to use based on the user's homework question",
-    handoffs=[history_tutor_agent, math_tutor_agent],
+supervisor_agent = Agent(
+    name="Expert Sourcing Supervisor",
+    instructions="You coordinate the expert sourcing workflow by determining which specialist agent to use based on the client's needs - expert search/matchmaking or CV parsing/profile enrichment.",
+    handoffs=[profile_enrichment_agent, expert_search_agent],
     input_guardrails=[
-        InputGuardrail(guardrail_function=homework_guardrail),
+        InputGuardrail(guardrail_function=expert_sourcing_guardrail),
     ],
 )
 
@@ -126,8 +126,8 @@ async def chat(req: ChatReq):
     try:
         print(f"🔍 Processing request: {req.prompt}")
         
-        # Use triage_agent as entry point to multi-agent system
-        result = await Runner.run(triage_agent, req.prompt)
+        # Use supervisor_agent as entry point to multi-agent system
+        result = await Runner.run(supervisor_agent, req.prompt)
         
         answer = result.final_output if result.final_output else "No response"
         print(f"✅ AI Response: {answer}")
@@ -146,7 +146,7 @@ async def chat(req: ChatReq):
         print(f"❌ Error in chat endpoint: {str(e)}")
         # Handle guardrail rejections gracefully
         if "guardrail" in str(e).lower():
-            return {"answer": "Sorry, I can only help with homework-related questions."}
+            return {"answer": "Sorry, I can only help with expert sourcing and talent acquisition requests."}
         raise HTTPException(500, str(e))
 
 @app.get("/history", response_model=List[Msg])
@@ -163,20 +163,20 @@ async def test_multi_agent_system():
     """Test function to verify multi-agent system functionality"""
     print("🧪 Testing multi-agent system...")
     
-    # Test 1: History question
-    print("\n📚 Testing history question:")
-    result = await Runner.run(triage_agent, "who was the first president of the united states?")
+    # Test 1: Expert search question
+    print("\n🔍 Testing expert search question:")
+    result = await Runner.run(supervisor_agent, "I need to find a Python developer for my fintech project")
     print(f"Response: {result.final_output}")
     
-    # Test 2: Math question
-    print("\n🔢 Testing math question:")
-    result = await Runner.run(triage_agent, "what is 2+2?")
+    # Test 2: CV parsing question
+    print("\n📄 Testing CV parsing question:")
+    result = await Runner.run(supervisor_agent, "Can you analyze this developer's CV and extract their key skills?")
     print(f"Response: {result.final_output}")
     
-    # Test 3: Non-homework question (should be blocked)
-    print("\n🚫 Testing non-homework question:")
+    # Test 3: Non-expert-sourcing question (should be blocked)
+    print("\n🚫 Testing non-expert-sourcing question:")
     try:
-        result = await Runner.run(triage_agent, "what is life")
+        result = await Runner.run(supervisor_agent, "what is the weather today?")
         print(f"Response: {result.final_output}")
     except Exception as e:
         print(f"Blocked by guardrail: {str(e)}")
