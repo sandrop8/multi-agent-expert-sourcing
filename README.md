@@ -2,6 +2,26 @@
 
 A modular, hierarchical multi-agent AI system that demonstrates intelligent expert sourcing workflows using OpenAI Agents SDK with FastAPI backend and Next.js frontend.
 
+## 📑 Table of Contents
+
+- [🤖 OpenAI Agents SDK Framework](#openai-agents-sdk-framework)
+- [🎯 Multi-Agent Architecture](#-multi-agent-architecture)
+  - [🏢 Project Submission Track](#-project-submission-track-currently-implemented)
+  - [👨‍💻 Freelancer Profile Track](#-freelancer-profile-track-planned-implementation)
+- [💬 Example Chat Interface](#-example-chat-interface)
+- [🔍 Agent Workflow Debugging](#-agent-workflow-debugging)
+- [🛠️ Tech Stack](#️-tech-stack)
+- [🧪 Testing Framework](#-testing-framework)
+- [⚙️ Installation & Setup](#installation--setup)
+- [🔧 Development Workflow](#development-workflow)
+- [🚀 Production Deployment](#production-deployment)
+- [📁 Project Structure](#project-structure)
+- [💡 Development Tips](#-development-tips)
+- [🤝 Contributing](#contributing)
+- [📄 License](#license)
+
+---
+
 ## OpenAI Agents SDK Framework
 
 This project showcases a sophisticated multi-agent system built with the OpenAI Agents SDK, featuring:
