@@ -6,8 +6,8 @@
   --color-ring: hsl(222.2 84% 4.9%);
   --color-background: hsl(0 0% 100%);
   --color-foreground: hsl(222.2 84% 4.9%);
-  --color-primary: hsl(222.2 47.4% 11.2%);
-  --color-primary-foreground: hsl(210 40% 98%);
+  --color-primary: hsl(142 64% 24%);
+  --color-primary-foreground: hsl(0 0% 100%);
   --color-secondary: hsl(210 40% 96%);
   --color-secondary-foreground: hsl(222.2 47.4% 11.2%);
   --color-destructive: hsl(0 84.2% 60.2%);
@@ -30,5 +30,42 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+
+  /* Enhanced Forest Green Button Styles */
+  .btn-primary {
+    background: linear-gradient(to bottom, #2faa4d, #1e8437);
+    color: #ffffff;
+    padding: 0.85rem 1.75rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .btn-primary:hover,
+  .btn-primary:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px -6px rgba(0, 0, 0, 0.25);
+  }
+
+  .btn-primary:focus-visible {
+    outline: 2px solid #2faa4d;
+    outline-offset: 2px;
+  }
+
+  .btn-primary:disabled {
+    background: #adcdb7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
   }
 }
