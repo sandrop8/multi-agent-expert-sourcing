@@ -6,22 +6,16 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  // Configure webpack for path aliases
-  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Get the absolute path to the project root
-    const projectRoot = path.resolve(__dirname)
-
+  // Configure webpack for path aliases - simplified for Docker compatibility
+  webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': projectRoot,
-      '@/lib': path.join(projectRoot, 'lib'),
-      '@/lib/utils': path.join(projectRoot, 'lib', 'utils'),
-      '@/components': path.join(projectRoot, 'components'),
-      '@/app': path.join(projectRoot, 'app'),
+      '@': path.resolve(__dirname),
     }
 
-    // Debug: uncomment the line below to see path resolution in build logs
-    // console.log('Webpack alias configuration:', config.resolve.alias)
+    // Enable debug logging for Docker builds
+    console.log('Docker build - Project root:', path.resolve(__dirname))
+    console.log('Docker build - @ alias:', config.resolve.alias['@'])
 
     return config
   },
