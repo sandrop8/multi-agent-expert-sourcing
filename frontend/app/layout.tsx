@@ -1,8 +1,8 @@
-import './globals.css'
+import './globals.css';
 
 export const metadata = {
-  title: 'Multi-Agent Expert Sourcing',
-  description: 'AI-powered homework assistance with AG-UI protocol integration',
+  title: 'Multi Agent Chat',
+  description: 'A modern chat interface for multi-agent interactions.',
 }
 
 export default function RootLayout({
@@ -11,8 +11,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-background font-sans antialiased">
+    <html lang="en" className="h-full">
+      <body className="h-full flex flex-col bg-gray-500">
         {children}
       </body>
     </html>

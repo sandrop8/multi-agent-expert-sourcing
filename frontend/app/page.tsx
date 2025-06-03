@@ -1,7 +1,101 @@
 "use client";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import { useEffect, useRef, useState } from "react";
 
-import AGUIChat from "@/components/AGUIChat";
+type Msg = { role: "user" | "assistant"; content: string };
 
 export default function ChatPage() {
-  return <AGUIChat />;
+  const [history, setHistory] = useState<Msg[]>([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom whenever history changes
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [history]);
+
+  async function send() {
+    if (!input.trim() || isLoading) return;
+
+    // Optimistic UI update
+    setHistory(h => [...h, { role: "user", content: input }]);
+    const prompt = input;
+    setInput("");
+    setIsLoading(true);
+
+    try {
+      console.log('Sending request to:', `${process.env.NEXT_PUBLIC_API_URL}/chat`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt })
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
+      const data = await res.json();
+      console.log('Response received:', data);
+      setHistory(h => [...h, { role: "assistant", content: data.answer }]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setHistory(h => [...h, {
+        role: "assistant",
+        content: `Error: ${error instanceof Error ? error.message : 'Failed to send message'}`
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6">
+      <Card className="w-full max-w-2xl h-full md:max-h-[90vh] flex flex-col shadow-xl bg-background">
+        <div className="p-4 border-b">
+          <h1 className="text-xl font-semibold text-center text-primary">Multi Agent Chat</h1>
+        </div>
+
+        <ScrollArea className="flex-1 p-4 space-y-4">
+          {history.map((m, i) => (
+            <div
+              key={i}
+              className={cn(
+                "p-3 rounded-lg shadow-sm max-w-[85%] whitespace-pre-wrap break-words",
+                m.role === "user"
+                  ? "ml-auto bg-primary text-primary-foreground"
+                  : "mr-auto bg-muted text-muted-foreground"
+              )}>
+              {m.content}
+            </div>
+          ))}
+          {isLoading && (
+            <div className="mr-auto p-3 rounded-lg shadow-sm bg-muted text-muted-foreground max-w-[85%] animate-pulse">
+              AI is thinking...
+            </div>
+          )}
+          <div ref={bottomRef} />
+        </ScrollArea>
+
+        <div className="p-4 border-t flex items-center gap-2">
+          <Input
+            placeholder="Ask me anything…"
+            value={input}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && send()}
+            disabled={isLoading}
+            className="flex-1"
+          />
+          <Button onClick={send} disabled={isLoading}>
+            {isLoading ? "Sending..." : "Send"}
+          </Button>
+        </div>
+      </Card>
+    </main>
+  );
 } 
