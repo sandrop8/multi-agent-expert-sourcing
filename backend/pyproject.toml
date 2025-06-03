@@ -13,4 +13,52 @@ dependencies = [
   "ag-ui-protocol>=0.1.5",
   "websockets>=11.0",
   "python-multipart>=0.0.5",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=7.4.0",
+  "pytest-asyncio>=0.21.0",
+  "httpx>=0.24.0",
+  "pytest-cov>=4.1.0",
+  "pytest-mock>=3.11.0",
+]
+
+[project.scripts]
+test = "pytest"
+test-cov = "pytest --cov=. --cov-report=html --cov-report=term"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+  "--strict-markers",
+  "--strict-config",
+  "--disable-warnings",
+  "-ra",
+]
+filterwarnings = [
+  "ignore::DeprecationWarning",
+  "ignore::PendingDeprecationWarning",
+]
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+  "tests/*",
+  ".venv/*",
+  "__pycache__/*",
+  "*.pyc",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "def __repr__",
+  "raise AssertionError",
+  "raise NotImplementedError",
+  "if __name__ == .__main__.:",
 ] 
