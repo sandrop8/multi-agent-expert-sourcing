@@ -30,7 +30,11 @@ export default function ChatPage() {
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-      console.log('Sending request to:', `${apiUrl}/chat`);
+      console.log('API Configuration:');
+      console.log('- NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
+      console.log('- Resolved API URL:', apiUrl);
+      console.log('- Full request URL:', `${apiUrl}/chat`);
+
       const res = await fetch(`${apiUrl}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -46,9 +50,18 @@ export default function ChatPage() {
       setHistory(h => [...h, { role: "assistant", content: data.answer }]);
     } catch (error) {
       console.error('Error sending message:', error);
+
+      // More specific error handling
+      let errorMessage = 'Failed to send message';
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        errorMessage = 'Network error: Cannot connect to backend. Check if NEXT_PUBLIC_API_URL is correct and backend is running.';
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
       setHistory(h => [...h, {
         role: "assistant",
-        content: `Error: ${error instanceof Error ? error.message : 'Failed to send message'}`
+        content: `Error: ${errorMessage}`
       }]);
     } finally {
       setIsLoading(false);
