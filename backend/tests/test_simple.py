@@ -5,6 +5,7 @@ Simple working tests to demonstrate the testing framework
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch, MagicMock
+import io
 
 def test_app_import():
     """Test that we can import the main app"""
@@ -70,6 +71,85 @@ def test_history_endpoint_basic():
         data = response.json()
         assert isinstance(data, list)
 
+def test_cv_upload_endpoint_basic():
+    """Test basic CV upload functionality"""
+    from main import app
+    
+    # Mock database operations
+    with patch('main.engine.begin') as mock_db:
+        mock_conn = MagicMock()
+        mock_db.return_value.__enter__.return_value = mock_conn
+        
+        client = TestClient(app)
+        
+        # Create a mock PDF file
+        pdf_content = b"Fake PDF content"
+        
+        response = client.post(
+            "/upload-cv",
+            files={"file": ("test-cv.pdf", io.BytesIO(pdf_content), "application/pdf")}
+        )
+        
+        assert response.status_code == 200
+        data = response.json()
+        assert "message" in data
+        assert data["message"] == "CV uploaded successfully"
+        assert data["filename"] == "test-cv.pdf"
+        assert data["size"] == len(pdf_content)
+
+def test_cv_upload_invalid_file_type():
+    """Test CV upload with invalid file type"""
+    from main import app
+    
+    client = TestClient(app)
+    
+    # Create a mock text file
+    text_content = b"This is not a CV"
+    
+    response = client.post(
+        "/upload-cv",
+        files={"file": ("test.txt", io.BytesIO(text_content), "text/plain")}
+    )
+    
+    assert response.status_code == 400
+    assert "Only PDF and Word documents are allowed" in response.json()["detail"]
+
+def test_cv_upload_large_file():
+    """Test CV upload with file too large"""
+    from main import app
+    
+    client = TestClient(app)
+    
+    # Create a mock large file (11MB)
+    large_content = b"x" * (11 * 1024 * 1024)
+    
+    response = client.post(
+        "/upload-cv",
+        files={"file": ("large-cv.pdf", io.BytesIO(large_content), "application/pdf")}
+    )
+    
+    assert response.status_code == 400
+    assert "File size exceeds 10MB limit" in response.json()["detail"]
+
+def test_cvs_list_endpoint_basic():
+    """Test basic CVs list functionality"""
+    from main import app
+    
+    with patch('main.engine.connect') as mock_connect:
+        # Mock database query
+        mock_conn = MagicMock()
+        mock_result = MagicMock()
+        mock_result.__iter__ = lambda self: iter([])  # Empty result
+        mock_conn.execute.return_value = mock_result
+        mock_connect.return_value.__enter__.return_value = mock_conn
+        
+        client = TestClient(app)
+        response = client.get("/cvs")
+        
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
+
 def test_chat_request_validation():
     """Test that ChatReq model validates correctly"""
     from main import ChatReq
@@ -126,4 +206,17 @@ def test_cors_configuration():
             middleware_found = True
             break
     
-    assert middleware_found, "CORS middleware should be configured" 
+    assert middleware_found, "CORS middleware should be configured"
+
+def test_database_tables_exist():
+    """Test that both messages and cvs tables are configured"""
+    from main import messages, cvs
+    
+    assert messages is not None
+    assert cvs is not None
+    assert hasattr(messages.c, 'id')
+    assert hasattr(messages.c, 'role')
+    assert hasattr(messages.c, 'content')
+    assert hasattr(cvs.c, 'id')
+    assert hasattr(cvs.c, 'filename')
+    assert hasattr(cvs.c, 'file_data') 

@@ -1,7 +1,8 @@
 """
-Minimal FastAPI backend exposing two endpoints:
- - POST /chat    : runs OpenAI Agents SDK multi-agent system and stores Q&A in Postgres
- - GET  /history : returns the last N messages
+Minimal FastAPI backend exposing endpoints:
+ - POST /chat      : runs OpenAI Agents SDK multi-agent system and stores Q&A in Postgres
+ - GET  /history   : returns the last N messages
+ - POST /upload-cv : handles CV file uploads and stores them in Postgres
 """
 
 import os
@@ -9,7 +10,7 @@ import datetime as dt
 import asyncio
 from typing import List
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -56,7 +57,21 @@ messages = sa.Table(
     sa.Column("ts", sa.DateTime, default=dt.datetime.utcnow),
 )
 
-meta.create_all(engine)                              # auto-create table
+# CV storage table
+cvs = sa.Table(
+    "cvs",
+    meta,
+    sa.Column("id", sa.Integer, primary_key=True),
+    sa.Column("filename", sa.String(255)),
+    sa.Column("original_filename", sa.String(255)),
+    sa.Column("file_size", sa.Integer),
+    sa.Column("content_type", sa.String(100)),
+    sa.Column("file_data", sa.LargeBinary),  # Store file content as binary
+    sa.Column("uploaded_at", sa.DateTime, default=dt.datetime.utcnow),
+    sa.Column("processed", sa.Boolean, default=False),
+)
+
+meta.create_all(engine)                              # auto-create tables
 
 # ---- Multi-Agent System Implementation -------------------------------------
 
@@ -107,7 +122,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000", 
+        "http://localhost:3002",  # Add port 3002 for your current frontend
         "http://127.0.0.1:3000",
+        "http://127.0.0.1:3002",  # Add 127.0.0.1 version too
         "https://poetic-optimism-production.up.railway.app"  # Railway frontend URL
     ],
     allow_credentials=True,
@@ -161,6 +178,61 @@ async def history(limit: int = 20):
             sa.select(messages).order_by(messages.c.id.desc()).limit(limit)
         )
         return [dict(r) for r in rows][::-1]
+
+@app.post("/upload-cv")
+async def upload_cv(file: UploadFile = File(...)):
+    """Handle CV file uploads and store them in Postgres."""
+    try:
+        # Validate file type
+        allowed_types = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
+        if file.content_type not in allowed_types:
+            raise HTTPException(400, "Only PDF and Word documents are allowed")
+        
+        # Validate file size (10MB limit)
+        file_content = await file.read()
+        if len(file_content) > 10 * 1024 * 1024:
+            raise HTTPException(400, "File size exceeds 10MB limit")
+        
+        print(f"📁 Processing CV upload: {file.filename} ({len(file_content)} bytes)")
+
+        # Store file in database
+        with engine.begin() as conn:
+            result = conn.execute(cvs.insert(), [{
+                "filename": file.filename,
+                "original_filename": file.filename,
+                "file_size": len(file_content),
+                "content_type": file.content_type,
+                "file_data": file_content,
+                "processed": False
+            }])
+            
+        print(f"💾 CV stored successfully in database")
+        
+        return {
+            "message": "CV uploaded successfully",
+            "filename": file.filename,
+            "size": len(file_content)
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Error in upload endpoint: {str(e)}")
+        raise HTTPException(500, f"Upload failed: {str(e)}")
+
+@app.get("/cvs")
+async def list_cvs():
+    """Get list of uploaded CVs (for testing/debugging)."""
+    try:
+        with engine.connect() as conn:
+            rows = conn.execute(
+                sa.select(cvs.c.id, cvs.c.filename, cvs.c.file_size, cvs.c.content_type, cvs.c.uploaded_at, cvs.c.processed)
+                .order_by(cvs.c.uploaded_at.desc())
+            )
+            return [dict(r._mapping) for r in rows]
+    except Exception as e:
+        print(f"❌ Error listing CVs: {str(e)}")
+        raise HTTPException(500, str(e))
 
 # ---- Testing Function (for development/debugging) -------------------------
 async def test_multi_agent_system():

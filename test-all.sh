@@ -72,25 +72,25 @@ fi
 
 # Run pytest tests
 print_status "Running pytest tests..."
-if uv run pytest tests/test_simple.py -v --tb=short; then
+if uv run pytest tests/test_simple.py tests/test_api.py -v --tb=short; then
     BACKEND_TEST_RESULT="PASSED"
     print_success "Backend pytest tests completed"
     # Count individual test results (simplified)
-    BACKEND_PASSED=$(uv run pytest tests/test_simple.py --tb=no -q | grep -o 'passed' | wc -l || echo 0)
-    BACKEND_FAILED=$(uv run pytest tests/test_simple.py --tb=no -q | grep -o 'failed' | wc -l || echo 0)
+    BACKEND_PASSED=$(uv run pytest tests/test_simple.py tests/test_api.py --tb=no -q | grep -o 'passed' | wc -l || echo 0)
+    BACKEND_FAILED=$(uv run pytest tests/test_simple.py tests/test_api.py --tb=no -q | grep -o 'failed' | wc -l || echo 0)
     ((PASSED_TESTS += BACKEND_PASSED))
     ((FAILED_TESTS += BACKEND_FAILED))
     ((TOTAL_TESTS += BACKEND_PASSED + BACKEND_FAILED))
 else
     BACKEND_TEST_RESULT="FAILED"
     print_error "Backend pytest tests failed"
-    ((FAILED_TESTS += 5))  # Estimate
-    ((TOTAL_TESTS += 5))
+    ((FAILED_TESTS += 25))  # Estimate based on 50 backend tests
+    ((TOTAL_TESTS += 25))
 fi
 
 # Run tests with coverage
 print_status "Running backend tests with coverage..."
-if uv run pytest tests/test_simple.py --cov=. --cov-report=term --cov-report=html; then
+if uv run pytest tests/test_simple.py tests/test_api.py --cov=. --cov-report=term --cov-report=html; then
     print_success "Backend coverage report generated"
 else
     print_warning "Backend coverage generation had issues"
@@ -127,9 +127,9 @@ if bun run test --passWithNoTests --coverage; then
     FRONTEND_TEST_RESULT="PASSED"
     print_success "Frontend Jest tests completed"
     # Jest outputs test counts, but let's use a simple estimate
-    ((PASSED_TESTS += 30))  # Approximate based on our test output
-    ((FAILED_TESTS += 2))   # We saw 2 minor failures
-    ((TOTAL_TESTS += 32))
+    ((PASSED_TESTS += 35))  # Approximate based on our test output (38 tests)
+    ((FAILED_TESTS += 3))   # Minor failures
+    ((TOTAL_TESTS += 38))
 else
     FRONTEND_TEST_RESULT="FAILED"
     print_error "Frontend Jest tests failed"

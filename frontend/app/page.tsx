@@ -100,9 +100,9 @@ export default function HomePage() {
 
               <div className="space-y-3 flex-grow">
                 <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>• Browse matching projects</li>
-                  <li>• Showcase your skills</li>
+                  <li>• Get feedback for your CV</li>
                   <li>• Connect with clients</li>
+                  <li>• Apply for projects</li>
                 </ul>
               </div>
 

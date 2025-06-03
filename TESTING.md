@@ -118,7 +118,8 @@ bun run test:all
 backend/
 ├── tests/
 │   ├── __init__.py
-│   └── test_api.py         # Comprehensive API tests
+│   ├── test_simple.py      # Basic functionality tests (14 tests)
+│   └── test_api.py         # Comprehensive API tests (36 tests)
 ├── test_db.py              # Database connectivity test
 └── pyproject.toml          # Python dependencies and test config
 ```
@@ -339,6 +340,40 @@ async def test_chat_endpoint():
         assert response.status_code == 200
         data = response.json()
         assert "answer" in data
+```
+
+### **CV Upload Tests**
+```python
+# Example: CV upload test
+import io
+from fastapi.testclient import TestClient
+from main import app
+
+def test_cv_upload_success():
+    client = TestClient(app)
+    pdf_content = b"Mock PDF content"
+    
+    response = client.post(
+        "/upload-cv",
+        files={"file": ("resume.pdf", io.BytesIO(pdf_content), "application/pdf")}
+    )
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["message"] == "CV uploaded successfully"
+    assert data["filename"] == "resume.pdf"
+
+def test_cv_upload_invalid_type():
+    client = TestClient(app)
+    text_content = b"Not a CV"
+    
+    response = client.post(
+        "/upload-cv",
+        files={"file": ("file.txt", io.BytesIO(text_content), "text/plain")}
+    )
+    
+    assert response.status_code == 400
+    assert "Only PDF and Word documents are allowed" in response.json()["detail"]
 ```
 
 ## 🚀 **CI/CD Integration**

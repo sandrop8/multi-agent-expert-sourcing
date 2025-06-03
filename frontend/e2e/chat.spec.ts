@@ -2,31 +2,31 @@ import { expect, test } from '@playwright/test';
 
 test.describe('Multi-Agent Chat Application', () => {
     test.beforeEach(async ({ page }) => {
-        // Navigate to the chat page
-        await page.goto('/');
+        // Navigate to the project chat page
+        await page.goto('/project');
     });
 
     test('should load the chat interface correctly', async ({ page }) => {
         // Check that main elements are present
-        await expect(page.getByText('Multi Agent Chat')).toBeVisible();
-        await expect(page.getByPlaceholder('Ask me anything…')).toBeVisible();
-        await expect(page.getByRole('button', { name: /send/i })).toBeVisible();
+        await expect(page.getByText('Project Submission Chat')).toBeVisible();
+        await expect(page.getByPlaceholder('Describe your project, skills needed, timeline, budget...')).toBeVisible();
+        await expect(page.getByRole('button', { name: /submit/i })).toBeVisible();
     });
 
     test('should have proper page title and favicon', async ({ page }) => {
         await expect(page).toHaveTitle(/multi-agent/i);
     });
 
-    test('should display input field and send button', async ({ page }) => {
-        const input = page.getByPlaceholder('Ask me anything…');
-        const sendButton = page.getByRole('button', { name: /send/i });
+    test('should display input field and submit button', async ({ page }) => {
+        const input = page.getByPlaceholder('Describe your project, skills needed, timeline, budget...');
+        const submitButton = page.getByRole('button', { name: /submit/i });
 
         await expect(input).toBeEnabled();
-        await expect(sendButton).toBeEnabled();
+        await expect(submitButton).toBeEnabled();
     });
 
     test('should handle user input correctly', async ({ page }) => {
-        const input = page.getByPlaceholder('Ask me anything…');
+        const input = page.getByPlaceholder('Describe your project, skills needed, timeline, budget...');
 
         // Type a message
         await input.fill('Hello, I need help finding a developer');
@@ -43,11 +43,11 @@ test.describe('Multi-Agent Chat Application', () => {
             });
         });
 
-        const input = page.getByPlaceholder('Ask me anything…');
-        const sendButton = page.getByRole('button', { name: /send/i });
+        const input = page.getByPlaceholder('Describe your project, skills needed, timeline, budget...');
+        const submitButton = page.getByRole('button', { name: /submit/i });
 
         await input.fill('Test message');
-        await sendButton.click();
+        await submitButton.click();
 
         // Input should be cleared after sending
         await expect(input).toHaveValue('');
@@ -65,11 +65,11 @@ test.describe('Multi-Agent Chat Application', () => {
             });
         });
 
-        const input = page.getByPlaceholder('Ask me anything…');
-        const sendButton = page.getByRole('button', { name: /send/i });
+        const input = page.getByPlaceholder('Describe your project, skills needed, timeline, budget...');
+        const submitButton = page.getByRole('button', { name: /submit/i });
 
         await input.fill('Test user message');
-        await sendButton.click();
+        await submitButton.click();
 
         // User message should appear immediately (optimistic UI)
         await expect(page.getByText('Test user message')).toBeVisible();
@@ -86,16 +86,16 @@ test.describe('Multi-Agent Chat Application', () => {
             });
         });
 
-        const input = page.getByPlaceholder('Ask me anything…');
-        const sendButton = page.getByRole('button', { name: /send/i });
+        const input = page.getByPlaceholder('Describe your project, skills needed, timeline, budget...');
+        const submitButton = page.getByRole('button', { name: /submit/i });
 
         await input.fill('Test message');
-        await sendButton.click();
+        await submitButton.click();
 
         // Should show loading indicators
-        await expect(page.getByText('AI is thinking...')).toBeVisible();
-        await expect(page.getByText('Sending...')).toBeVisible();
-        await expect(sendButton).toBeDisabled();
+        await expect(page.getByText('AI is analyzing your project requirements...')).toBeVisible();
+        await expect(page.getByText('Analyzing...')).toBeVisible();
+        await expect(submitButton).toBeDisabled();
     });
 
     test('should display AI response after successful request', async ({ page }) => {
@@ -108,11 +108,11 @@ test.describe('Multi-Agent Chat Application', () => {
             });
         });
 
-        const input = page.getByPlaceholder('Ask me anything…');
-        const sendButton = page.getByRole('button', { name: /send/i });
+        const input = page.getByPlaceholder('Describe your project, skills needed, timeline, budget...');
+        const submitButton = page.getByRole('button', { name: /submit/i });
 
         await input.fill('Find me a Python developer');
-        await sendButton.click();
+        await submitButton.click();
 
         // Should display the AI response
         await expect(page.getByText('This is an AI response from the expert sourcing system')).toBeVisible();
@@ -128,11 +128,11 @@ test.describe('Multi-Agent Chat Application', () => {
             });
         });
 
-        const input = page.getByPlaceholder('Ask me anything…');
-        const sendButton = page.getByRole('button', { name: /send/i });
+        const input = page.getByPlaceholder('Describe your project, skills needed, timeline, budget...');
+        const submitButton = page.getByRole('button', { name: /submit/i });
 
         await input.fill('Test message');
-        await sendButton.click();
+        await submitButton.click();
 
         // Should display error message
         await expect(page.getByText(/error/i)).toBeVisible();
@@ -144,11 +144,11 @@ test.describe('Multi-Agent Chat Application', () => {
             await route.abort('failed');
         });
 
-        const input = page.getByPlaceholder('Ask me anything…');
-        const sendButton = page.getByRole('button', { name: /send/i });
+        const input = page.getByPlaceholder('Describe your project, skills needed, timeline, budget...');
+        const submitButton = page.getByRole('button', { name: /submit/i });
 
         await input.fill('Test message');
-        await sendButton.click();
+        await submitButton.click();
 
         // Should display network error message
         await expect(page.getByText(/network error/i)).toBeVisible();
@@ -164,7 +164,7 @@ test.describe('Multi-Agent Chat Application', () => {
             });
         });
 
-        const input = page.getByPlaceholder('Ask me anything…');
+        const input = page.getByPlaceholder('Describe your project, skills needed, timeline, budget...');
 
         await input.fill('Test Enter key');
         await input.press('Enter');
@@ -174,14 +174,14 @@ test.describe('Multi-Agent Chat Application', () => {
     });
 
     test('should prevent sending empty messages', async ({ page }) => {
-        const sendButton = page.getByRole('button', { name: /send/i });
+        const submitButton = page.getByRole('button', { name: /submit/i });
 
         // Try to send without typing anything
-        await sendButton.click();
+        await submitButton.click();
 
         // Should not have made any API calls or added messages
         // (In a real test, you might check for lack of new chat bubbles)
-        await expect(sendButton).toBeEnabled(); // Button should still be enabled
+        await expect(submitButton).toBeEnabled(); // Button should still be enabled
     });
 
     test('should maintain chat history', async ({ page }) => {
@@ -196,19 +196,19 @@ test.describe('Multi-Agent Chat Application', () => {
             });
         });
 
-        const input = page.getByPlaceholder('Ask me anything…');
-        const sendButton = page.getByRole('button', { name: /send/i });
+        const input = page.getByPlaceholder('Describe your project, skills needed, timeline, budget...');
+        const submitButton = page.getByRole('button', { name: /submit/i });
 
         // Send first message
         await input.fill('First message');
-        await sendButton.click();
+        await submitButton.click();
 
         // Wait for response
         await expect(page.getByText('Response 1')).toBeVisible();
 
         // Send second message
         await input.fill('Second message');
-        await sendButton.click();
+        await submitButton.click();
 
         // Both messages should be visible
         await expect(page.getByText('First message')).toBeVisible();
@@ -222,26 +222,26 @@ test.describe('Multi-Agent Chat Application', () => {
         await page.setViewportSize({ width: 375, height: 667 });
 
         // Check that elements are still visible and usable
-        await expect(page.getByText('Multi Agent Chat')).toBeVisible();
-        await expect(page.getByPlaceholder('Ask me anything…')).toBeVisible();
-        await expect(page.getByRole('button', { name: /send/i })).toBeVisible();
+        await expect(page.getByText('Project Submission Chat')).toBeVisible();
+        await expect(page.getByPlaceholder('Describe your project, skills needed, timeline, budget...')).toBeVisible();
+        await expect(page.getByRole('button', { name: /submit/i })).toBeVisible();
 
         // Test interaction on mobile
-        const input = page.getByPlaceholder('Ask me anything…');
+        const input = page.getByPlaceholder('Describe your project, skills needed, timeline, budget...');
         await input.fill('Mobile test');
         await expect(input).toHaveValue('Mobile test');
     });
 
     test('should have proper accessibility attributes', async ({ page }) => {
-        const input = page.getByPlaceholder('Ask me anything…');
-        const sendButton = page.getByRole('button', { name: /send/i });
+        const input = page.getByPlaceholder('Describe your project, skills needed, timeline, budget...');
+        const submitButton = page.getByRole('button', { name: /submit/i });
 
         // Check that elements have proper roles and labels
         await expect(input).toHaveAttribute('type', 'text');
-        await expect(sendButton).toHaveAttribute('type', 'button');
+        await expect(submitButton).toHaveAttribute('type', 'button');
 
         // Check that the main heading is properly structured
-        const heading = page.getByRole('heading', { name: /multi agent chat/i });
+        const heading = page.getByRole('heading', { name: /project submission chat/i });
         await expect(heading).toBeVisible();
     });
 }); 

@@ -14,11 +14,11 @@
 
 ### **🔥 Quick Commands**
 ```bash
-# Frontend tests (37 tests)
+# Frontend tests (38 tests)
 cd frontend && bun run test
 
-# Backend tests (9 tests)  
-cd backend && uv run pytest tests/test_simple.py -v
+# Backend tests (50 tests)  
+cd backend && uv run pytest tests/test_simple.py tests/test_api.py -v
 
 # Database check
 cd backend && uv run python test_db.py
@@ -29,10 +29,11 @@ cd frontend && bunx tsc --noEmit
 
 ## 📊 **What's Tested**
 
-✅ **46 Total Tests** across the full stack  
+✅ **88 Total Tests** across the full stack  
 ✅ **95% Pass Rate** - Production ready  
 ✅ **Component Testing** - UI interactions & accessibility  
 ✅ **API Testing** - Endpoints with mocking  
+✅ **CV Upload Testing** - File validation & storage  
 ✅ **E2E Testing** - Real user workflows  
 ✅ **Database Testing** - Connectivity & schema  
 ✅ **Build Testing** - TypeScript & production builds  

@@ -85,41 +85,60 @@ graph TD
 
 ---
 
-## 👨‍💻 **Freelancer Profile Track** *(Planned Implementation)*
+## 👨‍💻 **Freelancer Profile Track** *(Partial Implementation)*
+
+### **Current Implementation Status**
+✅ **CV Upload System** - Fully functional CV upload and storage system
+- File upload interface with drag & drop support
+- File validation (PDF, DOC, DOCX only, max 10MB)
+- Secure binary storage in PostgreSQL database
+- Upload status feedback and error handling
+- CVs list endpoint for debugging and management
 
 ### **Visual Architecture**
 
 ```mermaid
 graph TD
-    A[👤 Freelancer] --> B[📎 CV Upload]
-    B --> C[🛡️ CV Content Validator]
-    C -->|✅ Valid CV| D[🎯 Freelancer Profile Manager]
+    A[👤 Freelancer] --> B[📎 CV Upload Interface]
+    B --> C[🛡️ CV File Validator]
+    C -->|✅ Valid CV| D[💾 PostgreSQL Storage]
     C -->|❌ Invalid File| E[🚫 Upload Error]
     
-    D -->|Document Processing| F[📄 CV Parser Agent]
-    D -->|Profile Building| G[👤 Profile Enrichment Agent]
-    D -->|Skill Analysis| H[🧠 Skills Extraction Agent]
-    D -->|Gap Assessment| I[🔍 Gap Analysis Agent]
+    D --> F[🎯 Future: Freelancer Profile Manager]
+    F -->|Document Processing| G[📄 CV Parser Agent]
+    F -->|Profile Building| H[👤 Profile Enrichment Agent]
+    F -->|Skill Analysis| I[🧠 Skills Extraction Agent]
+    F -->|Gap Assessment| J[🔍 Gap Analysis Agent]
     
-    F --> J[📊 Structured CV Data]
-    G --> K[💼 Enhanced Profile]
-    H --> L[🏷️ Skill Tags & Levels]
-    I --> M[📋 Missing Information Requests]
+    G --> K[📊 Structured CV Data]
+    H --> L[💼 Enhanced Profile]
+    I --> M[🏷️ Skill Tags & Levels]
+    J --> N[📋 Missing Information Requests]
     
-    J --> N[🎯 Profile Manager]
-    K --> N
-    L --> N
-    M --> N
-    N --> O[📤 Complete Profile Response]
+    K --> O[🎯 Profile Manager]
+    L --> O
+    M --> O
+    N --> O
+    O --> P[📤 Complete Profile Response]
     
     style A fill:#e1f5fe,color:#000000
-    style D fill:#f3e5f5,color:#000000
+    style B fill:#e8f5e8,color:#000000
     style C fill:#fff3e0,color:#000000
-    style F fill:#e8f5e8,color:#000000
-    style G fill:#e8f5e8,color:#000000
-    style H fill:#e8f5e8,color:#000000
-    style I fill:#e8f5e8,color:#000000
+    style D fill:#e8f5e8,color:#000000
+    style F fill:#f3e5f5,color:#000000
+    style G fill:#f0f0f0,color:#000000
+    style H fill:#f0f0f0,color:#000000
+    style I fill:#f0f0f0,color:#000000
+    style J fill:#f0f0f0,color:#000000
 ```
+
+### **Implemented Features**
+#### 📎 **CV Upload System**
+- **Role**: File upload and validation system for freelancer CVs
+- **Features**: Secure file handling with comprehensive validation
+- **Validation**: File type (PDF/Word), size limits (10MB), content validation
+- **Storage**: Binary file storage in PostgreSQL with metadata tracking
+- **UI**: Modern drag & drop interface with real-time feedback
 
 ### **Planned Agent Roles & Responsibilities**
 
@@ -253,11 +272,11 @@ Built-in tracing capabilities allow you to debug and monitor the complete agent 
 
 ## 🧪 **Testing Framework**
 
-**Comprehensive test suite with 46 tests across frontend and backend:**
+**Comprehensive test suite with 88 tests across frontend and backend:**
 
 ### **Quick Stats**
-- ✅ **46 Total Tests** - 37 Frontend + 9 Backend
-- 🎯 **95% Success Rate** - Production-ready quality
+- ✅ **88 Total Tests** - 38 Frontend + 50 Backend
+- 🎯 **95% Success Rate** - production ready quality
 - ⚡ **< 30 seconds** - Fast feedback loop
 - 🔄 **Pre-commit Ready** - Local testing before GitHub
 
@@ -385,6 +404,8 @@ bun run dev:all
 
 - **POST** `/chat` - Send message to AI agent
 - **GET** `/history?limit=20` - Retrieve conversation history
+- **POST** `/upload-cv` - Upload CV files (PDF/Word, max 10MB)
+- **GET** `/cvs` - List uploaded CVs (debugging/management)
 - **GET** `/docs` - FastAPI automatic documentation
 
 ### Environment Variables
