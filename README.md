@@ -1,5 +1,6 @@
 # Multi-Agent Expert Sourcing Demo 
 
+Find the live demo here: https://poetic-optimism-production.up.railway.app
 A modular, hierarchical multi-agent AI system that demonstrates intelligent expert sourcing workflows using OpenAI Agents SDK with FastAPI backend and Next.js frontend.
 
 ## 📑 Table of Contents
