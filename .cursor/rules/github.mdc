@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Never commit or push to github automatically. Only if the user explicitly ask you to do so.

@@ -45,6 +45,10 @@ if missing_vars:
     raise RuntimeError(f"Missing required environment variables: {', '.join(missing_vars)}")
 
 # ---- Database schema ------------------------------------------------------
+# Fix Railway URL format: postgres:// -> postgresql://
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://")
+
 engine = sa.create_engine(DATABASE_URL, future=True)
 meta   = sa.MetaData()
 

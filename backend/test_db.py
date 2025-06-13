@@ -30,12 +30,17 @@ import sqlalchemy as sa
 def test_database_connection():
     """Test the database connection and create the messages table if it doesn't exist."""
     
-    database_url = os.getenv("PG_URL")
+    # Use same logic as main.py: DATABASE_URL first, then PG_URL as fallback
+    database_url = os.getenv("DATABASE_URL") or os.getenv("PG_URL")
     
     if not database_url:
-        print("❌ PG_URL environment variable not found!")
+        print("❌ DATABASE_URL or PG_URL environment variable not found!")
         print("   Make sure your .env file is properly configured.")
         return False
+    
+    # Fix Railway URL format: postgres:// -> postgresql://
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://")
     
     print(f"🔗 Testing connection to: {database_url}")
     

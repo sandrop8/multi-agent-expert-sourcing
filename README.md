@@ -381,23 +381,33 @@ cd backend && uv run pytest tests/test_simple.py -v
 
 ## Development Workflow
 
+### 🛠️ Build System
+This project uses **Makefiles** for standardized development workflows:
+- **Root Makefile**: Cross-service orchestration (`make dev-all`, `make install-all`)
+- **Backend Makefile**: Python/uv specific commands (`make dev`, `make test-db`)
+- **Frontend Makefile**: Bun/Next.js specific commands (`make dev`, `make build`)
+
 ### Starting Both Services
 
-**Option 1: Manual (Recommended for development)**
-```bash
-# Terminal 1 - Backend
-cd backend
-uv run uvicorn main:app --reload
-
-# Terminal 2 - Frontend  
-cd frontend
-bun dev
-```
-
-**Option 2: Using scripts (future enhancement)**
+**Option 1: Using Makefiles (Recommended)**
 ```bash
 # From project root
-bun run dev:all
+make dev-all          # Start both services
+make dev-backend      # Backend only
+make dev-frontend     # Frontend only
+
+# Service-specific commands
+cd backend && make help
+cd frontend && make help
+```
+
+**Option 2: Manual commands**
+```bash
+# Terminal 1 - Backend
+cd backend && uv run uvicorn main:app --reload
+
+# Terminal 2 - Frontend  
+cd frontend && bun dev
 ```
 
 ### API Endpoints
@@ -467,10 +477,12 @@ multi-agent-expert-sourcing/
 
 ## 🔧 Development Tips
 
-- **Dependencies**: `uv add package_name` (Python) | `bun add package_name` (Node.js)
-- **Auto-reload**: Backend (`--reload` flag) | Frontend (`bun dev`)
+- **Quick Start**: `make help` (root) | `cd backend && make help` | `cd frontend && make help`
+- **Dependencies**: `make install-all` | `cd backend && make install` | `cd frontend && make install`
+- **Development**: `make dev-all` for both services | `make dev-backend` | `make dev-frontend`
+- **Testing**: `make test-all` | `cd backend && make test` | `cd frontend && make test`
+- **Cleanup**: `make clean-all` | `cd backend && make clean` | `cd frontend && make clean`
 - **Debugging**: Browser DevTools (frontend) | Terminal output (backend)
-- **Testing**: Run `./test-all.sh` before commits for quality assurance
 
 ### 🆘 Need Help?
 - **Testing Issues**: See [Quick Start Testing](QUICK_START_TESTING.md) troubleshooting
