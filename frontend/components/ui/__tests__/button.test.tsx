@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Button, buttonVariants } from '../button'
 
@@ -121,12 +121,13 @@ describe('Button Component', () => {
             expect(handleClick).not.toHaveBeenCalled()
         })
 
-        it('handles keyboard events', () => {
+        it('handles keyboard events', async () => {
             const handleClick = jest.fn()
             render(<Button onClick={handleClick}>Keyboard</Button>)
 
             const button = screen.getByRole('button')
-            fireEvent.keyDown(button, { key: 'Enter', code: 'Enter' })
+            button.focus()
+            await userEvent.keyboard('{Enter}')
 
             expect(handleClick).toHaveBeenCalledTimes(1)
         })

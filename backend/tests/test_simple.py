@@ -4,7 +4,7 @@ Simple working tests to demonstrate the testing framework
 
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, AsyncMock
 import io
 
 def test_app_import():
@@ -14,7 +14,7 @@ def test_app_import():
 
 def test_models_import():
     """Test that we can import the Pydantic models"""
-    from main import ChatReq, Msg
+    from schemas.chat_schemas import ChatReq, Msg
     
     # Test ChatReq model
     chat_req = ChatReq(prompt="Test message")
@@ -30,16 +30,18 @@ def test_chat_endpoint_basic():
     """Test basic chat endpoint functionality with mocked agents"""
     from main import app
     
-    with patch('main.Runner') as mock_runner:
+    with patch('services.chat_service.Runner') as mock_runner:
         # Mock the agent response
         mock_result = MagicMock()
         mock_result.final_output = "Mocked AI response"
-        mock_runner.run.return_value = mock_result
+        mock_runner.run = AsyncMock(return_value=mock_result)
         
         # Mock database operations
-        with patch('main.engine.begin') as mock_db:
+        with patch('models.base.get_engine') as mock_get_engine:
+            mock_engine = MagicMock()
             mock_conn = MagicMock()
-            mock_db.return_value.__enter__.return_value = mock_conn
+            mock_engine.begin.return_value.__enter__.return_value = mock_conn
+            mock_get_engine.return_value = mock_engine
             
             client = TestClient(app)
             response = client.post(
@@ -56,13 +58,15 @@ def test_history_endpoint_basic():
     """Test basic history endpoint functionality"""
     from main import app
     
-    with patch('main.engine.connect') as mock_connect:
+    with patch('models.base.get_engine') as mock_get_engine:
         # Mock database query
+        mock_engine = MagicMock()
         mock_conn = MagicMock()
         mock_result = MagicMock()
         mock_result.__iter__ = lambda self: iter([])  # Empty result
         mock_conn.execute.return_value = mock_result
-        mock_connect.return_value.__enter__.return_value = mock_conn
+        mock_engine.connect.return_value.__enter__.return_value = mock_conn
+        mock_get_engine.return_value = mock_engine
         
         client = TestClient(app)
         response = client.get("/history")
@@ -75,27 +79,34 @@ def test_cv_upload_endpoint_basic():
     """Test basic CV upload functionality"""
     from main import app
     
-    # Mock database operations
-    with patch('main.engine.begin') as mock_db:
-        mock_conn = MagicMock()
-        mock_db.return_value.__enter__.return_value = mock_conn
-        
-        client = TestClient(app)
-        
-        # Create a mock PDF file
-        pdf_content = b"Fake PDF content"
-        
-        response = client.post(
-            "/upload-cv",
-            files={"file": ("test-cv.pdf", io.BytesIO(pdf_content), "application/pdf")}
-        )
-        
-        assert response.status_code == 200
-        data = response.json()
-        assert "message" in data
-        assert data["message"] == "CV uploaded successfully"
-        assert data["filename"] == "test-cv.pdf"
-        assert data["size"] == len(pdf_content)
+    # Mock database operations and agent processing
+    with patch('models.base.get_engine') as mock_get_engine:
+        with patch('services.cv_service.Runner') as mock_runner:
+            mock_engine = MagicMock()
+            mock_conn = MagicMock()
+            mock_engine.begin.return_value.__enter__.return_value = mock_conn
+            mock_get_engine.return_value = mock_engine
+            
+            # Mock agent response
+            mock_result = MagicMock()
+            mock_result.final_output = "CV processed successfully"
+            mock_runner.run = AsyncMock(return_value=mock_result)
+            
+            client = TestClient(app)
+            
+            # Create a mock PDF file
+            pdf_content = b"Fake PDF content"
+            
+            response = client.post(
+                "/upload-cv",
+                files={"file": ("test-cv.pdf", io.BytesIO(pdf_content), "application/pdf")}
+            )
+            
+            assert response.status_code == 200
+            data = response.json()
+            assert "message" in data
+            assert data["filename"] == "test-cv.pdf"
+            assert data["size"] == len(pdf_content)
 
 def test_cv_upload_invalid_file_type():
     """Test CV upload with invalid file type"""
@@ -135,13 +146,15 @@ def test_cvs_list_endpoint_basic():
     """Test basic CVs list functionality"""
     from main import app
     
-    with patch('main.engine.connect') as mock_connect:
+    with patch('models.base.get_engine') as mock_get_engine:
         # Mock database query
+        mock_engine = MagicMock()
         mock_conn = MagicMock()
         mock_result = MagicMock()
         mock_result.__iter__ = lambda self: iter([])  # Empty result
         mock_conn.execute.return_value = mock_result
-        mock_connect.return_value.__enter__.return_value = mock_conn
+        mock_engine.connect.return_value.__enter__.return_value = mock_conn
+        mock_get_engine.return_value = mock_engine
         
         client = TestClient(app)
         response = client.get("/cvs")
@@ -152,7 +165,7 @@ def test_cvs_list_endpoint_basic():
 
 def test_chat_request_validation():
     """Test that ChatReq model validates correctly"""
-    from main import ChatReq
+    from schemas.chat_schemas import ChatReq
     
     # Valid request
     valid_req = ChatReq(prompt="Hello")
@@ -164,7 +177,7 @@ def test_chat_request_validation():
 
 def test_agent_configuration():
     """Test that agents are configured correctly"""
-    from main import supervisor_agent, project_requirements_agent, project_refinement_agent, guardrail_agent
+    from app_agents.chat_agents import supervisor_agent, project_requirements_agent, project_refinement_agent, guardrail_agent
     
     assert supervisor_agent.name == "Expert Sourcing Supervisor"
     assert project_requirements_agent.name == "Project Requirements Assistant"
@@ -210,7 +223,8 @@ def test_cors_configuration():
 
 def test_database_tables_exist():
     """Test that both messages and cvs tables are configured"""
-    from main import messages, cvs
+    from models.chat_models import messages
+    from models.cv_models import cvs
     
     assert messages is not None
     assert cvs is not None

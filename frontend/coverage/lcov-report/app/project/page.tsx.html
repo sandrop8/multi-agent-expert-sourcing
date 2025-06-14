@@ -195,7 +195,13 @@
 <a name='L130'></a><a href='#L130'>130</a>
 <a name='L131'></a><a href='#L131'>131</a>
 <a name='L132'></a><a href='#L132'>132</a>
-<a name='L133'></a><a href='#L133'>133</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -292,6 +298,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">32x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -317,6 +328,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">279x</span>
 <span class="cline-any cline-yes">282x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -401,62 +413,68 @@ export default function ProjectSubmissionPage() {
     }
 &nbsp;
     return (
-        &lt;main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6"&gt;
-            &lt;Card className="w-full max-w-2xl h-full md:max-h-[90vh] flex flex-col shadow-xl bg-background"&gt;
-                &lt;div className="p-4 border-b flex items-center justify-between"&gt;
-                    &lt;Link
-                        href="/"
-                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                    &gt;
-                        ← Back to Home
-                    &lt;/Link&gt;
-                    &lt;h1 className="text-xl font-semibold text-center text-primary flex-1"&gt;
-                        Project Submission Chat
-                    &lt;/h1&gt;
-                    &lt;div className="w-20"&gt;&lt;/div&gt; {/* Spacer for centering */}
-                &lt;/div&gt;
+        &lt;main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6 relative"&gt;
+            {/* Golden background overlay to match homepage */}
+            &lt;div className="absolute inset-0 bg-gradient-to-br from-amber-100/40 via-orange-100/30 to-amber-200/40"&gt;&lt;/div&gt;
+            &lt;div className="absolute inset-0 bg-gradient-to-t from-orange-200/20 via-transparent to-amber-100/15"&gt;&lt;/div&gt;
 &nbsp;
-                &lt;div className="px-4 py-2 bg-muted/50 border-b"&gt;
-                    &lt;p className="text-sm text-muted-foreground text-center"&gt;
-                        Describe your project requirements and our AI will help match you with the right freelancers
-                    &lt;/p&gt;
-                &lt;/div&gt;
+            &lt;div className="relative z-10 w-full h-full flex justify-center"&gt;
+                &lt;Card className="w-full max-w-2xl h-full md:max-h-[90vh] flex flex-col shadow-xl bg-background"&gt;
+                    &lt;div className="p-4 border-b flex items-center justify-between"&gt;
+                        &lt;Link
+                            href="/"
+                            className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                        &gt;
+                            ← Back to Home
+                        &lt;/Link&gt;
+                        &lt;h1 className="text-xl font-semibold text-center text-primary flex-1"&gt;
+                            Project Submission Chat
+                        &lt;/h1&gt;
+                        &lt;div className="w-20"&gt;&lt;/div&gt; {/* Spacer for centering */}
+                    &lt;/div&gt;
 &nbsp;
-                &lt;ScrollArea className="flex-1 p-4 space-y-4"&gt;
-                    {history.map((m, i) =&gt; (
-                        &lt;div
-                            key={i}
-                            className={cn(
-                                "p-3 rounded-lg shadow-sm max-w-[85%] whitespace-pre-wrap break-words",
-                                m.role === "user"
-                                    ? "ml-auto bg-primary text-primary-foreground"
-                                    : "mr-auto bg-muted text-muted-foreground"
-                            )}&gt;
-                            {m.content}
-                        &lt;/div&gt;
-                    ))}
-                    {isLoading &amp;&amp; (
-                        &lt;div className="mr-auto p-3 rounded-lg shadow-sm bg-muted text-muted-foreground max-w-[85%] animate-pulse"&gt;
-                            AI is analyzing your project requirements...
-                        &lt;/div&gt;
-                    )}
-                    &lt;div ref={bottomRef} /&gt;
-                &lt;/ScrollArea&gt;
+                    &lt;div className="px-4 py-2 bg-muted/50 border-b"&gt;
+                        &lt;p className="text-sm text-muted-foreground text-center"&gt;
+                            Describe your project requirements and our AI will help match you with the right freelancers
+                        &lt;/p&gt;
+                    &lt;/div&gt;
 &nbsp;
-                &lt;div className="p-4 border-t flex items-center gap-2"&gt;
-                    &lt;Input
-                        placeholder="Describe your project, skills needed, timeline, budget..."
-                        value={input}
-                        onChange={(e: React.ChangeEvent&lt;HTMLInputElement&gt;) =&gt; setInput(e.target.value)}
-                        onKeyDown={(e: React.KeyboardEvent&lt;HTMLInputElement&gt;) =&gt; e.key === "Enter" &amp;&amp; send()}
-                        disabled={isLoading}
-                        className="flex-1"
-                    /&gt;
-                    &lt;Button onClick={send} disabled={isLoading}&gt;
-                        {isLoading ? "Analyzing..." : "Submit"}
-                    &lt;/Button&gt;
-                &lt;/div&gt;
-            &lt;/Card&gt;
+                    &lt;ScrollArea className="flex-1 p-4 space-y-4"&gt;
+                        {history.map((m, i) =&gt; (
+                            &lt;div
+                                key={i}
+                                className={cn(
+                                    "p-3 rounded-lg shadow-sm max-w-[85%] whitespace-pre-wrap break-words",
+                                    m.role === "user"
+                                        ? "ml-auto bg-primary text-primary-foreground"
+                                        : "mr-auto bg-muted text-muted-foreground"
+                                )}&gt;
+                                {m.content}
+                            &lt;/div&gt;
+                        ))}
+                        {isLoading &amp;&amp; (
+                            &lt;div className="mr-auto p-3 rounded-lg shadow-sm bg-muted text-muted-foreground max-w-[85%] animate-pulse"&gt;
+                                AI is analyzing your project requirements...
+                            &lt;/div&gt;
+                        )}
+                        &lt;div ref={bottomRef} /&gt;
+                    &lt;/ScrollArea&gt;
+&nbsp;
+                    &lt;div className="p-4 border-t flex items-center gap-2"&gt;
+                        &lt;Input
+                            placeholder="Describe your project, skills needed, timeline, budget..."
+                            value={input}
+                            onChange={(e: React.ChangeEvent&lt;HTMLInputElement&gt;) =&gt; setInput(e.target.value)}
+                            onKeyDown={(e: React.KeyboardEvent&lt;HTMLInputElement&gt;) =&gt; e.key === "Enter" &amp;&amp; send()}
+                            disabled={isLoading}
+                            className="flex-1"
+                        /&gt;
+                        &lt;Button onClick={send} disabled={isLoading}&gt;
+                            {isLoading ? "Analyzing..." : "Submit"}
+                        &lt;/Button&gt;
+                    &lt;/div&gt;
+                &lt;/Card&gt;
+            &lt;/div&gt;
         &lt;/main&gt;
     );
 } </pre></td></tr></table></pre>
@@ -466,7 +484,7 @@ export default function ProjectSubmissionPage() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-03T15:38:43.159Z
+                at 2025-06-14T17:42:10.138Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

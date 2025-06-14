@@ -120,7 +120,8 @@ backend/
 │   ├── __init__.py
 │   ├── test_simple.py      # Basic functionality tests (14 tests)
 │   └── test_api.py         # Comprehensive API tests (36 tests)
-├── test_db.py              # Database connectivity test
+├── scripts/
+│   └── test_db.py          # Database connectivity test
 └── pyproject.toml          # Python dependencies and test config
 ```
 
@@ -165,7 +166,7 @@ uv run pytest -x
 cd backend
 
 # Test database connectivity
-uv run python test_db.py
+uv run python scripts/test_db.py
 ```
 
 ## 🪝 **Pre-commit Hooks Setup**
@@ -541,7 +542,7 @@ bunx playwright install-deps
 cat backend/.env
 
 # Test database connectivity
-cd backend && uv run python test_db.py
+cd backend && uv run python scripts/test_db.py
 ```
 
 ---

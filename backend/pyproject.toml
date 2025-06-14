@@ -6,6 +6,7 @@ dependencies = [
   "fastapi",
   "uvicorn[standard]",
   "sqlalchemy>=2.0",
+  "alembic>=1.12.0",
   "openai>=1.30",
   "openai-agents>=0.0.16",
   "psycopg2-binary",
@@ -15,7 +16,7 @@ dependencies = [
   "python-multipart>=0.0.5",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 test = [
   "pytest>=7.4.0",
   "pytest-asyncio>=0.21.0",

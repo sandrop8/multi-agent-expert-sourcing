@@ -227,13 +227,16 @@ Built-in tracing capabilities allow you to debug and monitor the complete agent 
 - **FastAPI** - High-performance Python web framework with automatic API docs
 - **Uvicorn** - Lightning-fast ASGI server with standard extras
 
+#### **Architecture & Development Standards**
+- **[FastAPI Best Practices](backend/FASTAPI_BEST_PRACTICES.md)** - Comprehensive guide for SQLAlchemy ORM, Pydantic schemas, and project structure
+
 #### **AI & Agent System**
 - **OpenAI Agents SDK** (`openai-agents>=0.0.16`) - Multi-agent orchestration framework
 - **OpenAI API** (`openai>=1.30`) - GPT models and AI capabilities
 
 #### **Database & Data**
-- **PostgreSQL** - Robust relational database for conversation storage
-- **SQLAlchemy Core 2.x** (`sqlalchemy>=2.0`) - Database abstraction layer for schema and queries
+- **PostgreSQL** - Robust relational database for conversation and CV storage
+- **SQLAlchemy 2.x** (`sqlalchemy>=2.0`) - Database ORM and abstraction layer (migrating from Core to ORM pattern)
 - **psycopg2-binary** - PostgreSQL database adapter
 
 #### **Development & Utilities**
@@ -273,28 +276,19 @@ Built-in tracing capabilities allow you to debug and monitor the complete agent 
 
 ## 🧪 **Testing Framework**
 
-**Comprehensive test suite with 88 tests across frontend and backend:**
-
-### **Quick Stats**
-- ✅ **88 Total Tests** - 38 Frontend + 50 Backend
-- 🎯 **95% Success Rate** - working on it 
-- ⚡ **< 30 seconds** - Fast feedback loop
-- 🔄 **Pre-commit Ready** - Local testing before GitHub
+**Comprehensive test suite with 163 tests:**
 
 ### **Testing Stack**
-```
-Frontend: Jest + React Testing Library + Playwright
-Backend:  pytest + FastAPI TestClient + Coverage
-E2E:      Cross-browser testing with Playwright
-Quality:  ESLint, TypeScript, Coverage Reports
-```
+- **Frontend Testing** - Jest + React Testing Library for UI components, interactions, accessibility (37/38 tests passing)
+- **E2E Testing** - Playwright cross-browser testing across 5 browsers for full user journeys (75/75 tests passing)  
+- **API Testing** - pytest + FastAPI TestClient for endpoints, database, agent system (50/50 tests passing)
+- **Quality Assurance** - ESLint + TypeScript for code quality and type safety (0 errors)
+- **Performance** - Coverage reports and build validation for production readiness
 
-### **Test Coverage**
-- **Component Testing** - UI components, interactions, accessibility
-- **Integration Testing** - API calls, user workflows, error handling  
-- **E2E Testing** - Full user journeys across browsers
-- **API Testing** - Endpoints, database, agent system
-- **Build Testing** - TypeScript compilation, production builds
+### **Testing Summary**
+✅ **162/163 Total Tests Passing** (99.4% success rate)  
+⚡ **< 30 seconds** - Fast feedback loop  
+🔄 **Pre-commit Ready** - Local testing before GitHub
 
 ### **Quick Start Testing**
 ```bash
@@ -305,7 +299,7 @@ Quality:  ESLint, TypeScript, Coverage Reports
 cd frontend && bun run test
 
 # Backend only  
-cd backend && uv run pytest tests/test_simple.py -v
+cd backend && uv run pytest tests/ -v
 ```
 
 📚 **Detailed Documentation:**
