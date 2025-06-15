@@ -11,8 +11,7 @@ multi-agent-expert-sourcing/
 ├── Makefile               # Root-level commands (dev-all, test-all, etc.)
 ├── .gitignore             # Git ignore patterns
 ├── test-all.sh           # Comprehensive test suite script
-├── TESTING.md            # Testing documentation
-├── QUICK_START_TESTING.md # Quick testing guide
+├── TESTING.md            # Testing documentation (includes quick start)
 ├── railway.json          # Deployment configuration
 ├── backend/
 │   ├── main.py           # FastAPI app initialization and routes

@@ -2,6 +2,8 @@
 CV service - business logic for CV upload and processing
 """
 
+import os
+import tempfile
 from typing import List
 from fastapi import HTTPException, UploadFile
 import sqlalchemy as sa
@@ -45,45 +47,56 @@ class CVService:
                 
             print(f"💾 CV stored successfully in database")
             
-            # Process CV with freelancer agent system
+            # Process CV with freelancer agent system using stored file data
             try:
-                print(f"🤖 Processing CV with freelancer agent system...")
-                cv_description = f"CV file uploaded: {file.filename} ({file.content_type}, {len(file_content)} bytes). Please analyze this CV upload and coordinate the profile creation workflow."
+                print(f"🤖 Processing CV with freelancer agent system using stored file...")
                 
-                # Use freelancer_profile_manager as entry point to CV processing system
-                result = await Runner.run(freelancer_profile_manager, cv_description)
+                # Get the CV ID from the inserted record
+                cv_id = result.inserted_primary_key[0]
+                print(f"📁 Processing stored CV with ID: {cv_id}")
                 
-                agent_response = result.final_output if result.final_output else "CV processed successfully"
-                print(f"✅ Agent Response: {agent_response}")
-                
-                # CV was successfully processed by agents - confirmed as valid CV
-                return CVUploadResponse(
-                    message="CV uploaded successfully! Our AI will analyze it and provide feedback soon.",
-                    filename=file.filename,
-                    size=len(file_content),
-                    agent_feedback=agent_response,
-                    processing_status="validated"
-                )
-                
-            except Exception as agent_error:
-                print(f"⚠️ Agent processing error: {str(agent_error)}")
-                # Handle agent errors gracefully - file is still stored
-                if "guardrail" in str(agent_error).lower():
+                try:
+                    # Use freelancer_profile_manager with the stored CV ID
+                    result = await Runner.run(freelancer_profile_manager, f"stored_cv_id:{cv_id}")
+                    
+                    agent_response = result.final_output if result.final_output else "CV processed successfully"
+                    print(f"✅ Agent Response: {agent_response}")
+                    
+                    # CV was successfully processed by agents - confirmed as valid CV
                     return CVUploadResponse(
-                        message="File uploaded successfully, but we're still analyzing if it's a proper CV. We'll provide feedback soon.",
+                        message="CV uploaded and analyzed successfully! Our AI has processed your CV.",
                         filename=file.filename,
                         size=len(file_content),
-                        agent_feedback="Our AI is analyzing the content to determine if this is a professional CV/resume.",
-                        processing_status="analyzing"
+                        agent_feedback=str(agent_response) if agent_response else "CV processed successfully",
+                        processing_status="completed"
                     )
-                else:
-                    return CVUploadResponse(
-                        message="File uploaded successfully, but our AI analysis encountered an issue. We'll review it manually.",
-                        filename=file.filename,
-                        size=len(file_content),
-                        agent_feedback="Automated processing encountered an issue, but your file has been saved for manual review.",
-                        processing_status="manual_review"
-                    )
+                    
+                except Exception as agent_error:
+                    print(f"⚠️ Agent processing error: {str(agent_error)}")
+                    # Handle agent errors gracefully - file is still stored
+                    if "guardrail" in str(agent_error).lower() or "tripwire" in str(agent_error).lower():
+                        return CVUploadResponse(
+                            message="File uploaded successfully, but our AI determined this may not be a standard CV format. We'll review it manually.",
+                            filename=file.filename,
+                            size=len(file_content),
+                            agent_feedback="Our AI analysis suggests this document may not follow standard CV/resume format. Manual review recommended.",
+                            processing_status="needs_review"
+                        )
+                    else:
+                        return CVUploadResponse(
+                            message="File uploaded successfully, but our AI analysis encountered an issue. We'll review it manually.",
+                            filename=file.filename,
+                            size=len(file_content),
+                            agent_feedback=f"AI processing error: {str(agent_error)[:200]}...",
+                            processing_status="manual_review"
+                        )
+                except Exception as agent_processing_error:
+                    print(f"❌ Error in agent processing: {str(agent_processing_error)}")
+                    raise HTTPException(500, f"Agent processing failed: {str(agent_processing_error)}")
+            
+            except Exception as processing_error:
+                print(f"❌ Error in CV processing: {str(processing_error)}")
+                raise HTTPException(500, f"CV processing failed: {str(processing_error)}")
         
         except HTTPException:
             raise

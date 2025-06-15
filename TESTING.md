@@ -1,10 +1,58 @@
 # 🧪 Testing Framework Documentation
 
-**Comprehensive testing setup and configuration guide for the Multi-Agent Expert Sourcing application.**
+**Comprehensive testing setup and guide for the Multi-Agent Expert Sourcing application.**
 
-> 📖 **Navigation**: [Main README](README.md) | [Quick Start Testing](QUICK_START_TESTING.md) | **[Complete Guide]** | [Tailwind Debug](frontend/TAILWIND_DEBUG_GUIDE.md)
+> 📖 **Navigation**: [Main README](README.md) | **[Complete Testing Guide]** | [Backend Tests](backend/tests/README.md) | [Tailwind Debug](frontend/TAILWIND_DEBUG_GUIDE.md)
 
-> 💡 **Need quick commands?** See [Quick Start Testing Guide](QUICK_START_TESTING.md) for immediate testing.
+---
+
+## ⚡ **Quick Start - Run Tests Now**
+
+### **🎯 Everything (Recommended)**
+```bash
+./test-all.sh
+```
+*Runs all backend tests plus frontend testing with comprehensive summary*
+
+### **🔥 Quick Commands**
+```bash
+# Frontend tests
+cd frontend && bun run test
+
+# Backend tests (67 working tests)
+cd backend && uv run pytest tests/ -v
+
+# E2E tests
+cd frontend && bunx playwright test
+
+# Database check
+cd backend && uv run python scripts/test_db.py
+
+# Type safety
+cd frontend && bunx tsc --noEmit
+```
+
+### **📊 Current Test Status**
+✅ **67 Backend Tests** - pytest + FastAPI TestClient (working reliably)  
+✅ **Frontend Testing** - Jest + React Testing Library  
+✅ **E2E Testing** - Playwright cross-browser testing  
+✅ **Quality Assurance** - ESLint + TypeScript  
+✅ **CV Processing** - Core tests working, complex tests disabled  
+
+### **⚡ Daily Workflow**
+```bash
+# Before coding
+./test-all.sh                    # Ensure clean start
+
+# During development  
+cd frontend && bun run test:watch   # Watch mode
+cd backend && uv run pytest -v     # Quick backend check
+
+# Before committing
+./test-all.sh                    # Full verification
+```
+
+---
 
 ## 📋 **Testing Strategy Overview**
 
@@ -113,17 +161,21 @@ bun run test:all
 - **pytest-cov 4.1.0** - Coverage reporting
 - **pytest-mock 3.11.0** - Mocking utilities
 
-### **Test Structure**
+### **Current Test Status (67 Working Tests)**
 ```
-backend/
-├── tests/
-│   ├── __init__.py
-│   ├── test_simple.py      # Basic functionality tests (14 tests)
-│   └── test_api.py         # Comprehensive API tests (36 tests)
-├── scripts/
-│   └── test_db.py          # Database connectivity test
-└── pyproject.toml          # Python dependencies and test config
+backend/tests/
+├── test_simple.py       # 14 tests - Basic functionality ✅
+├── test_api.py          # 33 tests - API endpoints ✅ (1 disabled)
+├── test_cv_extraction.py # 6 tests - CV service ✅ (4 skipped)
+├── test_cv_agents.py    # 12 tests - CV workflow ✅ (2 disabled)
+└── fixtures/            # Test data files
+    └── test-cv.pdf      # Sample CV for testing
 ```
+
+### **Disabled Tests (For Future Integration)**
+- `test_cv_upload_database_storage` - Makes real OpenAI API calls (73+ seconds)
+- `test_cv_workflow_with_real_file` - Makes real OpenAI API calls (31+ seconds)  
+- `test_extraction_tools_functionality` - Broken mock (needs fixing)
 
 ### **Running Backend Tests**
 
@@ -142,7 +194,7 @@ uv add --group test pytest pytest-asyncio httpx pytest-cov pytest-mock
 ```bash
 cd backend
 
-# Run all tests
+# Run all tests (fast - 6 seconds)
 uv run pytest
 
 # Run with coverage
@@ -169,38 +221,50 @@ cd backend
 uv run python scripts/test_db.py
 ```
 
-## 🪝 **Pre-commit Hooks Setup**
+## 🚀 **CV Tests Integration**
 
-### **Installation & Configuration**
+### **Smart Test Design**
+The CV processing tests are designed to work reliably:
 
-#### **Initialize Husky**
 ```bash
-cd frontend
+# CV tests run automatically with backend tests
+cd backend && uv run pytest tests/ -v
 
-# Install dependencies (if not already done)
-bun install
-
-# Initialize Husky
-bun run prepare
-
-# Create pre-commit hook
-bunx husky add .husky/pre-commit "bun run pre-commit"
+# Specific CV test files
+cd backend && uv run pytest tests/test_cv_extraction.py -v
+cd backend && uv run pytest tests/test_cv_agents.py -v
 ```
 
-#### **Manual Pre-commit Check**
-```bash
-cd frontend
+### **What Happens When Dependencies Are Missing:**
+- Tests gracefully skip with `pytest.skip()`
+- No hanging or failures
+- Clear messages about what's missing
+- Core functionality remains testable
 
-# Run pre-commit checks manually
-bun run pre-commit
+### **Test Categories:**
+- **Always Run**: Import tests, configuration validation, mocked functionality
+- **Conditional**: Real API tests when `OPENAI_API_KEY` is set
+- **Disabled**: Tests making expensive real API calls (marked for integration)
+
+## 🪝 **Pre-commit Options**
+
+### **Recommended Approaches**
+
+**Manual (Recommended)**: Run `./test-all.sh` before each commit
+
+**VS Code Task**: Add to `.vscode/tasks.json`:
+```json
+{
+    "label": "Run All Tests",
+    "type": "shell", 
+    "command": "./test-all.sh"
+}
 ```
 
-### **What Runs on Pre-commit**
-1. **ESLint** - Code linting and auto-fixing
-2. **Prettier** - Code formatting
-3. **TypeScript** - Type checking
-4. **Jest** - Related unit tests
-5. **Coverage** - Test coverage validation
+**Git Hook**: 
+```bash
+echo '#!/bin/sh\n./test-all.sh' > .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+```
 
 ## 📊 **Coverage Requirements**
 
@@ -363,18 +427,6 @@ def test_cv_upload_success():
     data = response.json()
     assert data["message"] == "CV uploaded successfully"
     assert data["filename"] == "resume.pdf"
-
-def test_cv_upload_invalid_type():
-    client = TestClient(app)
-    text_content = b"Not a CV"
-    
-    response = client.post(
-        "/upload-cv",
-        files={"file": ("file.txt", io.BytesIO(text_content), "text/plain")}
-    )
-    
-    assert response.status_code == 400
-    assert "Only PDF and Word documents are allowed" in response.json()["detail"]
 ```
 
 ## 🚀 **CI/CD Integration**
@@ -426,7 +478,7 @@ jobs:
 2. **Arrange, Act, Assert** - Structure tests clearly
 3. **Independent Tests** - Each test should run in isolation
 4. **Descriptive Names** - Test names should describe the expected behavior
-5. **Mock External Dependencies** - Avoid real API calls in tests
+5. **Mock External Dependencies** - Avoid real API calls in unit tests
 
 ### **Frontend Testing Guidelines**
 - **Use `screen.getByRole()`** for better accessibility testing
@@ -545,10 +597,25 @@ cat backend/.env
 cd backend && uv run python scripts/test_db.py
 ```
 
+## 🆘 **Quick Fixes**
+
+```bash
+# Missing dependencies
+cd frontend && bun install
+cd backend && uv sync
+
+# Database issues  
+cd backend && uv run python scripts/test_db.py
+
+# Type errors
+cd frontend && bunx tsc --noEmit
+```
+
 ---
 
 ## 📚 **Additional Resources**
 
+- **[Backend Test Details](backend/tests/README.md)** - Backend-specific test structure and debugging
 - [Jest Documentation](https://jestjs.io/docs/getting-started)
 - [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
 - [Playwright Documentation](https://playwright.dev/)

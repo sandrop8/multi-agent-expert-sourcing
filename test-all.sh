@@ -85,7 +85,7 @@ else
     print_error "Backend pytest tests failed"
     # Set fallback values if tests failed
     API_PASSED=0
-    API_TOTAL=50
+    API_TOTAL=88
 fi
 
 cd "$ORIGINAL_DIR"
