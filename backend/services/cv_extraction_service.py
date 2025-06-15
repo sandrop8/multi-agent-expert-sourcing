@@ -14,6 +14,18 @@ import sqlalchemy as sa
 from models.base import get_engine
 from models.cv_models import cvs
 
+# Global variable to capture last extraction result for testing
+# TODO: REMOVE after testing is complete
+_last_extraction_result = None
+
+def get_last_extraction_result() -> Optional[str]:
+    """
+    Get the last extraction result for testing purposes.
+    TODO: REMOVE after testing is complete.
+    """
+    global _last_extraction_result
+    return _last_extraction_result
+
 class CVTextExtractionResult(BaseModel):
     """Result from CV text extraction tool"""
     extracted_text: str
@@ -74,7 +86,7 @@ async def extract_cv_text_with_responses_api(
         extraction_focus: Type of extraction - 'validation', 'summary', or 'comprehensive'
         
     Returns:
-        JSON string with extracted CV information
+        JSON string with extracted CV information matching cv_models.py structure
     """
     
     temp_file_path = None
@@ -128,101 +140,146 @@ async def extract_cv_text_with_responses_api(
             """,
             
             "comprehensive": """
-            Extract comprehensive CV information in this JSON structure. 
-            Use empty strings for missing text fields, empty arrays for missing lists:
+            Extract comprehensive CV information in this EXACT JSON structure, matching our PostgreSQL database schema.
+            CRITICAL: Use the exact field names as shown - no variations. Use null for missing values, empty arrays [] for missing lists:
             
             {
                 "personal_info": {
-                    "full_name": "string",
-                    "email": "string", 
-                    "phone": "string",
-                    "location": "string",
-                    "linkedin": "string",
-                    "portfolio": "string"
+                    "first_name": "string or null",
+                    "last_name": "string or null", 
+                    "phone": "string or null",
+                    "email": "string or null",
+                    "professional_title": "string or null",
+                    "summary": "string or null",
+                    "website_url": "string or null",
+                    "linkedin_url": "string or null",
+                    "xing_url": "string or null",
+                    "github_url": "string or null",
+                    "street": "string or null",
+                    "street_number": "string or null",
+                    "plz": "string or null",
+                    "city": "string or null",
+                    "country": "string or null",
+                    "languages": [{"language": "string", "level": "string"}],
+                    "work_preferences": ["remote", "on_premise"] or null,
+                    "industries": ["IT", "Engineering", "Marketing & Design", "Management, Sales & HR"] or null,
+                    "skills_array": ["skill1", "skill2", "skill3"],
+                    "top_skills": ["top1", "top2", "top3", "top4", "top5"],
+                    "total_years_experience": integer or null,
+                    "hours_per_week_available": integer or null,
+                    "available_start_date": "YYYY-MM-DD" or null,
+                    "hourly_rate_single": number or null,
+                    "hourly_rate_min": number or null,
+                    "hourly_rate_max": number or null
                 },
-                "professional_summary": "string",
+                "professional_services": {
+                    "management_sales_hr_services": ["service1", "service2"] or null,
+                    "marketing_design_services": ["service1", "service2"] or null,
+                    "engineering_services": ["service1", "service2"] or null,
+                    "it_services": ["service1", "service2"] or null
+                },
                 "employment_history": [
                     {
-                        "company": "string",
-                        "position": "string", 
-                        "start_date": "string",
-                        "end_date": "string",
-                        "description": "string",
-                        "achievements": ["string"]
+                        "company_name": "string",
+                        "job_title": "string",
+                        "description": "string or null",
+                        "location": "string or null",
+                        "start_date": "YYYY-MM-DD" or null,
+                        "end_date": "YYYY-MM-DD" or null,
+                        "is_current": boolean,
+                        "duration_months": integer or null,
+                        "employment_order": integer
                     }
                 ],
                 "education": [
                     {
                         "institution": "string",
                         "degree": "string",
-                        "field": "string",
-                        "graduation_date": "string",
-                        "gpa": "string"
+                        "field_of_study": "string or null",
+                        "graduation_year": integer or null,
+                        "grade_gpa": "string or null",
+                        "description": "string or null",
+                        "education_order": integer
                     }
                 ],
-                "skills": {
-                    "technical": ["string"],
-                    "soft": ["string"],
-                    "languages": ["string"]
-                },
+                "skills_detailed": [
+                    {
+                        "skill_name": "string",
+                        "skill_category": "business|technical|soft_skill|industry_knowledge|language",
+                        "proficiency_level": "beginner|intermediate|advanced|expert",
+                        "years_experience": integer or null,
+                        "is_primary_skill": boolean
+                    }
+                ],
                 "certifications": [
                     {
-                        "name": "string",
-                        "issuer": "string", 
-                        "date": "string",
-                        "expiry": "string"
+                        "certification_name": "string",
+                        "issuing_organization": "string or null",
+                        "issue_date": "YYYY-MM-DD" or null,
+                        "expiry_date": "YYYY-MM-DD" or null,
+                        "credential_id": "string or null",
+                        "verification_url": "string or null"
                     }
                 ],
                 "projects": [
                     {
-                        "name": "string",
-                        "description": "string",
-                        "technologies": ["string"],
-                        "url": "string"
+                        "project_name": "string",
+                        "description": "string or null",
+                        "technologies_used": ["tech1", "tech2"],
+                        "project_url": "string or null",
+                        "github_url": "string or null",
+                        "start_date": "YYYY-MM-DD" or null,
+                        "end_date": "YYYY-MM-DD" or null
                     }
                 ],
                 "extraction_confidence": 0.95,
-                "processing_notes": ["Successfully extracted CV data"]
+                "processing_notes": ["Successfully extracted CV data"],
+                "extraction_challenges": ["challenge1", "challenge2"]
             }
             
-            IMPORTANT: Extract actual information from the CV document.
+            IMPORTANT EXTRACTION RULES:
+            1. Extract ACTUAL information from the CV document - don't make up data
+            2. Use null for fields not found in the CV
+            3. For employment_order: 0 = most recent, 1 = second most recent, etc.
+            4. For education_order: 0 = highest/most recent degree, 1 = next degree, etc.
+            5. For skills: mark top 5-7 skills as is_primary_skill=true
+            6. For industries: infer from job titles and experience (select from the 4 options)
+            7. For professional_services: only populate arrays for selected industries
+            8. For languages: use levels like "native", "fluent", "good", "basic", "conversational"
+            9. For dates: use YYYY-MM-DD format (e.g., "2023-01-15")
+            10. Calculate duration_months and total_years_experience from date ranges
             """
         }
         
         # Get the appropriate prompt
         prompt = prompts.get(extraction_focus, prompts["comprehensive"])
         
-        # Process the file with OpenAI Chat Completions API using file_id (official method)
+        # Process the file with OpenAI Chat Completions API using file_id (official method for PDFs)
         print(f"🤖 Processing file with Chat Completions API...")
         response = await client.chat.completions.create(
-            model="gpt-4.1",  # Using gpt-4.1 as it supports file inputs
+            model="gpt-4o",  # Using gpt-4o for PDF processing capabilities
             messages=[
                 {
                     "role": "user",
                     "content": [
                         {
-                            "type": "file",
-                            "file": {
-                                "file_id": uploaded_file.id,
-                            }
-                        },
-                        {
                             "type": "text",
                             "text": prompt,
                         },
+                        {
+                            "type": "file",
+                            "file": {
+                                "file_id": uploaded_file.id
+                            }
+                        }
                     ]
                 }
-            ]
+            ],
+            max_tokens=4000,
+            temperature=0.1  # Low temperature for consistent extraction
         )
         
         print(f"✅ CV extraction completed successfully")
-        
-        # Clean up - delete the uploaded file from OpenAI
-        try:
-            await client.files.delete(uploaded_file.id)
-            print(f"🗑️ OpenAI file {uploaded_file.id} deleted")
-        except Exception as cleanup_error:
-            print(f"⚠️ Warning: Could not delete OpenAI file: {cleanup_error}")
         
         # Clean up temporary file if it was created from stored CV
         if temp_file_path and os.path.exists(temp_file_path):
@@ -243,16 +300,26 @@ async def extract_cv_text_with_responses_api(
         try:
             json.loads(extracted_content)
             print(f"📄 Successfully extracted and validated JSON content")
+            
+            # TODO: REMOVE - Store for testing ground truth comparison
+            global _last_extraction_result
+            _last_extraction_result = extracted_content
+            
             return extracted_content
         except json.JSONDecodeError:
             print(f"⚠️ Content is not valid JSON, wrapping in structured response")
             # If not valid JSON, wrap in a structured response
-            return json.dumps({
+            wrapped_result = json.dumps({
                 "extracted_text": extracted_content,
                 "confidence_score": 0.8,
                 "extraction_notes": [f"Successfully processed with {extraction_focus} focus"],
                 "processing_status": "completed"
             })
+            
+            # TODO: REMOVE - Store for testing ground truth comparison
+            _last_extraction_result = wrapped_result
+            
+            return wrapped_result
             
     except FileNotFoundError as fe:
         error_msg = f"File not found: {str(fe)}"
@@ -276,6 +343,8 @@ async def extract_cv_text_with_responses_api(
             "extraction_notes": [error_msg],
             "processing_status": "failed"
         })
+
+# Note: _encode_image_base64 function removed as we now use file_id for PDF processing
 
 @function_tool
 async def prepare_cv_file_for_processing(
@@ -355,12 +424,12 @@ async def test_cv_extraction_tools():
         
         # Test file preparation
         print("📋 Testing file preparation...")
-        prep_result = await prepare_cv_file_for_processing(ctx, test_file)
+        prep_result = await prepare_cv_file_for_processing.func(ctx, test_file)
         print(f"📋 Preparation result: {prep_result}")
         
         # Test extraction with validation focus (smaller/faster)
         print("🔍 Testing extraction (validation focus)...")
-        extraction_result = await extract_cv_text_with_responses_api(ctx, test_file, "validation")
+        extraction_result = await extract_cv_text_with_responses_api.func(ctx, test_file, "validation")
         print(f"🔍 Extraction result: {extraction_result}")
         
     else:

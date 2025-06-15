@@ -1,14 +1,14 @@
 """
 Ground truth data extraction for Lisa Shaw's CV.
-Updated to match comprehensive schema with industries, professional services, and freelancer platform fields.
-This demonstrates how to map CV content to our updated PostgreSQL schema.
+Updated to match EXACT cv_models.py PostgreSQL schema structure.
+This demonstrates how to map CV content to our PostgreSQL database schema.
 """
 from datetime import date
 from typing import Dict, List, Any, Optional
 
 def extract_lisa_shaw_cv() -> Dict[str, Any]:
     """
-    Extract structured data from Lisa Shaw's CV based on our updated PostgreSQL schema.
+    Extract structured data from Lisa Shaw's CV based on EXACT cv_models.py PostgreSQL schema.
     This serves as ground truth for benchmarking extraction algorithms.
     """
     
@@ -22,9 +22,9 @@ def extract_lisa_shaw_cv() -> Dict[str, Any]:
         "processing_status": "pending"
     }
     
-    # UPDATED: Comprehensive Personal Information (CVPersonalInfo)
+    # EXACT CVPersonalInfo structure matching cv_models.py
     personal_info = {
-        # REQUIRED FIELDS (marked for user follow-up if missing)
+        # REQUIRED FIELDS - marked as nullable=True but noted as required
         "first_name": "Lisa",
         "last_name": "Shaw", 
         "phone": "105 563 1992",
@@ -33,10 +33,10 @@ def extract_lisa_shaw_cv() -> Dict[str, Any]:
         "email": "firstname@resumetemplate.org",  # Note: generic email from template
         "professional_title": "Recruitment & Sales Management Professional",
         "summary": """A pro-active and innovative Senior Sales Management Professional offering across-the-board proficiency in:
-        Business Development | Talent Acquisition | Recruitment | Talent Sourcing | Client Services | Candidate Facilitation |
-        Extensive interpersonal and communication skills with developed ability to analyze problems, find tangible solutions and
-        implement new systems and procedures in a fast-paced business environment. Possess a strong drive to achieve set
-        goals and objectives by always delivering high standards of service excellence in line with the company's vision.""",
+Business Development | Talent Acquisition | Recruitment | Talent Sourcing | Client Services | Candidate Facilitation |
+Extensive interpersonal and communication skills with developed ability to analyze problems, find tangible solutions and
+implement new systems and procedures in a fast-paced business environment. Possess a strong drive to achieve set
+goals and objectives by always delivering high standards of service excellence in line with the company's vision.""",
         
         # ONLINE PRESENCE URLs
         "website_url": None,      # Not provided in CV
@@ -51,20 +51,18 @@ def extract_lisa_shaw_cv() -> Dict[str, Any]:
         "city": "Indian Trail",   # Extracted from location
         "country": "United States", # Inferred from "North Carolina"
         
-        # LANGUAGES (JSON format)
+        # LANGUAGES (JSON format) - matches cv_models.py JSON field
         "languages": [
             {"language": "English", "level": "native"}  # Inferred from US location and CV language
         ],
         
-        # WORK PREFERENCES
-        "work_preferences": None,  # Not mentioned in CV
+        # WORK PREFERENCES - ARRAY(String) field
+        "work_preferences": None,  # Not mentioned in CV - would be ["remote", "on_premise"] or null
         
-        # PROFESSIONAL CAPABILITIES & INDUSTRIES
-        # TODO: Infer from job titles and specializations - Lisa works in recruitment/HR
+        # PROFESSIONAL CAPABILITIES & INDUSTRIES - ARRAY(String) field
         "industries": ["Management, Sales & HR"],  # Inferred from professional focus
         
-        # SKILLS SUMMARY (separate from detailed CVSkill records)
-        # TODO: Extract from professional profile and career objectives
+        # SKILLS SUMMARY - matches cv_models.py ARRAY(String) fields
         "skills_array": [
             "Business Development", "Talent Acquisition", "Recruitment", "Talent Sourcing", 
             "Client Services", "Candidate Facilitation", "Sales Management", "Communication",
@@ -72,50 +70,49 @@ def extract_lisa_shaw_cv() -> Dict[str, Any]:
         ],
         "top_skills": [
             "Business Development", "Talent Acquisition", "Recruitment", "Sales Management", "Client Services"
-        ],  # Top 5 skills from is_primary_skill=True
-        "total_years_experience": None,  # TODO: Calculate from employment dates (2011-2017 = ~6 years)
+        ],  # Top 5 skills - subset of skills_array
         
-        # FREELANCER PLATFORM AVAILABILITY & PRICING
-        # NOTE: These fields are typically not found in CVs and would need user input
-        "hours_per_week_available": None,     # Not mentioned in CV
-        "available_start_date": None,         # Not mentioned in CV
+        # FREELANCER FIELDS - Integer and Date fields
+        "total_years_experience": 6,  # Calculated from employment dates (2011-2017)
+        "hours_per_week_available": None,     # Not mentioned in CV - Integer field
+        "available_start_date": None,         # Not mentioned in CV - Date field
+        
+        # HOURLY RATE FIELDS - DECIMAL(8,2) fields
         "hourly_rate_single": None,           # Not mentioned in CV
         "hourly_rate_min": None,              # Not mentioned in CV
         "hourly_rate_max": None               # Not mentioned in CV
     }
     
-    # NEW: Professional Services (CVProfessionalServices)
-    # Based on Lisa's industry selection and specializations mentioned in CV
+    # EXACT CVProfessionalServices structure matching cv_models.py
     professional_services = {
         # Lisa works in "Management, Sales & HR" industry
         "management_sales_hr_services": [
             "business consulting",    # Inferred from "Business Development" focus
             "HR services",           # Inferred from "Talent Acquisition", "Recruitment"
             "sales services"         # Inferred from "Sales Management Professional"
-            # Could also include: "agile coaching", "project management", "strategy consulting"
         ],
         
-        # Not applicable for Lisa's profile
+        # Not applicable for Lisa's profile - null for unused industry services
         "marketing_design_services": None,
         "engineering_services": None,
         "it_services": None
     }
 
-    # Employment History (unchanged structure, but added employment_order)
+    # EXACT CVEmployment structure matching cv_models.py
     employment_history = [
         {
-            "company_name": "ABC Recruitment",
-            "job_title": "Senior Sales Management Professional",  # Inferred from achievements
+            "company_name": "ABC Recruitment",  # String(255), nullable=False
+            "job_title": "Senior Sales Management Professional",  # String(255), nullable=False
             "description": """• Increased yearly sales revenue by 18% in 2017 for Graduate Division
-            • Established the new Graduate Division in 2016
-            • Augmented personal sales by 20% in 2014 and by 170% in 2016
-            • Succeeded as the Top Biller in 2013 and 2015""",
-            "location": None,
-            "start_date": date(2013, 1, 1),  # Earliest mentioned year
-            "end_date": date(2017, 12, 31),  # Latest mentioned year
-            "is_current": False,
-            "duration_months": 60,  # 2013-2017 = ~5 years
-            "employment_order": 0  # Most recent
+• Established the new Graduate Division in 2016
+• Augmented personal sales by 20% in 2014 and by 170% in 2016
+• Succeeded as the Top Biller in 2013 and 2015""",  # Text, nullable=True
+            "location": None,  # String(255), nullable=True
+            "start_date": date(2013, 1, 1),  # Date, nullable=True
+            "end_date": date(2017, 12, 31),  # Date, nullable=True
+            "is_current": False,  # Boolean, default=False, nullable=False
+            "duration_months": 60,  # Integer, nullable=True (2013-2017 = ~5 years)
+            "employment_order": 0  # Integer, default=0, nullable=False (Most recent)
         },
         {
             "company_name": "Nova Placement Services",
@@ -130,16 +127,16 @@ def extract_lisa_shaw_cv() -> Dict[str, Any]:
         }
     ]
     
-    # Education (unchanged structure, but added education_order)
+    # EXACT CVEducation structure matching cv_models.py
     education = [
         {
-            "institution": "University of Columbia",
-            "degree": "Master's Degree",
-            "field_of_study": "International Business",
-            "graduation_year": 2009,
-            "grade_gpa": "GPA 3.9",
-            "description": None,
-            "education_order": 0  # Most recent/highest degree
+            "institution": "University of Columbia",  # String(255), nullable=False
+            "degree": "Master's Degree",  # String(255), nullable=False
+            "field_of_study": "International Business",  # String(255), nullable=True
+            "graduation_year": 2009,  # Integer, nullable=True
+            "grade_gpa": "GPA 3.9",  # String(50), nullable=True
+            "description": None,  # Text, nullable=True
+            "education_order": 0  # Integer, default=0, nullable=False (Most recent/highest)
         },
         {
             "institution": "University of Boston", 
@@ -152,7 +149,7 @@ def extract_lisa_shaw_cv() -> Dict[str, Any]:
         }
     ]
     
-    # RENAMED: Detailed Skills (CVSkill records) - unchanged from original
+    # EXACT CVSkill structure matching cv_models.py
     skills_detailed = [
         # Core business skills from professional profile
         {"skill_name": "Business Development", "skill_category": "business", "proficiency_level": "expert", "years_experience": None, "is_primary_skill": True},
@@ -175,13 +172,13 @@ def extract_lisa_shaw_cv() -> Dict[str, Any]:
         {"skill_name": "Sales Management", "skill_category": "business", "proficiency_level": "expert", "years_experience": None, "is_primary_skill": True}
     ]
     
-    # Certifications (none explicitly mentioned in Lisa's CV)
-    certifications = []
+    # EXACT CVCertification structure matching cv_models.py (empty for Lisa)
+    certifications = []  # No certifications mentioned in Lisa's CV
     
-    # Projects (none explicitly mentioned in Lisa's CV)
-    projects = []
+    # EXACT CVProject structure matching cv_models.py (empty for Lisa)
+    projects = []  # No projects mentioned in Lisa's CV
     
-    # UPDATED: Extraction challenges for new schema
+    # Extraction challenges for this CV
     extraction_challenges = [
         "CV is in image format (JPG) requiring OCR",
         "Employment dates are scattered in achievements rather than structured format",
@@ -191,7 +188,6 @@ def extract_lisa_shaw_cv() -> Dict[str, Any]:
         "Contact email appears to be from a template rather than actual email",
         "No social media or portfolio links provided",
         "Employment descriptions are achievement-focused rather than responsibility-focused",
-        # NEW CHALLENGES for updated schema:
         "Industry selection must be inferred from job titles and specializations",
         "Professional services need to be mapped from skills and industry focus",
         "Total years experience requires calculation from employment date ranges",
@@ -203,19 +199,18 @@ def extract_lisa_shaw_cv() -> Dict[str, Any]:
     return {
         "file_info": file_info,
         "personal_info": personal_info,
-        "professional_services": professional_services,  # NEW
+        "professional_services": professional_services,
         "employment_history": employment_history,
         "education": education,
-        "skills_detailed": skills_detailed,  # RENAMED from "skills"
+        "skills_detailed": skills_detailed,
         "certifications": certifications,
         "projects": projects,
-        # "languages" removed - now integrated into personal_info
         "extraction_challenges": extraction_challenges
     }
 
 def validate_extraction(data: Dict[str, Any]) -> List[str]:
     """
-    Validate the extracted data against our schema requirements.
+    Validate the extracted data against our cv_models.py schema requirements.
     Returns list of validation errors.
     """
     errors = []
@@ -226,10 +221,12 @@ def validate_extraction(data: Dict[str, Any]) -> List[str]:
         if not data["file_info"].get(field):
             errors.append(f"Missing required file field: {field}")
     
-    # Personal info validation
+    # Personal info validation - check required fields
     personal = data["personal_info"]
-    if not personal.get("full_name"):
-        errors.append("Missing full_name in personal_info")
+    required_personal_fields = ["first_name", "last_name", "phone"]
+    for field in required_personal_fields:
+        if not personal.get(field):
+            errors.append(f"Missing required personal info field: {field}")
     
     # Employment validation
     for i, emp in enumerate(data["employment_history"]):
@@ -264,7 +261,7 @@ if __name__ == "__main__":
     else:
         print("✅ Lisa Shaw CV extraction validated successfully!")
         print(f"📊 Extracted data summary:")
-        print(f"  - Personal info: {lisa_data['personal_info']['full_name']}")
+        print(f"  - Personal info: {lisa_data['personal_info']['first_name']} {lisa_data['personal_info']['last_name']}")
         print(f"  - Employment history: {len(lisa_data['employment_history'])} positions")
         print(f"  - Education: {len(lisa_data['education'])} degrees")
         print(f"  - Skills: {len(lisa_data['skills_detailed'])} skills")

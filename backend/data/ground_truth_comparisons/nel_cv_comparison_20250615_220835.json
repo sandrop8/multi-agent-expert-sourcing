@@ -1,0 +1,487 @@
+{
+  "timestamp": "20250615_220835",
+  "file_path": "stored_cv_id:78",
+  "accuracy_score": 90.625,
+  "matches": 14.5,
+  "total_fields": 16,
+  "ground_truth": {
+    "file_info": {
+      "filename": "Shaw.pdf",
+      "original_filename": "Shaw.pdf",
+      "file_format": "pdf",
+      "file_size": null,
+      "content_type": "application/pdf",
+      "processing_status": "pending"
+    },
+    "personal_info": {
+      "first_name": "Janine",
+      "last_name": "Nel",
+      "phone": "3868683442",
+      "email": "email@email.com",
+      "professional_title": "Sales Engineer",
+      "summary": "Deadline-focused Sales Engineer with six years experience in technical sales, contributing to the 30% growth of income for a regional technology solutions provider over five states, producing and assisting long-term contracts with Fortune 500 clients, and growing territory sixfold up to $350M.",
+      "website_url": null,
+      "linkedin_url": "LinkedIn",
+      "xing_url": null,
+      "github_url": null,
+      "street": "1515 Pacific Ave",
+      "street_number": "1515",
+      "plz": "90291",
+      "city": "Los Angeles",
+      "country": "United States",
+      "languages": [
+        {
+          "language": "English",
+          "level": "Native"
+        },
+        {
+          "language": "Dutch",
+          "level": "Native"
+        }
+      ],
+      "work_preferences": null,
+      "industries": [
+        "Engineering",
+        "Management, Sales & HR"
+      ],
+      "skills_array": [
+        "AutoCAD",
+        "Knowledge of Technical Diagrams",
+        "Industry Trends & Sales Forecasting",
+        "Agile Project Management",
+        "Engineering",
+        "Technical Sales",
+        "Customer Relations",
+        "Program Management",
+        "Territory Management"
+      ],
+      "top_skills": [
+        "AutoCAD",
+        "Engineering",
+        "Technical Sales",
+        "Industry Trends & Sales Forecasting",
+        "Agile Project Management"
+      ],
+      "total_years_experience": 6,
+      "hours_per_week_available": null,
+      "available_start_date": null,
+      "hourly_rate_single": null,
+      "hourly_rate_min": null,
+      "hourly_rate_max": null
+    },
+    "professional_services": {
+      "engineering_services": [
+        "technical consulting",
+        "project management"
+      ],
+      "management_sales_hr_services": [
+        "sales services",
+        "business consulting"
+      ],
+      "marketing_design_services": null,
+      "it_services": null
+    },
+    "employment_history": [
+      {
+        "company_name": "Engen Oil",
+        "job_title": "Sales Engineer",
+        "description": "Recognized and provided current and future customer necessities in areas of filtration and lubrication products and services.",
+        "location": "Jacksonville",
+        "start_date": "2022-05-01",
+        "end_date": "2022-05-31",
+        "is_current": false,
+        "duration_months": 1,
+        "employment_order": 0
+      },
+      {
+        "company_name": "Quest Medical",
+        "job_title": "Sales Engineer",
+        "description": "Accountable for day-to-day program management, customer relationships, and estimating the shaping and assembly of medical programs for critical Fortune 500 Clients.",
+        "location": "Los Angeles",
+        "start_date": "2019-01-01",
+        "end_date": "2021-04-30",
+        "is_current": false,
+        "duration_months": 28,
+        "employment_order": 1
+      }
+    ],
+    "education": [
+      {
+        "institution": "Harvard University",
+        "degree": "Masters in Industrial Engineering",
+        "field_of_study": "Industrial Engineering",
+        "graduation_year": 2022,
+        "grade_gpa": null,
+        "description": null,
+        "education_order": 0
+      }
+    ],
+    "skills_detailed": [
+      {
+        "skill_name": "AutoCAD",
+        "skill_category": "technical",
+        "proficiency_level": "expert",
+        "years_experience": null,
+        "is_primary_skill": true
+      },
+      {
+        "skill_name": "Knowledge of Technical Diagrams",
+        "skill_category": "technical",
+        "proficiency_level": "advanced",
+        "years_experience": null,
+        "is_primary_skill": false
+      },
+      {
+        "skill_name": "Industry Trends & Sales Forecasting",
+        "skill_category": "business",
+        "proficiency_level": "advanced",
+        "years_experience": null,
+        "is_primary_skill": true
+      },
+      {
+        "skill_name": "Agile Project Management",
+        "skill_category": "business",
+        "proficiency_level": "advanced",
+        "years_experience": null,
+        "is_primary_skill": true
+      },
+      {
+        "skill_name": "Engineering",
+        "skill_category": "industry_knowledge",
+        "proficiency_level": "expert",
+        "years_experience": null,
+        "is_primary_skill": true
+      },
+      {
+        "skill_name": "Technical Sales",
+        "skill_category": "business",
+        "proficiency_level": "expert",
+        "years_experience": 6,
+        "is_primary_skill": true
+      },
+      {
+        "skill_name": "Customer Relations",
+        "skill_category": "soft_skill",
+        "proficiency_level": "advanced",
+        "years_experience": null,
+        "is_primary_skill": false
+      },
+      {
+        "skill_name": "Program Management",
+        "skill_category": "business",
+        "proficiency_level": "advanced",
+        "years_experience": null,
+        "is_primary_skill": false
+      },
+      {
+        "skill_name": "Territory Management",
+        "skill_category": "business",
+        "proficiency_level": "advanced",
+        "years_experience": null,
+        "is_primary_skill": false
+      }
+    ],
+    "certifications": [
+      {
+        "certification_name": "Professional Engineering (PE) Exam",
+        "issuing_organization": "National Council of Examiners for Engineering and Surveying (NCEES)",
+        "issue_date": "2018-01-01",
+        "expiry_date": "2019-12-31",
+        "credential_id": null,
+        "credential_url": null,
+        "description": null
+      },
+      {
+        "certification_name": "Certified Associate in Project Management",
+        "issuing_organization": "Project Management Institute (PMI)",
+        "issue_date": "2021-05-01",
+        "expiry_date": "2021-05-31",
+        "credential_id": null,
+        "credential_url": null,
+        "description": null
+      }
+    ],
+    "projects": [],
+    "extraction_challenges": [
+      "CV is in PDF format requiring text extraction",
+      "LinkedIn URL is incomplete - just says 'LinkedIn' without full URL",
+      "Email appears generic (email@email.com) - may not be real contact",
+      "Some employment dates need calculation (28 months duration)",
+      "Skills are categorized but proficiency levels need inference",
+      "Professional services need to be mapped from job roles and skills",
+      "Address parsing required for street number extraction",
+      "Certification expiry dates seem unusual (same month issue/expiry for PMI cert)",
+      "Industry classification requires mapping from job titles and skills",
+      "Total years experience mentioned in summary but needs validation against employment history"
+    ]
+  },
+  "extracted_data": {
+    "personal_info": {
+      "first_name": "Janine",
+      "last_name": "Nel",
+      "phone": "3868683442",
+      "email": "email@email.com",
+      "professional_title": "Sales Engineer",
+      "summary": "Deadline-focused Sales Engineer with six years experience in technical sales, contributing to the 30% growth of income for regional technology solutions provider over five states, producing and assisting long-term contracts with Fortune 500 clients, and growing Territory sixfold up to $350M.",
+      "website_url": null,
+      "linkedin_url": "LinkedIn",
+      "xing_url": null,
+      "github_url": null,
+      "street": "Pacific Ave",
+      "street_number": "1515",
+      "plz": "90291",
+      "city": "Los Angeles",
+      "country": "United States",
+      "languages": [
+        {
+          "language": "English",
+          "level": "native"
+        },
+        {
+          "language": "Dutch",
+          "level": "native"
+        }
+      ],
+      "work_preferences": [
+        "on_premise"
+      ],
+      "industries": [
+        "Engineering",
+        "Management, Sales & HR"
+      ],
+      "skills_array": [
+        "AutoCAD",
+        "Industry Trends & Sales Forecasting",
+        "Knowledge of Technical Diagrams",
+        "Engineering",
+        "Agile Project Management"
+      ],
+      "top_skills": [
+        "AutoCAD",
+        "Industry Trends & Sales Forecasting",
+        "Knowledge of Technical Diagrams",
+        "Engineering",
+        "Agile Project Management"
+      ],
+      "total_years_experience": 6,
+      "hours_per_week_available": null,
+      "available_start_date": null,
+      "hourly_rate_single": null,
+      "hourly_rate_min": null,
+      "hourly_rate_max": null
+    },
+    "professional_services": {
+      "management_sales_hr_services": null,
+      "marketing_design_services": null,
+      "engineering_services": [
+        "Technical Sales",
+        "Consulting"
+      ],
+      "it_services": null
+    },
+    "employment_history": [
+      {
+        "company_name": "Engen Oil",
+        "job_title": "Sales Engineer",
+        "description": "Recognized and provided current and future customer necessities in areas of filtration and lubrication products and services.",
+        "location": "Jacksonville",
+        "start_date": "2022-05-01",
+        "end_date": "2022-05-31",
+        "is_current": false,
+        "duration_months": 0,
+        "employment_order": 0
+      },
+      {
+        "company_name": "Quest Medical",
+        "job_title": "Sales Engineer",
+        "description": "Accountable for day-to-day program management, customer relationships, and estimating the shaping and assembly of medical programs for critical Fortune 500 Clients.",
+        "location": "Los Angeles",
+        "start_date": "2019-01-01",
+        "end_date": "2021-04-30",
+        "is_current": false,
+        "duration_months": 28,
+        "employment_order": 1
+      }
+    ],
+    "education": [
+      {
+        "institution": "Harvard University",
+        "degree": "Masters in Industrial Engineering",
+        "field_of_study": null,
+        "graduation_year": 2022,
+        "grade_gpa": null,
+        "description": null,
+        "education_order": 0
+      }
+    ],
+    "skills_detailed": [
+      {
+        "skill_name": "AutoCAD",
+        "skill_category": "technical",
+        "proficiency_level": "expert",
+        "years_experience": null,
+        "is_primary_skill": true
+      },
+      {
+        "skill_name": "Industry Trends & Sales Forecasting",
+        "skill_category": "business",
+        "proficiency_level": "advanced",
+        "years_experience": null,
+        "is_primary_skill": true
+      },
+      {
+        "skill_name": "Knowledge of Technical Diagrams",
+        "skill_category": "technical",
+        "proficiency_level": "advanced",
+        "years_experience": null,
+        "is_primary_skill": true
+      },
+      {
+        "skill_name": "Engineering",
+        "skill_category": "industry_knowledge",
+        "proficiency_level": "expert",
+        "years_experience": null,
+        "is_primary_skill": true
+      },
+      {
+        "skill_name": "Agile Project Management",
+        "skill_category": "business",
+        "proficiency_level": "advanced",
+        "years_experience": null,
+        "is_primary_skill": true
+      }
+    ],
+    "certifications": [
+      {
+        "certification_name": "Professional Engineering (PE) Exam",
+        "issuing_organization": "National Council of Examiners for Engineering and Surveying (NCEES)",
+        "issue_date": "2018-01-01",
+        "expiry_date": "2019-12-31",
+        "credential_id": null,
+        "verification_url": null
+      },
+      {
+        "certification_name": "Certified Associate in Project Management",
+        "issuing_organization": "Project Management Institute (PMI)",
+        "issue_date": "2021-05-01",
+        "expiry_date": "2021-05-31",
+        "credential_id": null,
+        "verification_url": null
+      }
+    ],
+    "projects": [],
+    "extraction_confidence": 0.95,
+    "processing_notes": [
+      "Successfully extracted CV data"
+    ],
+    "extraction_challenges": []
+  },
+  "field_comparisons": {
+    "first_name": {
+      "ground_truth": "Janine",
+      "extracted": "Janine",
+      "match_type": "exact"
+    },
+    "last_name": {
+      "ground_truth": "Nel",
+      "extracted": "Nel",
+      "match_type": "exact"
+    },
+    "phone": {
+      "ground_truth": "3868683442",
+      "extracted": "3868683442",
+      "match_type": "exact"
+    },
+    "email": {
+      "ground_truth": "email@email.com",
+      "extracted": "email@email.com",
+      "match_type": "exact"
+    },
+    "professional_title": {
+      "ground_truth": "Sales Engineer",
+      "extracted": "Sales Engineer",
+      "match_type": "exact"
+    },
+    "summary": {
+      "ground_truth": "Deadline-focused Sales Engineer with six years experience in technical sales, contributing to the 30% growth of income for a regional technology solutions provider over five states, producing and assisting long-term contracts with Fortune 500 clients, and growing territory sixfold up to $350M.",
+      "extracted": "Deadline-focused Sales Engineer with six years experience in technical sales, contributing to the 30% growth of income for regional technology solutions provider over five states, producing and assisting long-term contracts with Fortune 500 clients, and growing Territory sixfold up to $350M.",
+      "match_type": "partial"
+    },
+    "website_url": {
+      "ground_truth": null,
+      "extracted": null,
+      "match_type": "exact"
+    },
+    "linkedin_url": {
+      "ground_truth": "LinkedIn",
+      "extracted": "LinkedIn",
+      "match_type": "exact"
+    },
+    "xing_url": {
+      "ground_truth": null,
+      "extracted": null,
+      "match_type": "exact"
+    },
+    "github_url": {
+      "ground_truth": null,
+      "extracted": null,
+      "match_type": "exact"
+    },
+    "street": {
+      "ground_truth": "1515 Pacific Ave",
+      "extracted": "Pacific Ave",
+      "match_type": "partial"
+    },
+    "street_number": {
+      "ground_truth": "1515",
+      "extracted": "1515",
+      "match_type": "exact"
+    },
+    "plz": {
+      "ground_truth": "90291",
+      "extracted": "90291",
+      "match_type": "exact"
+    },
+    "city": {
+      "ground_truth": "Los Angeles",
+      "extracted": "Los Angeles",
+      "match_type": "exact"
+    },
+    "country": {
+      "ground_truth": "United States",
+      "extracted": "United States",
+      "match_type": "exact"
+    },
+    "languages": {
+      "ground_truth": [
+        {
+          "language": "English",
+          "level": "Native"
+        },
+        {
+          "language": "Dutch",
+          "level": "Native"
+        }
+      ],
+      "extracted": [
+        {
+          "language": "English",
+          "level": "native"
+        },
+        {
+          "language": "Dutch",
+          "level": "native"
+        }
+      ],
+      "match_type": "partial"
+    }
+  },
+  "employment_count": {
+    "ground_truth": 2,
+    "extracted": 2
+  },
+  "education_count": {
+    "ground_truth": 1,
+    "extracted": 1
+  }
+}
