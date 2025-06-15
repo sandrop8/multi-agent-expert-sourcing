@@ -223,6 +223,11 @@ The following fields were extracted with 100% accuracy:
 - **Employment History**: 2/2 positions extracted correctly
 - **Education**: 1/1 education entry extracted correctly
 
+#### **📄 Test CV Sample**
+**Source Document**: [nel.pdf](backend/data/fictional_cvs/nel.pdf) - Janine Nel's CV used for extraction testing
+
+![CV Preview](backend/data/fictional_cvs/nel.pdf)
+
 #### **🎯 Development Status**
 This demo showcases our multi-agent CV processing system in active development. While we achieved excellent results with **90.6% accuracy** on personal information extraction, we're continuously improving the system to handle edge cases like:
 - **Language proficiency detection** - Working on better multilingual skill assessment
