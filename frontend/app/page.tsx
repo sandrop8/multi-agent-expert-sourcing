@@ -98,7 +98,7 @@ export default function HomePage() {
         </div>
 
         {/* Enhanced Two main options side by side */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Project Submission Option */}
           <Card className="p-6 lg:p-8 shadow-2xl bg-white/95 backdrop-blur-sm border-0 hover:shadow-3xl hover:bg-white transition-all duration-500 h-full transform hover:-translate-y-2">
             <div className="text-center space-y-4 lg:space-y-6 flex flex-col h-full">
@@ -207,6 +207,61 @@ export default function HomePage() {
                 <Link href="/freelancer" className="block">
                   <Button size="lg" className="w-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                     Join as Freelancer
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </Card>
+
+          {/* Company/Agency Option */}
+          <Card className="p-6 lg:p-8 shadow-2xl bg-white/95 backdrop-blur-sm border-0 hover:shadow-3xl hover:bg-white transition-all duration-500 h-full transform hover:-translate-y-2 md:col-span-2 lg:col-span-1">
+            <div className="text-center space-y-4 lg:space-y-6 flex flex-col h-full">
+              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center shadow-lg">
+                <svg
+                  className="w-10 h-10 text-green-800"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0v-4a2 2 0 012-2h6a2 2 0 012 2v4m-6 0h-2">
+                  </path>
+                </svg>
+              </div>
+
+              <div>
+                <h2 className="text-2xl font-semibold text-black mb-2">
+                  Register as a Service Provider
+                </h2>
+                <p className="text-black mb-6">
+                  Offer your company's services to a wide range of projects. Register your agency to get matched with clients.
+                </p>
+              </div>
+
+              <div className="space-y-3 flex-grow">
+                <ul className="text-sm text-black space-y-2">
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>
+                    <span>Showcase your portfolio</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>
+                    <span>Connect with project owners</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>
+                    <span>Bid on high-value projects</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="mt-auto">
+                <Link href="/company-registration" className="block">
+                  <Button size="lg" className="w-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                    Register as Provider
                   </Button>
                 </Link>
               </div>
