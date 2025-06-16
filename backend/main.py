@@ -3,7 +3,7 @@ FastAPI application setup and route registration
 Phase 1 refactored version of main.py
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 
 # Import configuration
@@ -15,6 +15,8 @@ from models.base import create_all_tables
 # Import API routes
 from api.v1.chat import router as chat_router
 from api.v1.cv import router as cv_router
+from schemas.cv_schemas import CVUploadResponse
+from services.cv_service import CVService
 
 # ---- FastAPI application setup --------------------------------------------
 app = FastAPI(title="Multi-Agent Expert Sourcing API")
@@ -34,7 +36,7 @@ app.include_router(cv_router)
 
 # Legacy endpoints for backward compatibility
 from schemas.chat_schemas import ChatReq
-from fastapi import UploadFile, File
+from services.cv_status_service import get_status_for_frontend
 
 @app.post("/chat")
 async def legacy_chat(req: ChatReq):
@@ -48,11 +50,20 @@ async def legacy_history(limit: int = 20):
     from api.v1.chat import history
     return await history(limit)
 
-@app.post("/upload-cv")
-async def legacy_upload_cv(file: UploadFile = File(...)):
-    """Legacy CV upload endpoint - redirects to /cv/upload"""
-    from api.v1.cv import upload_cv
-    return await upload_cv(file)
+@app.post("/upload-cv", response_model=CVUploadResponse)
+async def legacy_upload_cv(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+    """
+    Legacy CV upload endpoint.
+    Processes the CV in the background and returns a session ID for polling.
+    """
+    cv_service = CVService()
+    return await cv_service.upload_cv(file, background_tasks)
+
+@app.get("/cv-status/{session_id}")
+async def legacy_cv_status(session_id: str):
+    """Legacy CV status endpoint - redirects to /cv/status/{session_id}"""
+    from api.v1.cv import get_cv_status
+    return await get_cv_status(session_id)
 
 @app.get("/cvs")
 async def legacy_list_cvs():

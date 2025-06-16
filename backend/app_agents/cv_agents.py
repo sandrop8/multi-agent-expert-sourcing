@@ -6,6 +6,7 @@ Following the hierarchical handoff pattern from OpenAI documentation
 from agents import Agent, InputGuardrail, GuardrailFunctionOutput, Runner, enable_verbose_stdout_logging
 from schemas.cv_schemas import CVValidationOutput
 from services.cv_extraction_service import extract_cv_text_with_responses_api, prepare_cv_file_for_processing
+from services.cv_status_service import CVProcessingStage, log_status_update, generate_session_id
 from pydantic import BaseModel
 from typing import Dict, Any
 import json
@@ -457,41 +458,73 @@ freelancer_profile_manager = Agent(
 
 # ---- Workflow Function (Simplified) ---------------------------------------
 
-async def process_cv_workflow(file_path: str) -> Dict[str, Any]:
+async def process_cv_workflow(file_path: str, session_id: str = None) -> Dict[str, Any]:
     """
-    Complete CV processing workflow using OpenAI Agents SDK
+    Complete CV processing workflow using OpenAI Agents SDK with progressive status updates
     
     Args:
         file_path: Path to the uploaded CV file
+        session_id: Optional session ID for status tracking (generated if not provided)
         
     Returns:
-        Dictionary containing processing results
+        Dictionary containing processing results and session_id
     """
     
+    # Generate session ID if not provided
+    if not session_id:
+        session_id = generate_session_id(os.path.basename(file_path))
+    
     try:
-        print(f"🚀 [WORKFLOW] Starting CV processing workflow for: {file_path}")
+        # Set session context for the extraction tools
+        try:
+            from services.cv_extraction_service import set_current_session_id
+            set_current_session_id(session_id)
+            print(f"📝 [WORKFLOW] Session context set for extraction tools: {session_id}")
+        except ImportError:
+            print(f"⚠️ [WORKFLOW] Could not set session context - status updates in tools may be limited")
+        
+        # Status Update: Starting workflow
+        log_status_update(session_id, CVProcessingStage.FILE_VALIDATION, f"Processing file: {os.path.basename(file_path)}")
+        print(f"🚀 [WORKFLOW] Starting CV processing workflow for: {file_path} (session: {session_id})")
         
         # Create input for the manager (just the file path)
         cv_input = f"Process this CV file: {file_path}"
         
+        # Status Update: Guardrail validation starting
+        log_status_update(session_id, CVProcessingStage.GUARDRAIL_VALIDATION, "Validating document format and content")
         print(f"🎯 [WORKFLOW] Calling Freelancer Profile Manager with input: {cv_input}")
         print(f"📋 [WORKFLOW] Manager has {len(freelancer_profile_manager.handoffs)} handoff agents available")
         print(f"🛠️ [WORKFLOW] Manager has {len(freelancer_profile_manager.tools)} tools available")
         print(f"🛡️ [WORKFLOW] Manager has {len(freelancer_profile_manager.input_guardrails)} guardrails configured")
         
+        print(f"▶️ [WORKFLOW] Executing agent workflow...")
+        
         # Run the workflow through the freelancer profile manager
         # The guardrail will validate first, then handoffs will process
-        print(f"▶️ [WORKFLOW] Executing agent workflow...")
         result = await Runner.run(
             freelancer_profile_manager,
             cv_input
         )
         
+        # Status Update: Profile enrichment (agents have finished main parsing)
+        log_status_update(session_id, CVProcessingStage.PROFILE_ENRICHMENT, "Enhancing your professional profile")
+        
+        # Status Update: Skills extraction
+        log_status_update(session_id, CVProcessingStage.SKILLS_EXTRACTION, "Identifying your skills and expertise")
+        
+        # Status Update: Gap analysis
+        log_status_update(session_id, CVProcessingStage.GAP_ANALYSIS, "Analyzing profile completeness")
+        
+        # Status Update: Finalizing results
+        log_status_update(session_id, CVProcessingStage.FINALIZING, "Preparing final analysis results")
         print(f"✅ [WORKFLOW] CV processing workflow completed successfully")
         print(f"📤 [WORKFLOW] Final output type: {type(result.final_output)}")
         if result.final_output:
             output_preview = str(result.final_output)[:200] + "..." if len(str(result.final_output)) > 200 else str(result.final_output)
             print(f"📄 [WORKFLOW] Output preview: {output_preview}")
+        
+        # Status Update: Completed
+        log_status_update(session_id, CVProcessingStage.COMPLETED, "Your CV analysis is ready!")
         
         # MINIMAL TESTING: Auto-compare with ground truth if Lisa Shaw CV detected
         # TODO: REMOVE this call after testing is complete
@@ -508,17 +541,22 @@ async def process_cv_workflow(file_path: str) -> Dict[str, Any]:
         return {
             "success": True,
             "result": result.final_output if result.final_output else "CV processed successfully",
-            "processing_notes": ["CV workflow completed successfully"]
+            "processing_notes": ["CV workflow completed successfully"],
+            "session_id": session_id
         }
         
     except Exception as e:
         error_msg = f"CV processing workflow failed: {str(e)}"
         print(f"❌ [WORKFLOW] {error_msg}")
         
+        # Status Update: Error occurred
+        log_status_update(session_id, CVProcessingStage.ERROR, f"Processing failed: {str(e)}")
+        
         return {
             "success": False,
             "error": error_msg,
-            "result": None
+            "result": None,
+            "session_id": session_id
         }
 
 # ---- Testing Function -----------------------------------------------------

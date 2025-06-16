@@ -20,6 +20,7 @@ class CVUploadResponse(BaseModel):
     size: int
     agent_feedback: str
     processing_status: str
+    session_id: Optional[str] = None
 
 class CVListItem(BaseModel):
     """Schema for CV list items"""

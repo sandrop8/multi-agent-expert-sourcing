@@ -18,6 +18,19 @@ from models.cv_models import cvs
 # TODO: REMOVE after testing is complete
 _last_extraction_result = None
 
+# Global variable to track current session ID for status updates
+_current_session_id = None
+
+def set_current_session_id(session_id: str):
+    """Set the current session ID for status tracking"""
+    global _current_session_id
+    _current_session_id = session_id
+
+def get_current_session_id() -> Optional[str]:
+    """Get the current session ID"""
+    global _current_session_id
+    return _current_session_id
+
 def get_last_extraction_result() -> Optional[str]:
     """
     Get the last extraction result for testing purposes.
@@ -73,7 +86,8 @@ def get_stored_cv_file_path(cv_identifier: str) -> str:
 async def extract_cv_text_with_responses_api(
     ctx: RunContextWrapper[Any], 
     pdf_file_path: str,
-    extraction_focus: str = "comprehensive"
+    extraction_focus: str = "comprehensive",
+    session_id: str = ""
 ) -> str:
     """Extract text content from a CV/resume using OpenAI's official PDF processing.
     
@@ -84,6 +98,7 @@ async def extract_cv_text_with_responses_api(
         ctx: Agent runtime context
         pdf_file_path: Path to the PDF file to process or stored_cv_id:123
         extraction_focus: Type of extraction - 'validation', 'summary', or 'comprehensive'
+        session_id: Session ID for status updates (will use global if empty)
         
     Returns:
         JSON string with extracted CV information matching cv_models.py structure
@@ -91,6 +106,17 @@ async def extract_cv_text_with_responses_api(
     
     temp_file_path = None
     try:
+        # Use provided session_id or get from global context
+        current_session = session_id or get_current_session_id()
+        
+        # Update status for OpenAI upload stage
+        if current_session:
+            try:
+                from services.cv_status_service import log_status_update, CVProcessingStage
+                log_status_update(current_session, CVProcessingStage.OPENAI_UPLOAD, f"Uploading {os.path.basename(pdf_file_path)} to AI system")
+            except ImportError:
+                pass  # Graceful fallback if status service not available
+        
         # Initialize OpenAI client
         client = AsyncOpenAI()
         
@@ -115,6 +141,14 @@ async def extract_cv_text_with_responses_api(
             )
         
         print(f"✅ File uploaded successfully with ID: {uploaded_file.id}")
+        
+        # Update status for CV parsing stage
+        if current_session:
+            try:
+                from services.cv_status_service import log_status_update, CVProcessingStage
+                log_status_update(current_session, CVProcessingStage.CV_PARSING, f"AI is analyzing your CV content")
+            except ImportError:
+                pass  # Graceful fallback
         
         # Define extraction prompts based on focus
         prompts = {
@@ -365,6 +399,15 @@ async def prepare_cv_file_for_processing(
     
     try:
         print(f"📋 Preparing CV file for processing: {uploaded_file_path}")
+        
+        # Update status if we have a session context
+        current_session = get_current_session_id()
+        if current_session:
+            try:
+                from services.cv_status_service import log_status_update, CVProcessingStage
+                log_status_update(current_session, CVProcessingStage.FILE_PREPARATION, f"Preparing {os.path.basename(uploaded_file_path)} for processing")
+            except ImportError:
+                pass  # Graceful fallback
         
         # Get actual file path (handles both regular paths and stored CV IDs)
         actual_file_path = get_stored_cv_file_path(uploaded_file_path)
