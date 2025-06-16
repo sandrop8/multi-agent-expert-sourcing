@@ -170,7 +170,7 @@ class TestCVUploadEndpoint:
         pdf_content = b"Mock PDF content for CV"
         
         # Mock the agent Runner to prevent hanging
-        with patch('services.cv_service.Runner.run') as mock_runner_run:
+        with patch('app_agents.cv_agents.Runner.run') as mock_runner_run:
             mock_result = MagicMock()
             mock_result.final_output = "CV processed successfully by agents"
             mock_runner_run.return_value = mock_result
@@ -182,18 +182,18 @@ class TestCVUploadEndpoint:
             
             assert response.status_code == 200
             data = response.json()
-            assert "uploaded and analyzed successfully" in data["message"]
+            assert "CV upload started" in data["message"]
             assert data["filename"] == "resume.pdf"
             assert data["size"] == len(pdf_content)
-            assert data["processing_status"] == "completed"
-            assert data["agent_feedback"] == "CV processed successfully by agents"
+            assert data["processing_status"] == "processing_started"
+            assert "session_id" in data
 
     def test_successful_cv_upload_word_doc(self, client, mock_db_engine):
         """Test successful CV upload with Word document"""
         doc_content = b"Mock Word document content"
         
         # Mock the agent Runner to prevent hanging
-        with patch('services.cv_service.Runner.run') as mock_runner_run:
+        with patch('app_agents.cv_agents.Runner.run') as mock_runner_run:
             mock_result = MagicMock()
             mock_result.final_output = "CV processed successfully by agents"
             mock_runner_run.return_value = mock_result
@@ -205,7 +205,7 @@ class TestCVUploadEndpoint:
             
             assert response.status_code == 200
             data = response.json()
-            assert "uploaded and analyzed successfully" in data["message"]
+            assert "CV upload started" in data["message"]
             assert data["filename"] == "resume.doc"
 
     def test_successful_cv_upload_word_docx(self, client, mock_db_engine):
@@ -213,7 +213,7 @@ class TestCVUploadEndpoint:
         docx_content = b"Mock DOCX document content"
         
         # Mock the agent Runner to prevent hanging
-        with patch('services.cv_service.Runner.run') as mock_runner_run:
+        with patch('app_agents.cv_agents.Runner.run') as mock_runner_run:
             mock_result = MagicMock()
             mock_result.final_output = "CV processed successfully by agents"
             mock_runner_run.return_value = mock_result
@@ -225,7 +225,7 @@ class TestCVUploadEndpoint:
             
             assert response.status_code == 200
             data = response.json()
-            assert "uploaded and analyzed successfully" in data["message"]
+            assert "CV upload started" in data["message"]
             assert data["filename"] == "resume.docx"
 
     def test_cv_upload_invalid_file_type_text(self, client):

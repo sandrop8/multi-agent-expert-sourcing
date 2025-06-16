@@ -1,7 +1,7 @@
 [project]
 name = "agents-backend"
 version = "0.1.0"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
   "fastapi>=0.68.0",
   "uvicorn[standard]",
@@ -23,6 +23,8 @@ dependencies = [
   "tiktoken>=0.5.0", # Token counting for embeddings
   "mistralai>=1.0.0", # Mistral OCR API client (future use)
   "pillow>=10.0.0", # Image processing for vision models
+  "crewai>=0.130.0",
+  "crewai-tools>=0.47.1",
 ]
 
 [dependency-groups]

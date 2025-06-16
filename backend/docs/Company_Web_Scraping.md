@@ -19,41 +19,57 @@ This document outlines the step-by-step plan to implement a new feature allowing
     *   **Action**: A "Register" or "Submit for Analysis" button.
     *   **Functionality**: Initially, the button will have no action. The focus is on UI and page flow first.
 
-## Phase 2: Backend - CrewAI Agent Workflow (Planning & Implementation)
+## Phase 2: Backend - CrewAI Agentic Workflow for Company Profiling
 
-This phase will use `CrewAI` exclusively for the agentic workflow, demonstrating its capabilities, particularly in web scraping.
+This phase will implement an entirely new agentic workflow using the **CrewAI framework** to demonstrate a different approach to multi-agent systems compared to the existing OpenAI Agents SDK implementation. The goal is to create a sophisticated, yet easy-to-understand crew of AI agents that collaborate to build a detailed profile of a company by scraping its website and enriching the data with web research.
+
+This approach will highlight CrewAI's strengths in defining specialized agents with specific tools and orchestrating them through a sequence of tasks.
 
 1.  **Setup CrewAI Environment**:
     *   Add `crewai` and `crewai-tools` to the backend dependencies in `pyproject.toml`.
-    *   Configure necessary API keys (e.g., `OPENAI_API_KEY`, and potentially keys for scraping services like `FIRECRAWL_API_KEY`).
+    *   Already in .env file Configured necessary API keys (e.g., `OPENAI_API_KEY`) and a search tool API key (e.g., `SERPER_API_KEY`).
 
-2.  **Define CrewAI Agents & Tasks**:
-    *   Create a new file `backend/app_agents/company_agents.py`.
-    *   **Website Scraping Agent**:
-        *   **Role**: A specialist in extracting information from company websites.
-        *   **Goal**: To scrape the provided company URL and extract key information like services offered, company mission, "About Us" text, and contact details.
-        *   **Tools**: `ScrapeWebsiteTool`, `SeleniumScrapingTool` from `crewai-tools`.
-    *   **LinkedIn Scraping Agent (Optional Extension)**:
-        *   **Role**: A specialist in extracting data from LinkedIn company profiles.
-        *   **Goal**: To scrape the LinkedIn URL to get company size, industry, and other relevant data.
-        *   **Tools**: This is complex due to LinkedIn's restrictions and may require advanced tools like `Browserbase` or a custom `SeleniumScrapingTool` with authentication handling.
-    *   **Company Profile Analyst Agent**:
-        *   **Role**: An expert in analyzing corporate data to build a comprehensive company profile.
-        *   **Goal**: To synthesize information from the scraping agents into a structured JSON object, creating a clean, summarized profile of the company.
-        *   **Tools**: This agent will primarily process text and may not require external tools.
-    *   **Define Tasks**:
-        *   Task 1: Scrape the company website for general information.
-        *   Task 2: (Optional) Scrape the LinkedIn profile for corporate data.
-        *   Task 3: Analyze the scraped content to create a structured company profile.
+2.  **The Company Profiling Crew: Agents & Roles**:
+    *   A new file, `backend/app_agents/company_crew.py`, will be created to house the CrewAI definitions. The crew will consist of a team of specialist agents with distinct roles, goals, and toolsets, orchestrated by the Crew's sequential process manager.
 
-3.  **Create the Crew**:
-    *   Define a `Crew` in `company_agents.py` to orchestrate the agents and tasks in a sequential process.
-    *   The crew will take the website URL and optional LinkedIn URL as input.
+    *   **Specialist Agent 1**: `WebsiteContentScraper`
+        *   **Role**: A specialist focused on initial data extraction from a company's website.
+        *   **Goal**: To scrape the provided company URL and extract as much key information as possible, such as services offered, company mission/vision, "About Us" text, and contact details from a contact page.
+        *   **Tools**: `ScrapeWebsiteTool` from `crewai-tools`.
+        *   **Backstory**: An expert in navigating website structures to find and pull relevant text-based content efficiently.
+
+    *   **Specialist Agent 2**: `DataEnrichmentResearcher`
+        *   **Role**: A research analyst that verifies and supplements the initial data.
+        *   **Goal**: To analyze the data from the `WebsiteContentScraper`, identify critical missing information (e.g., physical address, founding year, key executives), and use web search to find these missing pieces.
+        *   **Tools**: `SerperDevTool` or `DuckDuckGoSearchRun`. This allows the agent to perform targeted web searches.
+        *   **Backstory**: A resourceful detective who excels at finding publicly available information to fill in the gaps and verify facts.
+
+    *   **Specialist Agent 3**: `CompanyProfileSynthesizer`
+        *   **Role**: The final analyst responsible for creating the end product.
+        *   **Goal**: To take the raw data from the scraper and the enriched data from the researcher, and synthesize it all into a clean, structured, and easy-to-read JSON object. It will perform final data cleaning and formatting.
+        *   **Tools**: No external tools required. This agent focuses on reasoning and structuring information.
+        *   **Backstory**: A meticulous editor and data analyst who transforms scattered information into a polished, coherent, and actionable company profile.
+
+3.  **The Task Pipeline**:
+    *   **Task 1: Initial Website Scraping**:
+        *   **Description**: "Scrape the content of the provided URL: `{url}`. Focus on extracting text related to services, company mission, about section, and contact information."
+        *   **Agent**: `WebsiteContentScraper`
+        *   **Expected Output**: A raw text document containing all relevant information found on the website.
+
+    *   **Task 2: Enrich and Verify Data**:
+        *   **Description**: "Review the scraped content. Identify and search for the following missing key information: official company address, main phone number, and a definitive list of services. If the scraped content is unclear, use your search tool to find clarity."
+        *   **Agent**: `DataEnrichmentResearcher`
+        *   **Context**: This task will use the output of Task 1.
+        *   **Expected Output**: A report containing any missing information found through web searches, along with the source URLs for verification.
+
+    *   **Task 3: Synthesize Final Company Profile**:
+        *   **Description**: "Consolidate all the information gathered from the website scraping and the data enrichment tasks. Create a final, structured JSON object with keys for `company_name`, `services`, `location`, `contact_info`, and a `summary`."
+        *   **Agent**: `CompanyProfileSynthesizer`
+        *   **Context**: This task will use the outputs of Task 1 and Task 2.
+        *   **Expected Output**: A complete and validated JSON object representing the company's profile, ready for system use.
 
 4.  **Create API Endpoint**:
-    *   Add a new endpoint, `POST /register-company`, in `backend/main.py`.
-    *   This endpoint will receive the URLs from the frontend, initialize the CrewAI crew, and run the analysis.
-    *   It will return the structured JSON profile generated by the crew.
+    *   Add a new endpoint, `POST /register-company`, in `backend/main.py`. This endpoint will receive the company URL, initialize the CrewAI crew with its tasks, and kick off the workflow. It will return the final JSON profile generated by the `CompanyProfileSynthesizer` agent.
 
 ## Phase 3: Frontend-Backend Integration
 

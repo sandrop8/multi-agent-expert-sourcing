@@ -63,9 +63,6 @@ multi-agent-expert-sourcing/
 │   │   ├── CV_Semantic_Search.md
 │   │   └── LOCAL_POSTGRES_SETUP.md
 │   ├── data/             # Test data and fixtures
-│   │   ├── fictional_cvs/ # Test CV files
-│   │   └── ground_truth/ # Manual analysis data
-│   │       └── lisa_shaw_ground_truth.py
 │   ├── scripts/          # Utility scripts
 │   │   ├── test_db.py    # Database connectivity test
 │   │   └── migration_helpers.py # Migration utilities

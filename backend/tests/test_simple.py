@@ -81,7 +81,7 @@ def test_cv_upload_endpoint_basic():
     
     # Mock database operations and agent processing
     with patch('models.base.get_engine') as mock_get_engine:
-        with patch('services.cv_service.Runner') as mock_runner:
+        with patch('app_agents.cv_agents.Runner') as mock_runner:
             mock_engine = MagicMock()
             mock_conn = MagicMock()
             mock_engine.begin.return_value.__enter__.return_value = mock_conn

@@ -19,23 +19,37 @@ export default function CompanyRegistrationPage() {
         setIsLoading(true);
         setMessage(null);
 
-        // For now, this is a placeholder.
-        console.log("Submitting:", { websiteUrl, linkedinUrl });
+        try {
+            // Use build-time environment variable with fallback
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+            const endpoint = `${apiUrl}/company/register`;
 
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
+            console.log('Submitting to:', endpoint);
 
-        console.log('Submission placeholder successful.');
-        setMessage({ type: 'success', text: 'Registration submitted for analysis. We will get back to you shortly.' });
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ website_url: websiteUrl, linkedin_url: linkedinUrl }),
+            });
 
-        // Reset form after a delay
-        setTimeout(() => {
-            setWebsiteUrl("");
-            setLinkedinUrl("");
-            setMessage(null);
-        }, 5000);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+            }
 
-        setIsLoading(false);
+            const result = await response.json();
+            console.log('Submission successful:', result);
+            setMessage({ type: 'success', text: result.message || 'Registration submitted for analysis.' });
+
+        } catch (error) {
+            console.error('Error submitting registration:', error);
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
+            setMessage({ type: 'error', text: errorMessage });
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (

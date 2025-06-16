@@ -15,8 +15,18 @@ from models.base import create_all_tables
 # Import API routes
 from api.v1.chat import router as chat_router
 from api.v1.cv import router as cv_router
+from api.v1.company import router as company_router
 from schemas.cv_schemas import CVUploadResponse
 from services.cv_service import CVService
+
+# Import CrewAI test function
+from app_agents.company_crew import run_test_crew
+from pydantic import BaseModel
+from typing import Optional
+
+class CompanyRegistrationRequest(BaseModel):
+    website_url: str
+    linkedin_url: Optional[str] = None
 
 # ---- FastAPI application setup --------------------------------------------
 app = FastAPI(title="Multi-Agent Expert Sourcing API")
@@ -33,6 +43,7 @@ app.add_middleware(
 # Register API routes
 app.include_router(chat_router)
 app.include_router(cv_router)
+app.include_router(company_router)
 
 # Legacy endpoints for backward compatibility
 from schemas.chat_schemas import ChatReq
