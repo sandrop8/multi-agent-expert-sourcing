@@ -72,20 +72,43 @@ fi
 
 # Run pytest tests and capture results
 print_status "Running pytest tests..."
-if uv run pytest tests/ -v --tb=short > "$TEMP_DIR/pytest.log" 2>&1; then
+PYTEST_EXIT_CODE=0
+uv run pytest tests/ --tb=short > "$TEMP_DIR/pytest.log" 2>&1 || PYTEST_EXIT_CODE=$?
+
+if [ "$PYTEST_EXIT_CODE" -eq 0 ]; then
     print_success "Backend pytest tests completed"
-    
-    # Parse pytest results
-    PYTEST_OUTPUT=$(cat "$TEMP_DIR/pytest.log")
-    API_PASSED=$(echo "$PYTEST_OUTPUT" | grep -o "[0-9]\+ passed" | head -1 | grep -o "[0-9]\+" || echo "0")
-    API_FAILED=$(echo "$PYTEST_OUTPUT" | grep -o "[0-9]\+ failed" | head -1 | grep -o "[0-9]\+" || echo "0")
-    
-    API_TOTAL=$((API_PASSED + API_FAILED))
 else
-    print_error "Backend pytest tests failed"
-    # Set fallback values if tests failed
-    API_PASSED=0
-    API_TOTAL=88
+    print_warning "Backend pytest tests completed with some failures"
+fi
+
+# Parse pytest results - format: "X failed, Y passed, Z skipped, W warnings in Xs"
+PYTEST_OUTPUT=$(cat "$TEMP_DIR/pytest.log")
+PYTEST_SUMMARY=$(echo "$PYTEST_OUTPUT" | grep -E "[0-9]+ (failed|passed|skipped).* in [0-9]+.*s$" | tail -1)
+
+if [ -n "$PYTEST_SUMMARY" ]; then
+    # Extract numbers from the summary line
+    API_PASSED=$(echo "$PYTEST_SUMMARY" | grep -o "[0-9]\+ passed" | grep -o "[0-9]\+" || echo "0")
+    API_FAILED=$(echo "$PYTEST_SUMMARY" | grep -o "[0-9]\+ failed" | grep -o "[0-9]\+" || echo "0")
+    API_SKIPPED=$(echo "$PYTEST_SUMMARY" | grep -o "[0-9]\+ skipped" | grep -o "[0-9]\+" || echo "0")
+    
+    # Calculate total tests (passed + failed + skipped)
+    API_TOTAL=$((API_PASSED + API_FAILED + API_SKIPPED))
+    
+    print_success "Parsed pytest results: $API_PASSED passed, $API_FAILED failed, $API_SKIPPED skipped (Total: $API_TOTAL)"
+else
+    print_error "Could not parse pytest results from summary line"
+    # Try alternative parsing
+    PYTEST_PASSED_LINE=$(echo "$PYTEST_OUTPUT" | grep "passed" | tail -1)
+    if [ -n "$PYTEST_PASSED_LINE" ]; then
+        API_PASSED=$(echo "$PYTEST_PASSED_LINE" | grep -o "[0-9]\+" | head -1 || echo "0")
+        API_TOTAL=92
+        print_warning "Using fallback parsing: $API_PASSED passed out of $API_TOTAL total"
+    else
+        # Ultimate fallback
+        API_PASSED=0
+        API_TOTAL=92
+        print_error "Could not parse pytest results at all"
+    fi
 fi
 
 cd "$ORIGINAL_DIR"

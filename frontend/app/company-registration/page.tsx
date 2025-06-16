@@ -95,7 +95,7 @@ export default function CompanyRegistrationPage() {
                             </h1>
 
                             <p className="text-lg text-muted-foreground">
-                                Provide your company's website for an AI-powered analysis of your services.
+                                Provide your company&apos;s website for an AI-powered analysis of your services.
                             </p>
 
                             {/* Form Section */}

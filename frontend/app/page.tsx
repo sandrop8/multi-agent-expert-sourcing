@@ -237,7 +237,7 @@ export default function HomePage() {
                   Register as a Service Provider
                 </h2>
                 <p className="text-black mb-6">
-                  Offer your company's services to a wide range of projects. Register your agency to get matched with clients.
+                  Offer your company&apos;s services to a wide range of projects. Register your agency to get matched with clients.
                 </p>
               </div>
 

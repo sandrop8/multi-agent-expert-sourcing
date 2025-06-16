@@ -2,7 +2,7 @@
 Company Service - business logic for company registration and profiling
 """
 from fastapi import BackgroundTasks
-from app_agents.company_crew import run_test_crew
+from app_agents.company_crew import run_company_profiling_crew
 
 class CompanyService:
     """Service class for company-related business logic"""
@@ -16,6 +16,6 @@ class CompanyService:
         Schedules the CrewAI company profiling workflow to run in the background.
         """
         print(f"🏢 [CompanyService] Scheduling CrewAI workflow for URL: {website_url}")
-        background_tasks.add_task(run_test_crew, website_url)
+        background_tasks.add_task(run_company_profiling_crew, website_url)
         # In a real application, we might return a session_id here for status polling
         return {"message": "Company profiling process has been started in the background."} 

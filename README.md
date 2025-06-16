@@ -1,14 +1,15 @@
 # Multi-Agent Expert Sourcing Demo 
 
 Find the live demo here: https://poetic-optimism-production.up.railway.app
-A modular, hierarchical multi-agent AI system that demonstrates intelligent expert sourcing workflows using OpenAI Agents SDK with FastAPI backend and Next.js frontend.
+A comprehensive multi-agent AI system showcasing **two different agent frameworks**: **OpenAI Agents SDK** for expert sourcing workflows and **CrewAI Framework** for company profiling, built with FastAPI backend and Next.js frontend.
 
 ## 📑 Table of Contents
 
-- [🤖 OpenAI Agents SDK Framework](#openai-agents-sdk-framework)
+- [🤖 Dual Agent Framework Architecture](#dual-agent-framework-architecture)
 - [🎯 Multi-Agent Architecture](#-multi-agent-architecture)
-  - [🏢 Project Submission Track](#-project-submission-track-currently-implemented)
-  - [👨‍💻 Freelancer Profile Track](#-freelancer-profile-track-planned-implementation)
+  - [🏢 CrewAI Company Service Workflow](#-crewai-company-service-workflow-newly-implemented)
+  - [🎯 OpenAI Agents SDK: Project Submission Track](#-openai-agents-sdk-project-submission-track-currently-implemented)
+  - [👨‍💻 OpenAI Agents SDK: Freelancer Profile Track](#-openai-agents-sdk-freelancer-profile-track-planned-implementation)
 - [💬 Example Chat Interface](#-example-chat-interface)
 - [🔍 Agent Workflow Debugging](#-agent-workflow-debugging)
 - [🛠️ Tech Stack](#️-tech-stack)
@@ -23,15 +24,111 @@ A modular, hierarchical multi-agent AI system that demonstrates intelligent expe
 
 ---
 
-## OpenAI Agents SDK Framework
+## Dual Agent Framework Architecture
 
-This project showcases two different multi-agent systesm built with the OpenAI Agents SDK, featuring:
+This project demonstrates **two distinct agent frameworks** working in parallel to showcase different approaches to multi-agent AI systems:
+
+### 🎯 **CrewAI Framework** - Company Profiling & Web Scraping
+- **Purpose**: Automated company analysis through website scraping and data enrichment
+- **Architecture**: Sequential crew of specialized agents with task handoffs
+- **Tools**: Web scraping, search engines, and data synthesis capabilities
+- **Use Case**: Company registration and service provider profiling
+
+### 🤖 **OpenAI Agents SDK** - Expert Sourcing & CV Processing  
+- **Purpose**: Intelligent project management and freelancer profile generation
+- **Architecture**: Hierarchical agent handoffs with supervisor coordination
+- **Tools**: Guardrails, file processing, and structured data extraction
+- **Use Cases**: Project requirement gathering and CV analysis workflows
+
+---
 
 ### 🎯 **Multi-Agent Architecture**
 
-This system demonstrates a sophisticated dual-track agent architecture supporting both **Project Owners** seeking experts and **Freelancers** building their profiles.
+This system demonstrates a **triple-track agent architecture** showcasing two different frameworks:
+1. **CrewAI Framework** - Company service provider registration and profiling
+2. **OpenAI Agents SDK** - Project owners seeking experts  
+3. **OpenAI Agents SDK** - Freelancers building their profiles
 
-## 🏢 **Project Submission Agentic Workflow** 
+## 🏢 **CrewAI Company Service Workflow** *(Newly Implemented)*
+
+### **Framework: CrewAI Sequential Crew Architecture**
+
+### **Visual Architecture**
+
+```mermaid
+graph TD
+    A[🏢 Company Registration] --> B[🔗 Website URL Input]
+    B --> C[🚀 CrewAI Company Crew]
+    
+    C --> D[🕸️ Website Content Scraper]
+    C --> E[🔍 Data Enrichment Researcher] 
+    C --> F[📊 Company Profile Synthesizer]
+    
+    D -->|Task 1: Scrape Content| G[📄 Raw Website Data]
+    E -->|Task 2: Enrich Data| H[🔍 Missing Info Research]
+    F -->|Task 3: Synthesize Profile| I[📋 Structured Company JSON]
+    
+    G --> J[🔄 Sequential Task Flow]
+    H --> J
+    I --> K[✅ Complete Company Profile]
+    
+    L[🛠️ ScrapeWebsiteTool] --> D
+    M[🔍 SerperDevTool] --> E
+    N[💡 AI Synthesis] --> F
+    
+    style A fill:#e1f5fe,color:#000000
+    style C fill:#4fc3f7,color:#000000,stroke:#01579b,stroke-width:3px
+    style D fill:#e8f5e8,color:#000000
+    style E fill:#fff3e0,color:#000000
+    style F fill:#f3e5f5,color:#000000
+    style K fill:#c8e6c9,color:#000000
+```
+
+### **CrewAI Agent Roles & Responsibilities**
+
+#### 🕸️ **Website Content Scraper** (Content Extraction Specialist)
+- **Role**: Website content extraction using CrewAI's `ScrapeWebsiteTool`
+- **Goal**: Extract key information about company services, mission, and contact details
+- **Backstory**: Expert in navigating website structures to find relevant text-based content
+- **Tools**: `ScrapeWebsiteTool` for comprehensive website content extraction
+- **Output**: Raw text document containing all relevant website information
+
+#### 🔍 **Data Enrichment Researcher** (Information Detective)
+- **Role**: Research analyst that supplements scraped data with web searches
+- **Goal**: Identify missing critical information (address, executives, services) and verify facts
+- **Backstory**: Resourceful detective using search tools to fill information gaps
+- **Tools**: `SerperDevTool` for targeted web searches (when API key available)
+- **Output**: Report with missing information and verification sources
+
+#### 📊 **Company Profile Synthesizer** (Data Integration Specialist)
+- **Role**: Final analyst responsible for creating structured company profiles
+- **Goal**: Transform raw and enriched data into clean, structured JSON objects
+- **Backstory**: Meticulous data analyst creating polished, actionable company profiles
+- **Tools**: AI-powered analysis and structuring (no external tools required)
+- **Output**: Complete JSON profile with `company_name`, `services`, `location`, `contact_info`, `summary`
+
+### **CrewAI Sequential Task Pipeline**
+
+#### **Task 1: Initial Website Scraping**
+- **Agent**: Website Content Scraper
+- **Process**: Scrape provided URL focusing on services, mission, about section, contact info
+- **CrewAI Features**: Tool integration with `ScrapeWebsiteTool`
+
+#### **Task 2: Data Enrichment & Verification**  
+- **Agent**: Data Enrichment Researcher
+- **Process**: Analyze scraped content, identify gaps, search for missing information
+- **CrewAI Features**: Context from Task 1, web search tool integration
+
+#### **Task 3: Profile Synthesis**
+- **Agent**: Company Profile Synthesizer  
+- **Process**: Consolidate all information into structured JSON company profile
+- **CrewAI Features**: Context from Tasks 1 & 2, structured output generation
+
+---
+
+## 🎯 **OpenAI Agents SDK: Project Submission Track** *(Currently Implemented)*
+
+### **Framework: OpenAI Agents SDK Hierarchical Architecture** 
 
 ### **Visual Architecture**
 
@@ -86,7 +183,9 @@ graph TD
 
 ---
 
-## 👨‍💻 **Freelancer Profile Gen Agentic Workflow** 
+## 👨‍💻 **OpenAI Agents SDK: Freelancer Profile Track** *(Planned Implementation)*
+
+### **Framework: OpenAI Agents SDK Hierarchical Architecture** 
 
 ### **Current Implementation Status**
 ✅ **Complete CV Processing System** - Fully implemented end-to-end CV processing with AI agents
@@ -256,15 +355,24 @@ The high accuracy rate demonstrates the effectiveness of our OpenAI Files API in
 - **Interactive**: Generates targeted suggestions for profile improvement and completeness
 - **Output**: Detailed recommendations for enhancing freelancer profile quality
 
-### 🔄 **Dual-Track Workflow Logic**
+### 🔄 **Triple-Track Workflow Logic**
 
-#### **Project Submission Flow**
+#### **CrewAI Company Service Flow** ✅ *(Implemented)*
+1. **Company Registration** → Service provider submits website URL for analysis
+2. **CrewAI Crew Initialization** → Sequential crew of 3 specialized agents activated
+3. **Website Scraping** → Website Content Scraper extracts company information using `ScrapeWebsiteTool`
+4. **Data Enrichment** → Data Enrichment Researcher fills gaps using `SerperDevTool` web searches
+5. **Profile Synthesis** → Company Profile Synthesizer creates structured JSON company profile
+6. **Sequential Task Flow** → Each task builds on previous results in CrewAI's sequential process
+7. **Structured Output** → Final JSON with company details ready for service provider database
+
+#### **OpenAI Agents SDK: Project Submission Flow** ✅ *(Implemented)*
 1. **Input Validation** → Expert Sourcing Validator ensures project-related queries
 2. **Intelligent Routing** → Expert Sourcing Supervisor routes to appropriate specialist
 3. **Specialized Processing** → Requirements Assistant or Refinement Specialist guides project description creation
 4. **Response Coordination** → Supervisor provides unified, high-quality project descriptions ready for freelancer matching
 
-#### **Freelancer Profile Flow** 🚧 *(WIP)*
+#### **OpenAI Agents SDK: Freelancer Profile Flow** 🚧 *(WIP)*
 1. **File Upload & Storage** → CVs stored securely in PostgreSQL database with binary data
 2. **Stored CV Processing** → Freelancer Profile Manager receives `stored_cv_id:123` identifier
 3. **Input Validation** → CV Content Validator guardrail ensures valid CV processing requests
@@ -277,9 +385,18 @@ The high accuracy rate demonstrates the effectiveness of our OpenAI Files API in
 6. **Data Integration** → Manager combines all specialist outputs into comprehensive profile
 7. **Automatic Cleanup** → Temporary files removed after OpenAI processing
 
-### 🏗️ **OpenAI Agents SDK Implementation Patterns**
+### 🏗️ **Multi-Framework Implementation Patterns**
 
-Both tracks demonstrate key SDK concepts:
+This project demonstrates two distinct agent framework architectures:
+
+#### **🎯 CrewAI Framework Patterns** (Company Service Track)
+- **🔄 Sequential Crew Processing** - Agents work in sequence with task context sharing
+- **🛠️ Specialized Tool Integration** - Each agent has specific tools (`ScrapeWebsiteTool`, `SerperDevTool`)
+- **📋 Task-Driven Architecture** - Explicit task definitions with expected outputs
+- **🤝 Context Sharing** - Later tasks receive context from previous task results
+- **🎯 Role-Based Specialization** - Clear agent roles with specific backstories and goals
+
+#### **🤖 OpenAI Agents SDK Patterns** (Project & Freelancer Tracks)
 - **🎯 Hierarchical Structure** - Clear supervisor/specialist relationships using `handoffs`
 - **🛡️ Guardrail Implementation** - Input validation with `InputGuardrail` and custom functions
 - **🔄 Intelligent Triage** - Smart routing based on request analysis with `handoff_descriptions`
@@ -313,9 +430,11 @@ Built-in tracing capabilities allow you to debug and monitor the complete agent 
 #### **Architecture & Development Standards**
 - **[FastAPI Best Practices](backend/FASTAPI_BEST_PRACTICES.md)** - Comprehensive guide for SQLAlchemy ORM, Pydantic schemas, and project structure
 
-#### **AI & Agent System**
-- **OpenAI Agents SDK** (`openai-agents>=0.0.16`) - Multi-agent orchestration framework
-- **OpenAI API** (`openai>=1.30`) - GPT models and AI capabilities
+#### **AI & Agent Systems**
+- **OpenAI Agents SDK** (`openai-agents>=0.0.16`) - Hierarchical multi-agent orchestration for expert sourcing
+- **CrewAI Framework** (`crewai>=0.130.0`) - Sequential crew-based agents for company profiling
+- **CrewAI Tools** (`crewai-tools>=0.47.1`) - Specialized tools for web scraping and search
+- **OpenAI API** (`openai>=1.30`) - GPT models and AI capabilities for both frameworks
 
 #### **Database & Data**
 - **PostgreSQL** - Robust relational database for conversation and CV storage
@@ -359,22 +478,26 @@ Built-in tracing capabilities allow you to debug and monitor the complete agent 
 
 ## 🧪 **Testing Framework**
 
-**Comprehensive test suite with 180 total tests:**
+**Comprehensive test suite with 205 total tests:**
 
 ### **Testing Stack**
 - **Frontend Testing** - Jest + React Testing Library for UI components, interactions, accessibility (38/38 tests passing)
 - **E2E Testing** - Playwright cross-browser testing across 5 browsers for full user journeys (75/75 tests passing)*
-- **API Testing** - pytest + FastAPI TestClient for endpoints, database, agent system (67/67 tests passing)
+- **API Testing** - pytest + FastAPI TestClient for endpoints, database, agent systems (85/92 tests passing)**
+  - **OpenAI Agents SDK Tests** - Expert sourcing and CV processing workflows (67 tests)
+  - **CrewAI Framework Tests** - Company profiling and web scraping workflows (18 tests)
+  - **Core API & Database Tests** - FastAPI endpoints and PostgreSQL integration (7 tests)
 - **Quality Assurance** - ESLint + TypeScript for code quality and type safety (0 errors)
 - **Performance** - Coverage reports and build validation for production readiness
 
 ### **Testing Summary**
-✅ **105/105 Core Tests Passing** (100% success rate) - *Backend + Frontend*  
-✅ **180/180 Total Tests Passing** (100% success rate) - *When backend running for E2E*  
-⚡ **6.33 seconds** - Fast feedback loop for core tests  
-🔄 **Pre-commit Ready** - Local testing before GitHub
+✅ **123/130 Core Tests Passing** (95% success rate) - *Backend + Frontend*  
+✅ **198/205 Total Tests Passing** (97% success rate) - *When backend running for E2E*  
+⚡ **Fast feedback loop** - Local testing before GitHub commits  
+🔄 **Pre-commit Ready** - Comprehensive validation across dual agent frameworks
 
-*E2E tests require backend server running*
+*E2E tests require backend server running*  
+**7 backend tests skipped (long-running integration tests)*
 
 ### **Quick Start Testing**
 ```bash
@@ -492,16 +615,23 @@ cd frontend && bun dev
 
 ### API Endpoints
 
-- **POST** `/chat` - Send message to AI agent
+#### **CrewAI Framework Endpoints**
+- **POST** `/company/register` - Register company service provider (triggers CrewAI crew workflow)
+
+#### **OpenAI Agents SDK Endpoints**
+- **POST** `/chat` - Send message to AI agent (expert sourcing workflow)
 - **GET** `/history?limit=20` - Retrieve conversation history
-- **POST** `/upload-cv` - Upload CV files (PDF/Word, max 10MB)
+- **POST** `/upload-cv` - Upload CV files (PDF/Word, max 10MB) 
 - **GET** `/cvs` - List uploaded CVs (debugging/management)
+
+#### **General**
 - **GET** `/docs` - FastAPI automatic documentation
 
 ### Environment Variables
 
 **Backend (`backend/.env`):**
-- `OPENAI_API_KEY` - Your OpenAI API key
+- `OPENAI_API_KEY` - Your OpenAI API key (required for both frameworks)
+- `SERPER_API_KEY` - Serper API key for web search (optional, for CrewAI enhanced search)
 - `PG_URL` - PostgreSQL connection string
 
 **Frontend (environment variables):**

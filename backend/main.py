@@ -19,8 +19,8 @@ from api.v1.company import router as company_router
 from schemas.cv_schemas import CVUploadResponse
 from services.cv_service import CVService
 
-# Import CrewAI test function
-from app_agents.company_crew import run_test_crew
+# Import CrewAI company profiling function
+from app_agents.company_crew import run_company_profiling_crew
 from pydantic import BaseModel
 from typing import Optional
 
