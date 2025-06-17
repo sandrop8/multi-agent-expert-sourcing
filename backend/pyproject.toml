@@ -25,6 +25,7 @@ dependencies = [
   "pillow>=10.0.0", # Image processing for vision models
   "crewai>=0.130.0",
   "crewai-tools>=0.47.1",
+  "pytest>=8.4.0",
 ]
 
 [dependency-groups]
