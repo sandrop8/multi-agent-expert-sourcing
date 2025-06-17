@@ -479,21 +479,36 @@ Built-in tracing capabilities allow you to debug and monitor the complete agent 
 
 ## 🧪 **Testing Framework**
 
-**Comprehensive test suite with 205 total tests:**
+**Comprehensive test suite with 220 total tests:**
 
 ### **Testing Stack**
 - **Frontend Testing** - Jest + React Testing Library for UI components, interactions, accessibility (38/38 tests passing)
 - **E2E Testing** - Playwright cross-browser testing across 5 browsers for full user journeys (75/75 tests passing)*
-- **API Testing** - pytest + FastAPI TestClient for endpoints, database, agent systems (85/92 tests passing)**
+- **API Testing** - pytest + FastAPI TestClient for endpoints, database, agent systems (100/107 tests passing)**
   - **OpenAI Agents SDK Tests** - Expert sourcing and CV processing workflows (67 tests)
   - **CrewAI Framework Tests** - Company profiling and web scraping workflows (18 tests)
   - **Core API & Database Tests** - FastAPI endpoints and PostgreSQL integration (7 tests)
+  - **NATS Integration Tests** - Event-driven messaging and communication system (15 tests)
 - **Quality Assurance** - ESLint + TypeScript for code quality and type safety (0 errors)
 - **Performance** - Coverage reports and build validation for production readiness
 
+### **NATS Messaging Tests**
+✅ **15/15 NATS Integration Tests Passing** (100% success rate)
+- **Health & Connection** - NATS server connectivity and health monitoring (2 tests)
+- **Event Publishing** - Core and persistent messaging with JetStream fallback (3 tests)
+- **Specialized Events** - CV upload, chat message, and agent task events (3 tests)
+- **Edge Cases & Performance** - Invalid subjects, large payloads, special characters (4 tests)
+- **Complex Scenarios** - Rapid publishing, mixed data types, nested structures (3 tests)
+
+**NATS Test Architecture:**
+- 🔄 **Graceful Degradation** - Tests work with both JetStream-enabled and core NATS servers
+- 🚀 **Railway Compatible** - Verified against Railway's TCP NATS service
+- 📊 **Comprehensive Coverage** - Edge cases, error handling, and performance scenarios
+- 🛡️ **Error Resilience** - Automatic fallback from JetStream to core NATS messaging
+
 ### **Testing Summary**
-✅ **123/130 Core Tests Passing** (95% success rate) - *Backend + Frontend*
-✅ **198/205 Total Tests Passing** (97% success rate) - *When backend running for E2E*
+✅ **138/145 Core Tests Passing** (95% success rate) - *Backend + Frontend*
+✅ **213/220 Total Tests Passing** (97% success rate) - *When backend running for E2E*
 ⚡ **Fast feedback loop** - Local testing before GitHub commits
 🔄 **Pre-commit Ready** - Comprehensive validation across dual agent frameworks
 

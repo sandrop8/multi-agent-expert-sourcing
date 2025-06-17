@@ -14,6 +14,18 @@ DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv(
     "PG_URL"
 )  # Railway uses DATABASE_URL
 
+# NATS Configuration
+# Priority: ENV var > Railway internal > Local fallback
+NATS_URL = os.getenv("NATS_URL") or os.getenv(
+    "NATS_INTERNAL_URL", "nats://localhost:4222"
+)
+NATS_PUBLIC_URL = os.getenv("NATS_PUBLIC_URL")  # For local development testing
+NATS_CLUSTER_URLS = (
+    os.getenv("NATS_CLUSTER_URLS", "").split(",")
+    if os.getenv("NATS_CLUSTER_URLS")
+    else []
+)
+
 # Better error messages for missing environment variables
 missing_vars = []
 if not OPENAI_KEY:

@@ -25,6 +25,8 @@ dependencies = [
   "pillow>=10.0.0", # Image processing for vision models
   "crewai>=0.130.0",
   "crewai-tools>=0.47.1",
+  # NATS messaging system
+  "nats-py>=2.7.0",  # NATS client for Python with async support
 ]
 
 [dependency-groups]

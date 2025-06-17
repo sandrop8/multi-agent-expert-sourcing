@@ -16,6 +16,7 @@ from models.base import create_all_tables
 from api.v1.chat import router as chat_router
 from api.v1.cv import router as cv_router, processing_router as cv_processing_router
 from api.v1.company import router as company_router
+from api.v1.nats import router as nats_router
 from schemas.cv_schemas import CVUploadResponse
 from schemas.chat_schemas import ChatReq
 from services.cv_service import CVService
@@ -47,6 +48,7 @@ app.include_router(chat_router)
 app.include_router(cv_router)
 app.include_router(cv_processing_router)
 app.include_router(company_router)
+app.include_router(nats_router)
 
 # Legacy endpoints for backward compatibility
 
@@ -90,10 +92,44 @@ async def legacy_cv_status(session_id: str):
 # Create database tables on startup
 @app.on_event("startup")
 async def startup_event():
-    """Initialize database tables"""
+    """Initialize database tables and NATS connection"""
     print("🚀 Starting Multi-Agent Expert Sourcing API...")
+
+    # Initialize database
     create_all_tables()
     print("✅ Database tables created/verified")
+
+    # Initialize NATS connection
+    try:
+        from core.nats import init_nats
+        from api.v1.nats import setup_event_subscribers
+
+        await init_nats()
+        print("✅ NATS connection established")
+
+        # Setup event subscribers in background
+        import asyncio
+        from core.nats import get_nats
+
+        nats_client = await get_nats()
+        asyncio.create_task(setup_event_subscribers(nats_client))
+        print("✅ NATS event subscribers configured")
+
+    except Exception as e:
+        print(f"⚠️  NATS initialization failed: {e}")
+        print("   The app will continue without NATS functionality")
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Clean shutdown of NATS connection"""
+    try:
+        from core.nats import close_nats
+
+        await close_nats()
+        print("✅ NATS connection closed")
+    except Exception as e:
+        print(f"⚠️  NATS shutdown error: {e}")
 
 
 if __name__ == "__main__":
