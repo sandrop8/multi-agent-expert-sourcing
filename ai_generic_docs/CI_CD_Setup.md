@@ -447,13 +447,13 @@ repos:
         entry: bash -c 'cd backend && uv run ruff check .'
         language: system
         files: '^backend/.*\.py$'
-        
+
       - id: backend-ruff-format
         name: Backend Ruff formatting
         entry: bash -c 'cd backend && uv run ruff format .'
         language: system
         files: '^backend/.*\.py$'
-        
+
       - id: backend-pytest-quick
         name: Backend quick tests
         entry: bash -c 'cd backend && uv run pytest tests/ -x --tb=short'
@@ -466,13 +466,13 @@ repos:
         entry: bash -c 'cd frontend && bun run lint --fix'
         language: system
         files: '^frontend/.*\.(ts|tsx|js|jsx)$'
-        
+
       - id: frontend-typescript
         name: Frontend TypeScript check
         entry: bash -c 'cd frontend && bunx tsc --noEmit'
         language: system
         files: '^frontend/.*\.(ts|tsx)$'
-        
+
       - id: frontend-jest-quick
         name: Frontend quick tests
         entry: bash -c 'cd frontend && bun run test --onlyChanged --passWithNoTests'
@@ -519,7 +519,7 @@ repos:
           - -c
           - |
             echo "🔍 Running selective pre-commit checks..."
-            
+
             # Check if frontend files changed
             if git diff --cached --name-only | grep -q "^frontend/"; then
                 echo "📱 Frontend changes detected"
@@ -527,14 +527,14 @@ repos:
                 cd frontend && bunx tsc --noEmit
                 cd frontend && bun run test --onlyChanged --passWithNoTests
             fi
-            
-            # Check if backend files changed  
+
+            # Check if backend files changed
             if git diff --cached --name-only | grep -q "^backend/"; then
                 echo "🐍 Backend changes detected"
                 cd backend && uv run ruff check . --fix
                 cd backend && uv run pytest tests/ -x --tb=short
             fi
-            
+
             echo "✅ Selective checks completed"
         language: system
         pass_filenames: false
@@ -601,21 +601,21 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Setup Python with uv
         uses: astral-sh/setup-uv@v1
         with:
           python-version: "3.11"
-          
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-          
+
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
@@ -623,27 +623,27 @@ jobs:
             ~/.cache/uv
             ~/.bun/install/cache
           key: ${{ runner.os }}-deps-${{ hashFiles('**/uv.lock', '**/bun.lockb') }}
-          
+
       - name: Install backend dependencies
         run: |
           cd backend
           uv sync
-          
+
       - name: Install frontend dependencies
         run: |
           cd frontend
           bun install
-          
+
       - name: Install Playwright browsers
         run: |
           cd frontend
           bunx playwright install --with-deps
-          
+
       - name: Run comprehensive test suite
         run: ./test-all.sh
         env:
           CI: true
-          
+
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
@@ -654,7 +654,7 @@ jobs:
             backend/htmlcov/
             frontend/test-results/
             frontend/playwright-report/
-            
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         if: always()
@@ -680,19 +680,19 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Needed for changed files detection
-          
+
       - name: Setup Python with uv
         uses: astral-sh/setup-uv@v1
-        
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
-        
+
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v42
@@ -702,7 +702,7 @@ jobs:
               - 'backend/**/*.py'
             frontend:
               - 'frontend/**/*.{ts,tsx,js,jsx}'
-            
+
       - name: Install dependencies
         run: |
           if [ "${{ steps.changed-files.outputs.backend_any_changed }}" == "true" ]; then
@@ -712,14 +712,14 @@ jobs:
             cd frontend && bun install
             bunx playwright install --with-deps
           fi
-          
+
       - name: Run backend tests
         if: steps.changed-files.outputs.backend_any_changed == 'true'
         run: |
           cd backend
           uv run ruff check .
           uv run pytest tests/ --cov=. --cov-report=xml
-          
+
       - name: Run frontend tests
         if: steps.changed-files.outputs.frontend_any_changed == 'true'
         run: |
@@ -727,13 +727,13 @@ jobs:
           bun run lint
           bunx tsc --noEmit
           bun run test --coverage
-          
+
       - name: Run E2E tests
         if: steps.changed-files.outputs.frontend_any_changed == 'true'
         run: |
           cd frontend
           bunx playwright test
-          
+
       - name: Comment PR with results
         uses: actions/github-script@v7
         if: always()
@@ -741,20 +741,20 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            
+
             let comment = '## 🧪 Test Results\n\n';
-            
+
             // Check if test results exist and add summary
             if (context.job.status === 'success') {
               comment += '✅ All tests passed!\n\n';
             } else {
               comment += '❌ Some tests failed. Please check the logs.\n\n';
             }
-            
+
             comment += '### Changed Files\n';
             comment += `- Backend: ${{ steps.changed-files.outputs.backend_any_changed }}\n`;
             comment += `- Frontend: ${{ steps.changed-files.outputs.frontend_any_changed }}\n`;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -868,7 +868,7 @@ jobs:
       - name: Deploy to staging
         run: |
           # Deployment commands for staging
-          
+
   deploy-production:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
@@ -923,17 +923,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Run Bandit (Python security)
         run: |
           cd backend
           uv run bandit -r . -f json -o bandit-report.json
-          
+
       - name: Run npm audit (JavaScript security)
         run: |
           cd frontend
           bun audit
-          
+
       - name: Upload security reports
         uses: github/codeql-action/upload-sarif@v3
         with:

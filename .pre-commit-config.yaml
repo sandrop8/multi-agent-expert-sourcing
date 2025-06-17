@@ -3,38 +3,40 @@ repos:
   # Local project hooks
   - repo: local
     hooks:
-      # Backend-specific hooks (run only when backend files change)
+            # Backend-specific hooks (run only when backend files change)
+      # Use uv run --project backend to maintain root directory context
       - id: backend-ruff-check
         name: Backend Ruff linting
-        entry: bash -c 'cd backend && uv run ruff check . --fix'
+        entry: uv run --project backend ruff check backend/ --fix
         language: system
         files: '^backend/.*\.py$'
-        
+
       - id: backend-ruff-format
         name: Backend Ruff formatting
-        entry: bash -c 'cd backend && uv run ruff format .'
+        entry: uv run --project backend ruff format backend/
         language: system
         files: '^backend/.*\.py$'
-        
+
       - id: backend-pytest-quick
         name: Backend quick tests (fast subset)
-        entry: bash -c 'cd backend && uv run pytest tests/test_simple.py -x --tb=short'
+        entry: uv run --project backend pytest backend/tests/test_simple.py -x --tb=short
         language: system
         files: '^backend/.*\.py$'
 
       # Frontend-specific hooks (run only when frontend files change)
+      # Run from root directory to maintain proper environment context
       - id: frontend-eslint
         name: Frontend ESLint
         entry: bash -c 'cd frontend && bun run lint --fix'
         language: system
         files: '^frontend/.*\.(ts|tsx|js|jsx)$'
-        
+
       - id: frontend-typescript
         name: Frontend TypeScript check
         entry: bash -c 'cd frontend && bunx tsc --noEmit'
         language: system
         files: '^frontend/.*\.(ts|tsx)$'
-        
+
       - id: frontend-jest-quick
         name: Frontend quick tests
         entry: bash -c 'cd frontend && bun run test --onlyChanged --passWithNoTests --maxWorkers=2'
@@ -61,4 +63,4 @@ repos:
         args: [--fix, --exit-non-zero-on-fix]
         files: '^backend/.*\.py$'
       - id: ruff-format
-        files: '^backend/.*\.py$' 
+        files: '^backend/.*\.py$'
