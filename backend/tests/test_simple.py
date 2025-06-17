@@ -216,7 +216,8 @@ async def test_async_functionality():
 
 def test_environment_variables():
     """Ensure critical env vars exist when required; otherwise skip."""
-    import os, pytest
+    import os
+    import pytest
 
     openai_key = os.getenv("OPENAI_API_KEY")
     database_url = os.getenv("DATABASE_URL") or os.getenv("PG_URL")

@@ -720,6 +720,5 @@ async def test_cv_agents():
 
 if __name__ == "__main__":
     import asyncio
-    import os
 
     asyncio.run(test_cv_agents())

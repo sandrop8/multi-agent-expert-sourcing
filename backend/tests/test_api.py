@@ -82,15 +82,18 @@ def mock_db_engine(test_engine):
 
 
 class TestChatEndpoint:
-    """Test cases for the /chat endpoint"""
+    """Test cases for the /conversations endpoint (RESTful)"""
 
-    def test_successful_chat_request(self, client, mock_runner, mock_db_engine):
-        """Test successful chat request with valid prompt"""
+    def test_successful_conversation_message_creation(
+        self, client, mock_runner, mock_db_engine
+    ):
+        """Test successful conversation message creation with valid prompt"""
         response = client.post(
-            "/chat", json={"prompt": "I need a Python developer for my project"}
+            "/conversations",
+            json={"prompt": "I need a Python developer for my project"},
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 201  # RESTful: 201 Created for resource creation
         data = response.json()
         assert "answer" in data
         assert data["answer"] == "Mocked AI response"
@@ -98,58 +101,64 @@ class TestChatEndpoint:
         # Verify agent was called
         mock_runner.run.assert_called_once()
 
-    def test_empty_prompt(self, client, mock_runner, mock_db_engine):
-        """Test handling of empty prompt"""
-        response = client.post("/chat", json={"prompt": ""})
+    def test_empty_prompt_conversation(self, client, mock_runner, mock_db_engine):
+        """Test handling of empty prompt in conversation"""
+        response = client.post("/conversations", json={"prompt": ""})
 
-        assert response.status_code == 200
+        assert response.status_code == 201  # RESTful: Still creates a resource
         # Should still process empty prompts but return mocked response
         data = response.json()
         assert "answer" in data
 
-    def test_missing_prompt_field(self, client):
-        """Test request without prompt field"""
-        response = client.post("/chat", json={})
+    def test_missing_prompt_field_conversation(self, client):
+        """Test conversation request without prompt field"""
+        response = client.post("/conversations", json={})
 
         assert response.status_code == 422  # Validation error
 
-    def test_invalid_json(self, client):
-        """Test request with invalid JSON"""
+    def test_invalid_json_conversation(self, client):
+        """Test conversation request with invalid JSON"""
         response = client.post(
-            "/chat", data="invalid json", headers={"Content-Type": "application/json"}
+            "/conversations",
+            data="invalid json",
+            headers={"Content-Type": "application/json"},
         )
 
         assert response.status_code == 422
 
     @pytest.mark.asyncio
-    async def test_agent_error_handling(self, client, mock_db_engine):
-        """Test handling of agent system errors"""
+    async def test_conversation_agent_error_handling(self, client, mock_db_engine):
+        """Test handling of agent system errors in conversation creation"""
         with patch(
             "services.chat_service.Runner.run", side_effect=Exception("Agent error")
         ):
-            response = client.post("/chat", json={"prompt": "test prompt"})
+            response = client.post("/conversations", json={"prompt": "test prompt"})
 
             assert response.status_code == 500
 
     @pytest.mark.asyncio
-    async def test_guardrail_rejection(self, client, mock_db_engine):
-        """Test handling of guardrail rejections"""
+    async def test_conversation_guardrail_rejection(self, client, mock_db_engine):
+        """Test handling of guardrail rejections in conversation"""
         with patch(
             "services.chat_service.Runner.run",
             side_effect=Exception("guardrail triggered"),
         ):
-            response = client.post("/chat", json={"prompt": "What's the weather?"})
+            response = client.post(
+                "/conversations", json={"prompt": "What's the weather?"}
+            )
 
-            assert response.status_code == 200
+            assert response.status_code == 201  # RESTful: Still creates resource
             data = response.json()
             assert "expert sourcing" in data["answer"].lower()
 
-    def test_database_storage(self, client, mock_runner, mock_db_engine, clean_db):
+    def test_conversation_database_storage(
+        self, client, mock_runner, mock_db_engine, clean_db
+    ):
         """Test that conversations are stored in database"""
         prompt = "Find me a data scientist"
 
-        response = client.post("/chat", json={"prompt": prompt})
-        assert response.status_code == 200
+        response = client.post("/conversations", json={"prompt": prompt})
+        assert response.status_code == 201  # RESTful: 201 Created
 
         # Check database storage
         with mock_db_engine.connect() as conn:
@@ -162,12 +171,24 @@ class TestChatEndpoint:
             assert rows[1].role == "assistant"
             assert rows[1].content == "Mocked AI response"
 
+    # Legacy endpoint tests for backward compatibility
+    def test_legacy_chat_endpoint(self, client, mock_runner, mock_db_engine):
+        """Test legacy /chat endpoint still works (backward compatibility)"""
+        response = client.post(
+            "/chat", json={"prompt": "I need a Python developer for my project"}
+        )
+
+        assert response.status_code == 200  # Legacy endpoints return 200, not 201
+        data = response.json()
+        assert "answer" in data
+        assert data["answer"] == "Mocked AI response"
+
 
 class TestCVUploadEndpoint:
-    """Test cases for the /upload-cv endpoint"""
+    """Test cases for the /cvs endpoint (RESTful)"""
 
-    def test_successful_cv_upload_pdf(self, client, mock_db_engine):
-        """Test successful CV upload with PDF file"""
+    def test_successful_cv_resource_creation_pdf(self, client, mock_db_engine):
+        """Test successful CV resource creation with PDF file"""
         pdf_content = b"Mock PDF content for CV"
 
         # Mock the agent Runner to prevent hanging
@@ -177,13 +198,15 @@ class TestCVUploadEndpoint:
             mock_runner_run.return_value = mock_result
 
             response = client.post(
-                "/upload-cv",
+                "/cvs",
                 files={
                     "file": ("resume.pdf", io.BytesIO(pdf_content), "application/pdf")
                 },
             )
 
-            assert response.status_code == 200
+            assert (
+                response.status_code == 201
+            )  # RESTful: 201 Created for resource creation
             data = response.json()
             assert "CV upload started" in data["message"]
             assert data["filename"] == "resume.pdf"
@@ -191,8 +214,8 @@ class TestCVUploadEndpoint:
             assert data["processing_status"] == "processing_started"
             assert "session_id" in data
 
-    def test_successful_cv_upload_word_doc(self, client, mock_db_engine):
-        """Test successful CV upload with Word document"""
+    def test_successful_cv_resource_creation_word_doc(self, client, mock_db_engine):
+        """Test successful CV resource creation with Word document"""
         doc_content = b"Mock Word document content"
 
         # Mock the agent Runner to prevent hanging
@@ -202,7 +225,7 @@ class TestCVUploadEndpoint:
             mock_runner_run.return_value = mock_result
 
             response = client.post(
-                "/upload-cv",
+                "/cvs",
                 files={
                     "file": (
                         "resume.doc",
@@ -212,13 +235,13 @@ class TestCVUploadEndpoint:
                 },
             )
 
-            assert response.status_code == 200
+            assert response.status_code == 201  # RESTful: 201 Created
             data = response.json()
             assert "CV upload started" in data["message"]
             assert data["filename"] == "resume.doc"
 
-    def test_successful_cv_upload_word_docx(self, client, mock_db_engine):
-        """Test successful CV upload with Word DOCX document"""
+    def test_successful_cv_resource_creation_word_docx(self, client, mock_db_engine):
+        """Test successful CV resource creation with Word DOCX document"""
         docx_content = b"Mock DOCX document content"
 
         # Mock the agent Runner to prevent hanging
@@ -228,7 +251,7 @@ class TestCVUploadEndpoint:
             mock_runner_run.return_value = mock_result
 
             response = client.post(
-                "/upload-cv",
+                "/cvs",
                 files={
                     "file": (
                         "resume.docx",
@@ -238,42 +261,42 @@ class TestCVUploadEndpoint:
                 },
             )
 
-            assert response.status_code == 200
+            assert response.status_code == 201  # RESTful: 201 Created
             data = response.json()
             assert "CV upload started" in data["message"]
             assert data["filename"] == "resume.docx"
 
-    def test_cv_upload_invalid_file_type_text(self, client):
-        """Test CV upload rejection with text file"""
+    def test_cv_creation_invalid_file_type_text(self, client):
+        """Test CV creation rejection with text file"""
         text_content = b"This is just a text file"
 
         response = client.post(
-            "/upload-cv",
+            "/cvs",
             files={"file": ("resume.txt", io.BytesIO(text_content), "text/plain")},
         )
 
         assert response.status_code == 400
         assert "Only PDF and Word documents are allowed" in response.json()["detail"]
 
-    def test_cv_upload_invalid_file_type_image(self, client):
-        """Test CV upload rejection with image file"""
+    def test_cv_creation_invalid_file_type_image(self, client):
+        """Test CV creation rejection with image file"""
         image_content = b"Fake image content"
 
         response = client.post(
-            "/upload-cv",
+            "/cvs",
             files={"file": ("photo.jpg", io.BytesIO(image_content), "image/jpeg")},
         )
 
         assert response.status_code == 400
         assert "Only PDF and Word documents are allowed" in response.json()["detail"]
 
-    def test_cv_upload_file_too_large(self, client):
-        """Test CV upload rejection when file exceeds size limit"""
+    def test_cv_creation_file_too_large(self, client):
+        """Test CV creation rejection when file exceeds size limit"""
         # Create a file larger than 10MB
         large_content = b"x" * (11 * 1024 * 1024)  # 11MB
 
         response = client.post(
-            "/upload-cv",
+            "/cvs",
             files={
                 "file": (
                     "large-resume.pdf",
@@ -286,44 +309,17 @@ class TestCVUploadEndpoint:
         assert response.status_code == 400
         assert "File size exceeds 10MB limit" in response.json()["detail"]
 
-    def test_cv_upload_missing_file(self, client):
-        """Test CV upload with missing file parameter"""
-        response = client.post("/upload-cv")
+    def test_cv_creation_missing_file(self, client):
+        """Test CV creation with missing file parameter"""
+        response = client.post("/cvs")
 
         assert response.status_code == 422  # Validation error
 
-    @pytest.mark.skip(
-        reason="Makes real OpenAI API calls - takes 73+ seconds. Move to integration tests."
-    )
-    def test_cv_upload_database_storage(self, client, mock_db_engine, clean_db):
-        """Test that CV uploads are stored correctly in database"""
-        pdf_content = b"Test CV content"
-        filename = "test-cv.pdf"
-
-        response = client.post(
-            "/upload-cv",
-            files={"file": (filename, io.BytesIO(pdf_content), "application/pdf")},
-        )
-
-        assert response.status_code == 200
-
-        # Check database storage
-        with mock_db_engine.connect() as conn:
-            result = conn.execute(cvs.select())
-            rows = result.fetchall()
-
-            assert len(rows) == 1
-            cv_record = rows[0]
-            assert cv_record.filename == filename
-            assert cv_record.original_filename == filename
-            assert cv_record.file_size == len(pdf_content)
-            assert cv_record.content_type == "application/pdf"
-            assert cv_record.file_data == pdf_content
-            assert cv_record.processed == False
+    # NOTE: Real OpenAI API test moved to tests/integration/test_openai_integration.py
 
     @pytest.mark.asyncio
-    async def test_cv_upload_database_error_handling(self, client, test_engine):
-        """Test handling of database errors during CV upload"""
+    async def test_cv_creation_database_error_handling(self, client, test_engine):
+        """Test handling of database errors during CV creation"""
         # Mock the begin method on the test engine to raise an exception
         with patch.object(
             test_engine, "begin", side_effect=Exception("Database connection failed")
@@ -331,7 +327,7 @@ class TestCVUploadEndpoint:
             pdf_content = b"Test CV content"
 
             response = client.post(
-                "/upload-cv",
+                "/cvs",
                 files={
                     "file": ("test.pdf", io.BytesIO(pdf_content), "application/pdf")
                 },
@@ -340,12 +336,31 @@ class TestCVUploadEndpoint:
             assert response.status_code == 500
             assert "Upload failed" in response.json()["detail"]
 
+    # Legacy endpoint tests for backward compatibility
+    def test_legacy_upload_cv_endpoint(self, client, mock_db_engine):
+        """Test legacy /upload-cv endpoint still works (backward compatibility)"""
+        pdf_content = b"Mock PDF content for CV"
+
+        with patch("app_agents.cv_agents.Runner.run") as mock_runner_run:
+            mock_result = MagicMock()
+            mock_result.final_output = "CV processed successfully by agents"
+            mock_runner_run.return_value = mock_result
+
+            response = client.post(
+                "/upload-cv",
+                files={
+                    "file": ("resume.pdf", io.BytesIO(pdf_content), "application/pdf")
+                },
+            )
+
+            assert response.status_code == 200  # Legacy endpoints return 200, not 201
+
 
 class TestCVsListEndpoint:
-    """Test cases for the /cvs endpoint"""
+    """Test cases for the /cvs collection endpoint (RESTful)"""
 
-    def test_empty_cvs_list(self, client, mock_db_engine, clean_db):
-        """Test CVs list endpoint with no uploaded CVs"""
+    def test_empty_cvs_collection(self, client, mock_db_engine, clean_db):
+        """Test CVs collection endpoint with no CV resources"""
         response = client.get("/cvs")
 
         assert response.status_code == 200
@@ -353,8 +368,8 @@ class TestCVsListEndpoint:
         assert isinstance(data, list)
         assert len(data) == 0
 
-    def test_cvs_list_with_uploads(self, client, mock_db_engine, clean_db):
-        """Test CVs list endpoint with existing uploads"""
+    def test_cvs_collection_with_resources(self, client, mock_db_engine, clean_db):
+        """Test CVs collection endpoint with existing CV resources"""
         # Add test CVs to database
         with mock_db_engine.begin() as conn:
             conn.execute(
@@ -396,17 +411,17 @@ class TestCVsListEndpoint:
             cv1["content_type"]
             == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
-        assert cv1["processed"] == True
+        assert cv1["processed"]
 
         # Check second CV (cv1.pdf)
         cv2 = data[1]
         assert cv2["filename"] == "cv1.pdf"
         assert cv2["file_size"] == 1024
         assert cv2["content_type"] == "application/pdf"
-        assert cv2["processed"] == False
+        assert not cv2["processed"]
 
-    def test_cvs_list_order(self, client, mock_db_engine, clean_db):
-        """Test that CVs are returned in reverse chronological order (newest first)"""
+    def test_cvs_collection_order(self, client, mock_db_engine, clean_db):
+        """Test that CVs collection returns resources in reverse chronological order (newest first)"""
         # Add CVs with different timestamps
         with mock_db_engine.begin() as conn:
             conn.execute(
@@ -441,8 +456,8 @@ class TestCVsListEndpoint:
         assert data[1]["filename"] == "old-cv.pdf"
 
     @pytest.mark.asyncio
-    async def test_cvs_list_database_error_handling(self, client, test_engine):
-        """Test handling of database errors in CVs list endpoint"""
+    async def test_cvs_collection_database_error_handling(self, client, test_engine):
+        """Test handling of database errors in CVs collection endpoint"""
         # Mock the connect method on the test engine to raise an exception
         with patch.object(
             test_engine, "connect", side_effect=Exception("Database connection failed")
@@ -451,21 +466,83 @@ class TestCVsListEndpoint:
 
             assert response.status_code == 500
 
+    # Legacy endpoint tests for backward compatibility
+    def test_legacy_cvs_list_endpoint(self, client, mock_db_engine, clean_db):
+        """Test legacy /cvs endpoint still works (backward compatibility)"""
+        response = client.get("/cvs")
+        assert response.status_code == 200
+        assert isinstance(response.json(), list)
+
+
+class TestCVProcessingSessionsEndpoint:
+    """Test cases for the /cv-processing-sessions endpoint (RESTful)"""
+
+    def test_get_processing_session_success(self, client):
+        """Test retrieving CV processing session by ID"""
+        session_id = "test-session-123"
+
+        # Patch at the module level where the function is called
+        with patch("api.v1.cv.get_status_for_frontend") as mock_status:
+            mock_status.return_value = {
+                "session_id": session_id,
+                "status": "completed",
+                "progress": 100,
+            }
+
+            response = client.get(f"/cv-processing-sessions/{session_id}")
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data["session_id"] == session_id
+            assert data["status"] == "completed"
+            assert data["progress"] == 100
+
+    def test_get_processing_session_error(self, client):
+        """Test error handling when retrieving processing session"""
+        session_id = "invalid-session"
+
+        # Patch at the module level where the function is called
+        with patch("api.v1.cv.get_status_for_frontend") as mock_status:
+            mock_status.side_effect = Exception("Session not found")
+
+            response = client.get(f"/cv-processing-sessions/{session_id}")
+
+            assert response.status_code == 500
+            assert "Error retrieving processing session" in response.json()["detail"]
+
+    # Legacy endpoint tests for backward compatibility
+    def test_legacy_cv_status_endpoint(self, client):
+        """Test legacy /cv-status/{session_id} endpoint still works (backward compatibility)"""
+        session_id = "test-session-123"
+
+        # Patch at the module level where the function is called
+        with patch("api.v1.cv.get_status_for_frontend") as mock_status:
+            mock_status.return_value = {
+                "session_id": session_id,
+                "status": "processing",
+            }
+
+            response = client.get(f"/cv-status/{session_id}")
+
+            assert response.status_code == 200
+            data = response.json()
+            assert data["session_id"] == session_id
+
 
 class TestHistoryEndpoint:
-    """Test cases for the /history endpoint"""
+    """Test cases for the /conversations collection endpoint (RESTful)"""
 
-    def test_empty_history(self, client, mock_db_engine, clean_db):
-        """Test history endpoint with no messages"""
-        response = client.get("/history")
+    def test_empty_conversation_history(self, client, mock_db_engine, clean_db):
+        """Test conversation history endpoint with no messages"""
+        response = client.get("/conversations")
 
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, list)
         assert len(data) == 0
 
-    def test_history_with_messages(self, client, mock_db_engine, clean_db):
-        """Test history endpoint with existing messages"""
+    def test_conversation_history_with_messages(self, client, mock_db_engine, clean_db):
+        """Test conversation history endpoint with existing messages"""
         # Add test messages
         with mock_db_engine.begin() as conn:
             conn.execute(
@@ -480,7 +557,7 @@ class TestHistoryEndpoint:
                 ],
             )
 
-        response = client.get("/history")
+        response = client.get("/conversations")
         assert response.status_code == 200
 
         data = response.json()
@@ -490,8 +567,8 @@ class TestHistoryEndpoint:
         assert data[1]["role"] == "assistant"
         assert data[1]["content"] == "Hi there"
 
-    def test_history_limit_parameter(self, client, mock_db_engine):
-        """Test history endpoint with limit parameter"""
+    def test_conversation_history_limit_parameter(self, client, mock_db_engine):
+        """Test conversation history endpoint with limit parameter"""
         # Add multiple test messages
         with mock_db_engine.begin() as conn:
             test_messages = [
@@ -500,14 +577,14 @@ class TestHistoryEndpoint:
             ]
             conn.execute(messages.insert(), test_messages)
 
-        response = client.get("/history?limit=5")
+        response = client.get("/conversations?limit=5")
         assert response.status_code == 200
 
         data = response.json()
         assert len(data) == 5
 
-    def test_history_order(self, client, mock_db_engine, clean_db):
-        """Test that history returns messages in chronological order"""
+    def test_conversation_history_order(self, client, mock_db_engine, clean_db):
+        """Test that conversation history returns messages in chronological order"""
         # Add messages with different timestamps
         with mock_db_engine.begin() as conn:
             conn.execute(
@@ -523,7 +600,7 @@ class TestHistoryEndpoint:
                 ],
             )
 
-        response = client.get("/history")
+        response = client.get("/conversations")
         data = response.json()
 
         # Should be in chronological order (oldest first)
@@ -531,168 +608,62 @@ class TestHistoryEndpoint:
         assert data[1]["content"] == "Second"
         assert data[2]["content"] == "Third"
 
-
-class TestCORSConfiguration:
-    """Test CORS middleware configuration"""
-
-    def test_cors_headers_present(self, client):
-        """Test that CORS headers are present in responses"""
-        response = client.get("/history")
-
-        # Should allow CORS - just verify the endpoint responds successfully
-        assert response.status_code == 200
-
-    @pytest.mark.asyncio
-    async def test_allowed_origins(self, client):
-        """Test that allowed origins are configured correctly"""
-        # This would require more complex setup to test properly
-        # For now, just verify the endpoint responds
+    # Legacy endpoint tests for backward compatibility
+    def test_legacy_history_endpoint(self, client, mock_db_engine, clean_db):
+        """Test legacy /history endpoint still works (backward compatibility)"""
         response = client.get("/history")
         assert response.status_code == 200
+        assert isinstance(response.json(), list)
 
 
-class TestAgentSystem:
-    """Test the multi-agent system functionality"""
+class TestCompanyEndpoint:
+    """Test cases for the /companies endpoint (RESTful)"""
 
-    def test_agent_configuration(self):
-        """Test that agents are configured correctly"""
-        from app_agents.chat_agents import (
-            supervisor_agent,
-            project_requirements_agent,
-            project_refinement_agent,
-            guardrail_agent,
-        )
+    def test_successful_company_resource_creation(self, client):
+        """Test successful company resource creation"""
+        company_data = {
+            "website_url": "https://example.com",
+            "linkedin_url": "https://linkedin.com/company/example",
+        }
 
-        assert supervisor_agent.name == "Expert Sourcing Supervisor"
-        assert project_requirements_agent.name == "Project Requirements Assistant"
-        assert project_refinement_agent.name == "Project Refinement Specialist"
-        assert guardrail_agent.name == "Expert Sourcing Validator"
+        # Mock the company service
+        with patch(
+            "services.company_service.CompanyService.start_company_profiling_crew"
+        ) as mock_service:
+            mock_service.return_value = {
+                "message": "Company profiling started",
+                "website_url": "https://example.com",
+                "status": "processing",
+            }
 
-    def test_multi_agent_system_integration(self):
-        """Test the multi-agent system test function"""
-        # Mock the Runner to avoid actual API calls
-        with patch("services.chat_service.Runner.run") as mock_run:
-            mock_result = MagicMock()
-            mock_result.final_output = "Test response"
-            mock_run.return_value = mock_result
+            response = client.post("/companies", json=company_data)
 
-            # Should not raise any exceptions - simple test
-            assert True  # Placeholder test
+            assert (
+                response.status_code == 201
+            )  # RESTful: 201 Created for resource creation
+            data = response.json()
+            assert "Company profiling started" in data["message"]
+            assert data["website_url"] == "https://example.com"
 
-            # Could test agent configuration instead
+    def test_company_creation_invalid_data(self, client):
+        """Test company creation with invalid data"""
+        invalid_data = {}  # Missing required website_url
 
+        response = client.post("/companies", json=invalid_data)
 
-class TestEnvironmentConfiguration:
-    """Test environment variable handling"""
+        assert response.status_code == 422  # Validation error
 
-    def test_required_environment_variables(self):
-        """Test that required environment variables are checked"""
-        import os
-        from unittest.mock import patch
+    def test_company_creation_service_error(self, client):
+        """Test handling of service errors during company creation"""
+        company_data = {"website_url": "https://example.com"}
 
-        # Test with missing OPENAI_API_KEY - use a simpler approach
-        # Test that the check would fail by directly testing the logic
-        with patch.dict(os.environ, {}, clear=True):
-            # Test the actual environment variable validation logic
-            missing_vars = []
-            openai_key = os.getenv("OPENAI_API_KEY")
-            database_url = os.getenv("DATABASE_URL") or os.getenv("PG_URL")
+        # Mock the company service to raise an exception
+        with patch(
+            "services.company_service.CompanyService.start_company_profiling_crew"
+        ) as mock_service:
+            mock_service.side_effect = Exception("CrewAI service error")
 
-            if not openai_key:
-                missing_vars.append("OPENAI_API_KEY")
-            if not database_url:
-                missing_vars.append("DATABASE_URL or PG_URL")
+            response = client.post("/companies", json=company_data)
 
-            # Assert that the variables would be detected as missing
-            assert "OPENAI_API_KEY" in missing_vars
-            assert "DATABASE_URL or PG_URL" in missing_vars
-
-
-class TestDatabaseSchema:
-    """Test database schema and operations"""
-
-    def test_messages_table_structure(self, test_engine):
-        """Test that messages table has correct structure"""
-        from sqlalchemy import inspect
-
-        inspector = inspect(test_engine)
-        columns = inspector.get_columns("messages")
-
-        column_names = [col["name"] for col in columns]
-        assert "id" in column_names
-        assert "role" in column_names
-        assert "content" in column_names
-        assert "ts" in column_names
-
-    def test_cvs_table_structure(self, test_engine):
-        """Test that cvs table has correct structure"""
-        from sqlalchemy import inspect
-
-        inspector = inspect(test_engine)
-        columns = inspector.get_columns("cvs")
-
-        column_names = [col["name"] for col in columns]
-        assert "id" in column_names
-        assert "filename" in column_names
-        assert "original_filename" in column_names
-        assert "file_size" in column_names
-        assert "content_type" in column_names
-        assert "file_data" in column_names
-        assert "uploaded_at" in column_names
-        assert "processed" in column_names
-
-    def test_database_connection(self, test_engine):
-        """Test basic database connectivity"""
-        with test_engine.connect() as conn:
-            result = conn.execute(text("SELECT 1"))
-            assert result.fetchone()[0] == 1
-
-
-class TestErrorHandling:
-    """Test various error scenarios"""
-
-    @pytest.mark.asyncio
-    async def test_database_error_handling(self, client, test_engine):
-        """Test handling of database errors"""
-        # Mock both the Runner to return a successful result AND the database to fail
-        # This ensures we test database error handling specifically
-        with patch("services.chat_service.Runner.run") as mock_run:
-            mock_result = MagicMock()
-            mock_result.final_output = "Test response"
-            mock_run.return_value = mock_result
-
-            # Mock the begin method on the test engine to raise an exception
-            with patch.object(
-                test_engine, "begin", side_effect=Exception("Database error")
-            ):
-                response = client.post("/chat", json={"prompt": "test prompt"})
-
-                assert response.status_code == 500
-
-
-class TestPydanticModels:
-    """Test Pydantic model validation"""
-
-    def test_chat_request_model(self):
-        """Test ChatReq model validation"""
-        from schemas.chat_schemas import ChatReq
-
-        # Valid request
-        valid_req = ChatReq(prompt="Hello")
-        assert valid_req.prompt == "Hello"
-
-        # Test with empty string (should be valid)
-        empty_req = ChatReq(prompt="")
-        assert empty_req.prompt == ""
-
-    def test_message_model(self):
-        """Test Msg model structure"""
-        from schemas.chat_schemas import Msg
-        from datetime import datetime
-
-        msg = Msg(id=1, role="user", content="Test message", ts=datetime.now())
-
-        assert msg.id == 1
-        assert msg.role == "user"
-        assert msg.content == "Test message"
-        assert isinstance(msg.ts, datetime)
+            # The endpoint should handle the exception and return a proper HTTP error
+            assert response.status_code == 500

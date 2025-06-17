@@ -16,7 +16,8 @@ from sqlalchemy import (
     JSON,
 )
 from sqlalchemy.dialects.postgresql import ARRAY
-from .base import BaseModel
+import sqlalchemy as sa
+from .base import BaseModel, meta
 
 # ---- CV ORM Models (SQLAlchemy 2.x ORM) ------------------------------
 # Note: We use the existing 'cvs' table for file storage (defined in Core below)
@@ -259,9 +260,6 @@ class CVProject(BaseModel):
 
 # ---- Legacy Core Table (for file storage) ------------------
 # This is the MAIN table for storing CV files - all new ORM models link to this
-
-import sqlalchemy as sa
-from .base import meta
 
 cvs = sa.Table(
     "cvs",

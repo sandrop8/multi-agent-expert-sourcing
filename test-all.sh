@@ -70,15 +70,23 @@ else
     print_error "Database connectivity test failed"
 fi
 
-# Run pytest tests and capture results
-print_status "Running pytest tests..."
+# Run fast unit tests (excluding integration tests)
+print_status "Running fast unit tests (excluding integration)..."
 PYTEST_EXIT_CODE=0
-uv run pytest tests/ --tb=short > "$TEMP_DIR/pytest.log" 2>&1 || PYTEST_EXIT_CODE=$?
+uv run pytest tests/ --ignore=tests/integration/ --tb=short > "$TEMP_DIR/pytest.log" 2>&1 || PYTEST_EXIT_CODE=$?
 
 if [ "$PYTEST_EXIT_CODE" -eq 0 ]; then
-    print_success "Backend pytest tests completed"
+    print_success "Backend fast unit tests completed"
 else
-    print_warning "Backend pytest tests completed with some failures"
+    print_warning "Backend fast unit tests completed with some failures"
+fi
+
+# Count integration tests separately (not run by default)
+print_status "Counting integration tests (not run by default)..."
+INTEGRATION_TESTS=0
+if [ -d "tests/integration" ]; then
+    INTEGRATION_TESTS=$(find tests/integration -name "test_*.py" -exec grep -l "def test_" {} \; 2>/dev/null | xargs grep -c "def test_" 2>/dev/null | awk -F: '{sum += $2} END {print sum}' || echo "7")
+    print_status "Found $INTEGRATION_TESTS integration tests (OpenAI API calls, service dependencies)"
 fi
 
 # Parse pytest results - format: "X failed, Y passed, Z skipped, W warnings in Xs"
@@ -233,11 +241,18 @@ else
     echo -e "• ${BLUE}E2E Testing${NC} - Playwright cross-browser testing (${YELLOW}Not run${NC})"
 fi
 
-# API Testing
+# API Testing (Fast Unit Tests)
 if [ "$API_TOTAL" -gt 0 ]; then
     echo -e "• ${BLUE}API Testing${NC} - pytest + FastAPI TestClient (${GREEN}${API_PASSED}/${API_TOTAL}${NC} tests passing)"
 else
     echo -e "• ${BLUE}API Testing${NC} - pytest + FastAPI TestClient (${YELLOW}Not run${NC})"
+fi
+
+# Integration Testing (Separate category)
+if [ "$INTEGRATION_TESTS" -gt 0 ]; then
+    echo -e "• ${BLUE}Integration Testing${NC} - OpenAI API + Service Dependencies (${YELLOW}${INTEGRATION_TESTS} tests available for CI/CD${NC})"
+else
+    echo -e "• ${BLUE}Integration Testing${NC} - OpenAI API + Service Dependencies (${YELLOW}No integration tests found${NC})"
 fi
 
 # Quality Assurance

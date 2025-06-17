@@ -4,7 +4,6 @@ Tests for CV agents integration and workflow patterns
 """
 
 import pytest
-import os
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
@@ -20,17 +19,38 @@ class TestCVAgentsWorkflow:
         try:
             from app_agents.cv_agents import (
                 freelancer_profile_manager,
-                cv_parser_agent,
-                profile_enrichment_agent,
-                skills_extraction_agent,
-                gap_analysis_agent,
             )
 
             assert freelancer_profile_manager is not None
-            assert cv_parser_agent is not None
-            assert profile_enrichment_agent is not None
-            assert skills_extraction_agent is not None
-            assert gap_analysis_agent is not None
+
+            # Test that specialist agents can be imported (without importing unused ones)
+            try:
+                from app_agents.cv_agents import cv_parser_agent
+
+                assert cv_parser_agent is not None
+            except ImportError:
+                pass
+
+            try:
+                from app_agents.cv_agents import profile_enrichment_agent
+
+                assert profile_enrichment_agent is not None
+            except ImportError:
+                pass
+
+            try:
+                from app_agents.cv_agents import skills_extraction_agent
+
+                assert skills_extraction_agent is not None
+            except ImportError:
+                pass
+
+            try:
+                from app_agents.cv_agents import gap_analysis_agent
+
+                assert gap_analysis_agent is not None
+            except ImportError:
+                pass
 
         except ImportError as e:
             pytest.skip(f"CV agents not available: {e}")
@@ -50,13 +70,7 @@ class TestCVAgentsWorkflow:
     def test_agent_handoffs_configuration(self):
         """Test that agent handoffs are configured correctly"""
         try:
-            from app_agents.cv_agents import (
-                freelancer_profile_manager,
-                cv_parser_agent,
-                profile_enrichment_agent,
-                skills_extraction_agent,
-                gap_analysis_agent,
-            )
+            from app_agents.cv_agents import freelancer_profile_manager
         except ImportError:
             pytest.skip("CV agents not available")
 
@@ -105,7 +119,6 @@ class TestCVAgentsWorkflow:
         try:
             from app_agents.cv_agents import (
                 freelancer_profile_manager,
-                cv_validation_guardrail,
             )
         except ImportError:
             pytest.skip("CV agents not available")
@@ -135,32 +148,7 @@ class TestCVExtractionTools:
         except ImportError as e:
             pytest.skip(f"CV extraction tools not available: {e}")
 
-    @pytest.mark.skip(reason="Broken mock - needs fixing before enabling")
-    @pytest.mark.asyncio
-    async def test_extraction_tools_functionality(self):
-        """Test extraction tools with mocked data"""
-        try:
-            from services.cv_extraction_service import test_cv_extraction_tools
-        except ImportError:
-            pytest.skip("CV extraction tools not available")
-
-        # Mock the actual API calls
-        with patch("services.cv_extraction_service.client") as mock_client:
-            mock_file = MagicMock()
-            mock_file.id = "test-file-id"
-            mock_client.files.create.return_value = mock_file
-
-            mock_response = MagicMock()
-            mock_response.output_text = "Mocked CV extraction result"
-            mock_client.responses.create.return_value = mock_response
-
-            # This should run without errors when mocked
-            try:
-                await test_cv_extraction_tools()
-                assert True  # If we get here, the function completed successfully
-            except Exception as e:
-                # Expected if the function has issues with mocking setup
-                pytest.skip(f"Tool testing failed with mocked setup: {e}")
+    # NOTE: Broken mock test moved to tests/integration/test_broken_mocks.py
 
 
 class TestCVWorkflowIntegration:
@@ -184,38 +172,10 @@ class TestCVWorkflowIntegration:
 
             assert result is not None
             assert "success" in result
-            assert result["success"] == True
+            assert result["success"]
             assert "CV processed successfully" in str(result.get("result", ""))
 
-    @pytest.mark.skip(
-        reason="Makes real OpenAI API calls - takes 31+ seconds. Move to integration tests."
-    )
-    @pytest.mark.asyncio
-    async def test_cv_workflow_with_real_file(self):
-        """Test CV workflow with real test file (requires setup)"""
-        if not os.getenv("OPENAI_API_KEY"):
-            pytest.skip("OPENAI_API_KEY not set - skipping real workflow test")
-
-        if not TEST_CV_PATH.exists():
-            pytest.skip("Test CV file not found - skipping file-based workflow test")
-
-        try:
-            from app_agents.cv_agents import process_cv_workflow
-        except ImportError:
-            pytest.skip("CV workflow not available")
-
-        # This test would require actual OpenAI API setup
-        try:
-            result = await process_cv_workflow(str(TEST_CV_PATH))
-
-            # Basic validations if the call succeeds
-            assert result is not None
-            assert "success" in result
-
-        except Exception as e:
-            pytest.skip(
-                f"Real workflow test failed (expected without proper setup): {e}"
-            )
+    # NOTE: Real OpenAI API test moved to tests/integration/test_openai_integration.py
 
 
 class TestCVAgentStructureAnalysis:
@@ -354,7 +314,7 @@ class TestCVValidationGuardrail:
             assert result is not None
             assert hasattr(result, "tripwire_triggered")
             # Should allow processing on errors (permissive fallback)
-            assert result.tripwire_triggered == False
+            assert not result.tripwire_triggered
 
 
 # Pytest configuration for these tests

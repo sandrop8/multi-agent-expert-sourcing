@@ -427,8 +427,9 @@ Built-in tracing capabilities allow you to debug and monitor the complete agent 
 - **FastAPI** - High-performance Python web framework with automatic API docs
 - **Uvicorn** - Lightning-fast ASGI server with standard extras
 
-#### **Architecture & Development Standards**
-- **[FastAPI Best Practices](backend/FASTAPI_BEST_PRACTICES.md)** - Comprehensive guide for SQLAlchemy ORM, Pydantic schemas, and project structure
+#### **API Design & Architecture Standards**
+- **RESTful API Design** - Following REST principles for resource-oriented architecture ([REST API Principles](backend/docs/REST_API_PRINCIPLES.md))
+- **[FastAPI Best Practices](backend/docs/FASTAPI_PRINCIPLES.md)** - Comprehensive guide for SQLAlchemy ORM, Pydantic schemas, and project structure
 
 #### **AI & Agent Systems**
 - **OpenAI Agents SDK** (`openai-agents>=0.0.16`) - Hierarchical multi-agent orchestration for expert sourcing

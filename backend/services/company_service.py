@@ -1,6 +1,7 @@
 """
 Company Service - business logic for company registration and profiling
 """
+
 from fastapi import BackgroundTasks
 from app_agents.company_crew import run_company_profiling_crew
 

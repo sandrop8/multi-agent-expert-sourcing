@@ -3,7 +3,6 @@ description: Push to github with pre-commit hooks and optionally link a github i
 globs:
 alwaysApply: false
 ---
-
 # Push to Github with optionally linking an Issue Number
 
 1. Explicit Trigger: Only ever push or commit to Github if the user explicitly ask to "push to GitHub", "commit and push", or mention linking/closing a specific issue. NEVER push code automatically.
@@ -16,12 +15,17 @@ If the user asks to push to github, ALWAYS follow exactly these steps:
 3. Run quality checks with fallback approach:
    - **Primary**: Try `uv run --project backend pre-commit run --all-files` (from root directory)
    - **Fallback**: If pre-commit fails due to environment issues, run `./test-all.sh` (comprehensive test suite that works with direnv)
-4. Run git add . (I need to always add all files instead of specific ones)
-5. Create a descriptive commit message summarizing the changes (without any closes #... part).
-6. If the user provides a commit message - use it.
-7. Run git commit -m "Descriptive summary of changes".
-8. Run git push.
-9. Confirm success.
+4. **CRITICAL QUALITY GATE**: Analyze test results and STOP if success rate is below 95%:
+   - If `./test-all.sh` shows success rate < 95% in the summary, **ABORT the push**
+   - If all E2E tests are failing (0% E2E success), **ABORT the push**
+   - Report the issues to the user and ask them to fix before proceeding
+   - **NEVER proceed with commits when quality gates fail**
+5. Run git add . (I need to always add all files instead of specific ones)
+6. Create a descriptive commit message summarizing the changes (without any closes #... part).
+7. If the user provides a commit message - use it.
+8. Run git commit -m "Descriptive summary of changes".
+9. Run git push.
+10. Confirm success.
 
 **Scenario B (Issue Mentioned/Requested)**: If the user explicitly asks to close or link a specific issue, or provides an issue number with your push request:
 1. Ensure we're in the root directory (where .envrc is located for proper environment setup)
@@ -29,12 +33,17 @@ If the user asks to push to github, ALWAYS follow exactly these steps:
 3. Run quality checks with fallback approach:
    - **Primary**: Try `uv run --project backend pre-commit run --all-files` (from root directory)
    - **Fallback**: If pre-commit fails due to environment issues, run `./test-all.sh` (comprehensive test suite that works with direnv)
-4. Run git add .
-5. Create a descriptive commit message summarizing the changes and ending with "closes #issuenumber" (or closes #123, closes #456 if multiple issues are mentioned).
-6. If the user provides a commit message - use it and add the closes part at the end.
-7. Run git commit -m "Descriptive summary closes #issuenumber".
-8. Run git push.
-9. Confirm success.
+4. **CRITICAL QUALITY GATE**: Analyze test results and STOP if success rate is below 95%:
+   - If `./test-all.sh` shows success rate < 95% in the summary, **ABORT the push**
+   - If all E2E tests are failing (0% E2E success), **ABORT the push**
+   - Report the issues to the user and ask them to fix before proceeding
+   - **NEVER proceed with commits when quality gates fail**
+5. Run git add .
+6. Create a descriptive commit message summarizing the changes and ending with "closes #issuenumber" (or closes #123, closes #456 if multiple issues are mentioned).
+7. If the user provides a commit message - use it and add the closes part at the end.
+8. Run git commit -m "Descriptive summary closes #issuenumber".
+9. Run git push.
+10. Confirm success.
 
 **Important Environment Setup**:
 - Always run commands from the root directory where .envrc is located
@@ -45,18 +54,24 @@ If the user asks to push to github, ALWAYS follow exactly these steps:
 - **First priority**: Run pre-commit hooks for fast, targeted quality checks
 - **Fallback**: If environment issues prevent pre-commit from working, use `./test-all.sh` which:
   - Works reliably with direnv/.envrc setup
-  - Runs comprehensive test suite (197/205 tests, 96% success rate)
-  - Validates code quality across all frameworks
-  - Provides confidence for production deployment
+  - Runs comprehensive test suite across all frameworks
+  - Provides detailed success rate analysis in summary
+  - **MUST achieve 95%+ success rate to proceed**
 - **Never use `--no-verify`**: Always validate code quality before pushing
+- **Quality Gates**:
+  - Overall success rate must be ≥95%
+  - E2E tests cannot be completely failing (0% success)
+  - All linting and formatting issues must be resolved
 
-**Core Commands Preserved**: The sequence git status, quality checks, git add ., git commit ..., git push will be maintained in both scenarios.
+**Core Commands Preserved**: The sequence git status, quality checks, **quality gate analysis**, git add ., git commit ..., git push will be maintained in both scenarios.
 
 ```bash
 # Ensure we're in root directory (where .envrc sets up environment)
 git status
 # Try pre-commit first, fallback to comprehensive test suite if needed
 uv run --project backend pre-commit run --all-files || ./test-all.sh
+# CRITICAL: Check success rate from test output before proceeding
+# If success rate < 95% or E2E tests completely failing, ABORT push
 git add .
 git commit -m "Your descriptive message closes #issuenumber"
 git push
@@ -67,3 +82,4 @@ git push
 - NEVER just push a specific file to github. ALWAYS use 'git add .'
 - Pre-commit hooks will run automatically during `git commit`, but we run them explicitly first for transparency and early error detection
 - If pre-commit checks fail, fix the issues before proceeding with the commit
+- **CRITICAL**: If test success rate is below 95% or E2E tests are completely failing, NEVER proceed with push - report issues to user and request fixes first

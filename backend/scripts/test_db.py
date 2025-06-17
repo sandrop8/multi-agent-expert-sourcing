@@ -6,6 +6,7 @@ Simple script to test database connectivity to the local Postgres instance.
 import os
 import sys
 from pathlib import Path
+import sqlalchemy as sa
 
 # Add the backend directory to Python path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -25,8 +26,6 @@ except ImportError:
                 if line and not line.startswith("#") and "=" in line:
                     key, value = line.split("=", 1)
                     os.environ[key] = value
-
-import sqlalchemy as sa
 
 
 def test_database_connection():
@@ -59,7 +58,7 @@ def test_database_connection():
 
         # Test table creation (same as in main.py)
         meta = sa.MetaData()
-        messages = sa.Table(
+        sa.Table(
             "messages",
             meta,
             sa.Column("id", sa.Integer, primary_key=True),

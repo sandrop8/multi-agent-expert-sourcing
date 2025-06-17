@@ -1,6 +1,7 @@
 """
 Pydantic schemas for Company Registration API
 """
+
 from pydantic import BaseModel
 from typing import Optional
 

@@ -86,8 +86,8 @@ class TestCrewAIAgents:
             assert WebsiteContentScraper.role == "Website Content Scraper"
             assert "scrape" in WebsiteContentScraper.goal.lower()
             assert "website" in WebsiteContentScraper.backstory.lower()
-            assert WebsiteContentScraper.verbose == True
-            assert WebsiteContentScraper.allow_delegation == False
+            assert WebsiteContentScraper.verbose
+            assert not WebsiteContentScraper.allow_delegation
             assert len(WebsiteContentScraper.tools) == 1
         except ImportError:
             pytest.skip("Company crew agents not available")
@@ -103,8 +103,8 @@ class TestCrewAIAgents:
                 or "missing" in DataEnrichmentResearcher.goal.lower()
             )
             assert "detective" in DataEnrichmentResearcher.backstory.lower()
-            assert DataEnrichmentResearcher.verbose == True
-            assert DataEnrichmentResearcher.allow_delegation == False
+            assert DataEnrichmentResearcher.verbose
+            assert not DataEnrichmentResearcher.allow_delegation
             # Tools length can be 0 or 1 depending on SERPER_API_KEY
             assert len(DataEnrichmentResearcher.tools) >= 0
         except ImportError:
@@ -121,8 +121,8 @@ class TestCrewAIAgents:
                 or "structured" in CompanyProfileSynthesizer.goal.lower()
             )
             assert "analyst" in CompanyProfileSynthesizer.backstory.lower()
-            assert CompanyProfileSynthesizer.verbose == True
-            assert CompanyProfileSynthesizer.allow_delegation == False
+            assert CompanyProfileSynthesizer.verbose
+            assert not CompanyProfileSynthesizer.allow_delegation
             assert len(CompanyProfileSynthesizer.tools) == 0  # No tools for synthesizer
         except ImportError:
             pytest.skip("Company crew agents not available")
@@ -191,20 +191,27 @@ class TestCompanyRegistrationIntegration:
 
     def test_company_registration_endpoint_triggers_crew(self):
         """Test that company registration endpoint triggers CrewAI crew"""
-        with patch("models.base.get_engine") as mock_get_engine:
-            # Mock database
-            mock_engine = MagicMock()
-            mock_get_engine.return_value = mock_engine
+        with patch(
+            "services.company_service.CompanyService.start_company_profiling_crew"
+        ) as mock_profiling:
+            mock_profiling.return_value = {
+                "message": "Company profiling started in background",
+                "website_url": "https://example.com",
+            }
 
             client = TestClient(app)
+            # Use the new RESTful endpoint /companies and expect 201
             response = client.post(
-                "/company/register", json={"website_url": "https://example.com"}
+                "/companies",
+                json={"website_url": "https://example.com", "linkedin_url": ""},
             )
 
-            assert response.status_code == 200
+            assert response.status_code == 201
             data = response.json()
             assert "message" in data
-            assert "background" in data["message"]
+            assert "profiling started" in data["message"]
+            # Verify that the service method was called
+            mock_profiling.assert_called_once()
 
     def test_background_task_processing(self):
         """Test background task integration with company service"""
@@ -314,8 +321,6 @@ class TestCrewAIMocking:
     def test_crew_kickoff_mocked(self):
         """Test crew kickoff can be properly mocked"""
         try:
-            from app_agents.company_crew import company_profiling_crew
-
             # Fixed: Mock at module level to avoid Pydantic validation issues
             with patch("app_agents.company_crew.company_profiling_crew") as mock_crew:
                 mock_result = MagicMock()
@@ -325,7 +330,7 @@ class TestCrewAIMocking:
                 # Test that we can call the function that uses kickoff
                 from app_agents.company_crew import run_company_profiling_crew
 
-                result = run_company_profiling_crew("test-url")
+                run_company_profiling_crew("test-url")
 
                 # Should have called kickoff
                 mock_crew.kickoff.assert_called_once()

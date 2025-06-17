@@ -14,9 +14,10 @@ from models.base import create_all_tables
 
 # Import API routes
 from api.v1.chat import router as chat_router
-from api.v1.cv import router as cv_router
+from api.v1.cv import router as cv_router, processing_router as cv_processing_router
 from api.v1.company import router as company_router
 from schemas.cv_schemas import CVUploadResponse
+from schemas.chat_schemas import ChatReq
 from services.cv_service import CVService
 
 # Import CrewAI company profiling function
@@ -41,29 +42,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register API routes
+# Register RESTful API routes
 app.include_router(chat_router)
 app.include_router(cv_router)
+app.include_router(cv_processing_router)
 app.include_router(company_router)
 
 # Legacy endpoints for backward compatibility
-from schemas.chat_schemas import ChatReq
 
 
 @app.post("/chat")
 async def legacy_chat(req: ChatReq):
-    """Legacy chat endpoint - redirects to /chat/"""
-    from api.v1.chat import chat
+    """Legacy chat endpoint - redirects to /conversations/"""
+    from api.v1.chat import create_conversation_message
 
-    return await chat(req)
+    return await create_conversation_message(req)
 
 
 @app.get("/history")
 async def legacy_history(limit: int = 20):
-    """Legacy history endpoint - redirects to /chat/history"""
-    from api.v1.chat import history
+    """Legacy history endpoint - redirects to /conversations/"""
+    from api.v1.chat import list_conversation_history
 
-    return await history(limit)
+    return await list_conversation_history(limit)
 
 
 @app.post("/upload-cv", response_model=CVUploadResponse)
@@ -71,7 +72,7 @@ async def legacy_upload_cv(
     background_tasks: BackgroundTasks, file: UploadFile = File(...)
 ):
     """
-    Legacy CV upload endpoint.
+    Legacy CV upload endpoint - redirects to /cvs/
     Processes the CV in the background and returns a session ID for polling.
     """
     cv_service = CVService()
@@ -80,18 +81,10 @@ async def legacy_upload_cv(
 
 @app.get("/cv-status/{session_id}")
 async def legacy_cv_status(session_id: str):
-    """Legacy CV status endpoint - redirects to /cv/status/{session_id}"""
-    from api.v1.cv import get_cv_status
+    """Legacy CV status endpoint - redirects to /cv-processing-sessions/{session_id}"""
+    from api.v1.cv import get_processing_session
 
-    return await get_cv_status(session_id)
-
-
-@app.get("/cvs")
-async def legacy_list_cvs():
-    """Legacy CV list endpoint - redirects to /cv/list"""
-    from api.v1.cv import list_cvs
-
-    return await list_cvs()
+    return await get_processing_session(session_id)
 
 
 # Create database tables on startup

@@ -7,11 +7,11 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# Load environment variables
-load_dotenv()
-
 # Import our models for autogenerate support
 from models.base import Base
+
+# Load environment variables
+load_dotenv()
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

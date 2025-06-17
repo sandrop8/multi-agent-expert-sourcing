@@ -3,6 +3,7 @@ Ground truth data extraction for Janine Nel's CV.
 Updated to match EXACT cv_models.py PostgreSQL schema structure.
 This demonstrates how to map CV content to our PostgreSQL database schema.
 """
+
 from datetime import date
 from typing import Dict, List, Any
 

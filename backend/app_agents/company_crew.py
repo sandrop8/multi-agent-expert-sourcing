@@ -1,6 +1,7 @@
 """
 CrewAI agent definitions for company profiling
 """
+
 import os
 from crewai import Agent, Crew, Process, Task
 from crewai_tools import ScrapeWebsiteTool, SerperDevTool
