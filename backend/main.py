@@ -20,13 +20,14 @@ from schemas.cv_schemas import CVUploadResponse
 from services.cv_service import CVService
 
 # Import CrewAI company profiling function
-from app_agents.company_crew import run_company_profiling_crew
 from pydantic import BaseModel
 from typing import Optional
+
 
 class CompanyRegistrationRequest(BaseModel):
     website_url: str
     linkedin_url: Optional[str] = None
+
 
 # ---- FastAPI application setup --------------------------------------------
 app = FastAPI(title="Multi-Agent Expert Sourcing API")
@@ -47,22 +48,28 @@ app.include_router(company_router)
 
 # Legacy endpoints for backward compatibility
 from schemas.chat_schemas import ChatReq
-from services.cv_status_service import get_status_for_frontend
+
 
 @app.post("/chat")
 async def legacy_chat(req: ChatReq):
     """Legacy chat endpoint - redirects to /chat/"""
     from api.v1.chat import chat
+
     return await chat(req)
+
 
 @app.get("/history")
 async def legacy_history(limit: int = 20):
     """Legacy history endpoint - redirects to /chat/history"""
     from api.v1.chat import history
+
     return await history(limit)
 
+
 @app.post("/upload-cv", response_model=CVUploadResponse)
-async def legacy_upload_cv(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+async def legacy_upload_cv(
+    background_tasks: BackgroundTasks, file: UploadFile = File(...)
+):
     """
     Legacy CV upload endpoint.
     Processes the CV in the background and returns a session ID for polling.
@@ -70,17 +77,22 @@ async def legacy_upload_cv(background_tasks: BackgroundTasks, file: UploadFile =
     cv_service = CVService()
     return await cv_service.upload_cv(file, background_tasks)
 
+
 @app.get("/cv-status/{session_id}")
 async def legacy_cv_status(session_id: str):
     """Legacy CV status endpoint - redirects to /cv/status/{session_id}"""
     from api.v1.cv import get_cv_status
+
     return await get_cv_status(session_id)
+
 
 @app.get("/cvs")
 async def legacy_list_cvs():
     """Legacy CV list endpoint - redirects to /cv/list"""
     from api.v1.cv import list_cvs
+
     return await list_cvs()
+
 
 # Create database tables on startup
 @app.on_event("startup")
@@ -90,6 +102,8 @@ async def startup_event():
     create_all_tables()
     print("✅ Database tables created/verified")
 
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000) 
+
+    uvicorn.run(app, host="0.0.0.0", port=8000)

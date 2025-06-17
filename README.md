@@ -1,4 +1,4 @@
-# Multi-Agent Expert Sourcing Demo 
+# Multi-Agent Expert Sourcing Demo
 
 Find the live demo here: https://poetic-optimism-production.up.railway.app
 A comprehensive multi-agent AI system showcasing **two different agent frameworks**: **OpenAI Agents SDK** for expert sourcing workflows and **CrewAI Framework** for company profiling, built with FastAPI backend and Next.js frontend.
@@ -34,7 +34,7 @@ This project demonstrates **two distinct agent frameworks** working in parallel 
 - **Tools**: Web scraping, search engines, and data synthesis capabilities
 - **Use Case**: Company registration and service provider profiling
 
-### 🤖 **OpenAI Agents SDK** - Expert Sourcing & CV Processing  
+### 🤖 **OpenAI Agents SDK** - Expert Sourcing & CV Processing
 - **Purpose**: Intelligent project management and freelancer profile generation
 - **Architecture**: Hierarchical agent handoffs with supervisor coordination
 - **Tools**: Guardrails, file processing, and structured data extraction
@@ -46,7 +46,7 @@ This project demonstrates **two distinct agent frameworks** working in parallel 
 
 This system demonstrates a **triple-track agent architecture** showcasing two different frameworks:
 1. **CrewAI Framework** - Company service provider registration and profiling
-2. **OpenAI Agents SDK** - Project owners seeking experts  
+2. **OpenAI Agents SDK** - Project owners seeking experts
 3. **OpenAI Agents SDK** - Freelancers building their profiles
 
 ## 🏢 **CrewAI Company Service Workflow** *(Newly Implemented)*
@@ -59,23 +59,23 @@ This system demonstrates a **triple-track agent architecture** showcasing two di
 graph TD
     A[🏢 Company Registration] --> B[🔗 Website URL Input]
     B --> C[🚀 CrewAI Company Crew]
-    
+
     C --> D[🕸️ Website Content Scraper]
-    C --> E[🔍 Data Enrichment Researcher] 
+    C --> E[🔍 Data Enrichment Researcher]
     C --> F[📊 Company Profile Synthesizer]
-    
+
     D -->|Task 1: Scrape Content| G[📄 Raw Website Data]
     E -->|Task 2: Enrich Data| H[🔍 Missing Info Research]
     F -->|Task 3: Synthesize Profile| I[📋 Structured Company JSON]
-    
+
     G --> J[🔄 Sequential Task Flow]
     H --> J
     I --> K[✅ Complete Company Profile]
-    
+
     L[🛠️ ScrapeWebsiteTool] --> D
     M[🔍 SerperDevTool] --> E
     N[💡 AI Synthesis] --> F
-    
+
     style A fill:#e1f5fe,color:#000000
     style C fill:#4fc3f7,color:#000000,stroke:#01579b,stroke-width:3px
     style D fill:#e8f5e8,color:#000000
@@ -114,13 +114,13 @@ graph TD
 - **Process**: Scrape provided URL focusing on services, mission, about section, contact info
 - **CrewAI Features**: Tool integration with `ScrapeWebsiteTool`
 
-#### **Task 2: Data Enrichment & Verification**  
+#### **Task 2: Data Enrichment & Verification**
 - **Agent**: Data Enrichment Researcher
 - **Process**: Analyze scraped content, identify gaps, search for missing information
 - **CrewAI Features**: Context from Task 1, web search tool integration
 
 #### **Task 3: Profile Synthesis**
-- **Agent**: Company Profile Synthesizer  
+- **Agent**: Company Profile Synthesizer
 - **Process**: Consolidate all information into structured JSON company profile
 - **CrewAI Features**: Context from Tasks 1 & 2, structured output generation
 
@@ -128,7 +128,7 @@ graph TD
 
 ## 🎯 **OpenAI Agents SDK: Project Submission Track** *(Currently Implemented)*
 
-### **Framework: OpenAI Agents SDK Hierarchical Architecture** 
+### **Framework: OpenAI Agents SDK Hierarchical Architecture**
 
 ### **Visual Architecture**
 
@@ -137,17 +137,17 @@ graph TD
     A[👤 Project Owner] --> B[🛡️ Expert Sourcing Validator]
     B -->|✅ Valid Request| C[🎯 Expert Sourcing Supervisor]
     B -->|❌ Invalid Request| D[🚫 Rejection Response]
-    
+
     C -->|Initial Requirements| E[📝 Project Requirements Assistant]
     C -->|Refinement Needed| F[✨ Project Refinement Specialist]
-    
+
     E --> G[📋 Detailed Project Description]
     F --> H[🎯 Polished Project Requirements]
-    
+
     G --> I[📤 Coordinated Response]
     H --> I
     C --> I
-    
+
     style A fill:#e1f5fe,color:#000000
     style C fill:#f3e5f5,color:#000000
     style B fill:#fff3e0,color:#000000
@@ -185,13 +185,13 @@ graph TD
 
 ## 👨‍💻 **OpenAI Agents SDK: Freelancer Profile Track** *(Planned Implementation)*
 
-### **Framework: OpenAI Agents SDK Hierarchical Architecture** 
+### **Framework: OpenAI Agents SDK Hierarchical Architecture**
 
 ### **Current Implementation Status**
 ✅ **Complete CV Processing System** - Fully implemented end-to-end CV processing with AI agents
 - File upload interface with drag & drop support
 - File validation (PDF, DOC, DOCX only, max 10MB)
-- Secure binary storage in PostgreSQL database  
+- Secure binary storage in PostgreSQL database
 - **NEW**: Complete AI agent workflow for CV processing
 - **NEW**: Structured data extraction using OpenAI Files API
 - **NEW**: Hierarchical agent handoffs with specialist processing
@@ -206,33 +206,33 @@ graph TD
     B --> C[🛡️ CV File Validator]
     C -->|✅ Valid CV| D[💾 PostgreSQL Storage]
     C -->|❌ Invalid File| E[🚫 Upload Error]
-    
+
     D -->|stored_cv_id:123| F[🎯 Freelancer Profile Manager]
     F -->|Input Validation| G[🛡️ CV Content Validator]
     G -->|✅ Valid CV| H[📋 File Preparation Tool]
-    
+
     H -->|Retrieve from DB| I[💾 Stored CV Data]
     I -->|Create temp file| J[📄 OpenAI Files API]
-    
+
     F -->|Document Processing| K[📄 CV Parser Agent]
     F -->|Profile Building| L[👤 Profile Enrichment Agent]
     F -->|Skill Analysis| M[🧠 Skills Extraction Agent]
     F -->|Gap Assessment| N[🔍 Gap Analysis Agent]
-    
+
     K -->|Extract with OpenAI| J
     K --> O[📊 Structured CV Data]
     L --> P[💼 Enhanced Profile]
     M --> Q[🏷️ Skill Tags & Levels]
     N --> R[📋 Missing Information Requests]
-    
+
     O --> S[🎯 Profile Manager]
     P --> S
     Q --> S
     R --> S
     S --> T[📤 Complete Profile Response]
-    
+
     J -->|Cleanup| U[🗑️ Temp File Removal]
-    
+
     style A fill:#e1f5fe,color:#000000
     style B fill:#e8f5e8,color:#000000
     style C fill:#fff3e0,color:#000000
@@ -298,7 +298,7 @@ We have thoroughly tested our CV extraction system with real CV data and achieve
 #### **✅ Perfect Extractions (Exact Matches)**
 The following fields were extracted with 100% accuracy:
 - **First Name**: Janine
-- **Last Name**: Nel  
+- **Last Name**: Nel
 - **Phone**: Contact number extracted perfectly
 - **Email**: Email address extracted perfectly
 - **Professional Title**: "Sales Engineer" - exact match
@@ -491,12 +491,12 @@ Built-in tracing capabilities allow you to debug and monitor the complete agent 
 - **Performance** - Coverage reports and build validation for production readiness
 
 ### **Testing Summary**
-✅ **123/130 Core Tests Passing** (95% success rate) - *Backend + Frontend*  
-✅ **198/205 Total Tests Passing** (97% success rate) - *When backend running for E2E*  
-⚡ **Fast feedback loop** - Local testing before GitHub commits  
+✅ **123/130 Core Tests Passing** (95% success rate) - *Backend + Frontend*
+✅ **198/205 Total Tests Passing** (97% success rate) - *When backend running for E2E*
+⚡ **Fast feedback loop** - Local testing before GitHub commits
 🔄 **Pre-commit Ready** - Comprehensive validation across dual agent frameworks
 
-*E2E tests require backend server running*  
+*E2E tests require backend server running*
 **7 backend tests skipped (long-running integration tests)*
 
 ### **Quick Start Testing**
@@ -507,12 +507,38 @@ Built-in tracing capabilities allow you to debug and monitor the complete agent 
 # Frontend only
 cd frontend && bun run test
 
-# Backend only  
+# Backend only
 cd backend && uv run pytest tests/ -v
 ```
 
-📚 **Detailed Documentation:**
-- [📖 Complete Testing Documentation](TESTING.md) - Quick start guide and comprehensive setup
+### **🪝 Pre-commit Hooks (Quality Assurance)**
+**Automated quality checks before every commit:**
+```bash
+# Install pre-commit hooks (one-time setup)
+cd backend && uv run pre-commit install
+
+# Test hooks manually
+cd backend && uv run pre-commit run --all-files
+
+# Run full test suite manually
+./test-all.sh
+```
+
+**Pre-commit automatically runs:**
+- ✅ **Backend**: Ruff linting/formatting + quick tests
+- ✅ **Frontend**: ESLint + TypeScript checking + quick tests
+- ✅ **General**: File validation (YAML, JSON, trailing whitespace)
+
+## 📚 **Documentation Structure**
+
+### **📖 For Developers & LLMs**
+- **[Project Testing Guide](ai_project_docs/TESTING.md)** - Current test status, project-specific setup, debugging for this application
+- **[Generic CI/CD Setup Guide](ai_generic_docs/CI_CD_Setup.md)** - Reusable CI/CD pipeline patterns for Python + JavaScript projects
+
+### **🎯 Quick Reference**
+- **Current Project Testing**: See [TESTING.md](ai_project_docs/TESTING.md) for 205 tests status and project debugging
+- **CI/CD Implementation**: See [CI_CD_Setup.md](ai_generic_docs/CI_CD_Setup.md) for pre-commit hooks, GitHub Actions, and deployment automation
+- **LLM Guidance**: The CI/CD setup guide contains reusable patterns and best practices for implementing CI/CD in similar projects
 
 ---
 
@@ -541,14 +567,14 @@ cd backend && uv run pytest tests/ -v
    ```
 
 3. **Configure environment variables:**
-   
+
    **Option A: Standard PostgreSQL setup**
    ```bash
    # Create .env file in backend directory
    echo "OPENAI_API_KEY=your_openai_api_key_here" > .env
    echo "PG_URL=postgresql://username:password@localhost:5432/database_name" >> .env
    ```
-   
+
    **Option B: Using local Postgres.app (port 54323)**
    ```bash
    # For Postgres.app users, see LOCAL_POSTGRES_SETUP.md for detailed setup
@@ -609,7 +635,7 @@ cd frontend && make help
 # Terminal 1 - Backend
 cd backend && uv run uvicorn main:app --reload
 
-# Terminal 2 - Frontend  
+# Terminal 2 - Frontend
 cd frontend && bun dev
 ```
 
@@ -621,7 +647,7 @@ cd frontend && bun dev
 #### **OpenAI Agents SDK Endpoints**
 - **POST** `/chat` - Send message to AI agent (expert sourcing workflow)
 - **GET** `/history?limit=20` - Retrieve conversation history
-- **POST** `/upload-cv` - Upload CV files (PDF/Word, max 10MB) 
+- **POST** `/upload-cv` - Upload CV files (PDF/Word, max 10MB)
 - **GET** `/cvs` - List uploaded CVs (debugging/management)
 
 #### **General**
@@ -707,5 +733,5 @@ It is not under active development.
 
 ## License
 
-This project is licensed under the MIT License. 
-# Force redeploy
+This project is licensed under the MIT License.
+# Test commit

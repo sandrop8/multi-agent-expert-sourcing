@@ -103,4 +103,4 @@ health:
 	@bun --version
 	@echo "📝 Checking TypeScript:"
 	@bunx tsc --version
-	@echo "✅ Frontend environment healthy" 
+	@echo "✅ Frontend environment healthy"

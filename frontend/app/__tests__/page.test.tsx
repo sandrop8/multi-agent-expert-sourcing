@@ -332,4 +332,4 @@ describe('ProjectSubmissionPage', () => {
             expect(console.log).toHaveBeenCalledWith('- NEXT_PUBLIC_API_URL:', 'http://localhost:8000')
         })
     })
-}) 
+})

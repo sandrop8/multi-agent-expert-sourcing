@@ -59,4 +59,4 @@ format:
 # Development workflow - install and test before starting
 setup: install test-db
 	@echo "🎯 Backend setup complete! Ready for development."
-	@echo "📝 Run 'make dev' to start the development server" 
+	@echo "📝 Run 'make dev' to start the development server"

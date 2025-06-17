@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
-Never commit or push to github automatically. Only if the user explicitly ask you to do so.
+Never commit or push to github automatically. Only if the user explicitly ask you to do so. If the user asks you to do a commit, follow the rules in this file: rule-push-to-github.mdc

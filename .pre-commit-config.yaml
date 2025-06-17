@@ -1,0 +1,64 @@
+# .pre-commit-config.yaml
+repos:
+  # Local project hooks
+  - repo: local
+    hooks:
+      # Backend-specific hooks (run only when backend files change)
+      - id: backend-ruff-check
+        name: Backend Ruff linting
+        entry: bash -c 'cd backend && uv run ruff check . --fix'
+        language: system
+        files: '^backend/.*\.py$'
+        
+      - id: backend-ruff-format
+        name: Backend Ruff formatting
+        entry: bash -c 'cd backend && uv run ruff format .'
+        language: system
+        files: '^backend/.*\.py$'
+        
+      - id: backend-pytest-quick
+        name: Backend quick tests (fast subset)
+        entry: bash -c 'cd backend && uv run pytest tests/test_simple.py -x --tb=short'
+        language: system
+        files: '^backend/.*\.py$'
+
+      # Frontend-specific hooks (run only when frontend files change)
+      - id: frontend-eslint
+        name: Frontend ESLint
+        entry: bash -c 'cd frontend && bun run lint --fix'
+        language: system
+        files: '^frontend/.*\.(ts|tsx|js|jsx)$'
+        
+      - id: frontend-typescript
+        name: Frontend TypeScript check
+        entry: bash -c 'cd frontend && bunx tsc --noEmit'
+        language: system
+        files: '^frontend/.*\.(ts|tsx)$'
+        
+      - id: frontend-jest-quick
+        name: Frontend quick tests
+        entry: bash -c 'cd frontend && bun run test --onlyChanged --passWithNoTests --maxWorkers=2'
+        language: system
+        files: '^frontend/.*\.(ts|tsx|js|jsx)$'
+
+  # External hooks for general file validation
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+
+  # Python-specific external hooks
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.8
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+        files: '^backend/.*\.py$'
+      - id: ruff-format
+        files: '^backend/.*\.py$' 

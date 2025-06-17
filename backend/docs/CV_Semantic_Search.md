@@ -83,10 +83,10 @@ from agents import function_tool
 @function_tool
 async def extract_cv_text_with_responses_api(ctx, pdf_file_path, extraction_focus="comprehensive"):
     """Extract CV content using OpenAI's Responses API with file uploads"""
-    
+
     # Upload file with vision purpose
     uploaded_file = await client.files.create(file=file, purpose="vision")
-    
+
     # Process with responses API - exactly like documentation
     response = await client.responses.create(
         model="gpt-4o",
@@ -98,7 +98,7 @@ async def extract_cv_text_with_responses_api(ctx, pdf_file_path, extraction_focu
             ]
         }]
     )
-    
+
     return response.output_text
 
 @function_tool
@@ -182,16 +182,16 @@ async def cv_validation_guardrail(ctx, agent, input_data):
     """
     try:
         print(f"🛡️ [GUARDRAIL] Starting CV validation for input: {input_data}")
-        
+
         # Enhanced validation logic - check for obvious CV indicators first
         input_str = str(input_data).lower()
         obvious_cv_indicators = [
             '.pdf', '.doc', '.docx', 'cv', 'resume', 'curriculum vitae',
             'process this cv', 'cv file', 'resume file', 'tmp', 'temp'
         ]
-        
+
         has_cv_indicators = any(indicator in input_str for indicator in obvious_cv_indicators)
-        
+
         if has_cv_indicators:
             # Run the guardrail validation agent
             result = await Runner.run(cv_guardrail_agent, input_data, context=ctx.context)
@@ -205,17 +205,17 @@ async def cv_validation_guardrail(ctx, agent, input_data):
                 validation_notes="File path detected - assuming CV processing",
                 recommended_action="process"
             )
-        
+
         validation_passed = (
-            final_output.is_valid_cv and 
+            final_output.is_valid_cv and
             final_output.confidence_score >= 0.6  # Lowered threshold for permissive validation
         )
-        
+
         return GuardrailFunctionOutput(
             output_info=final_output,
             tripwire_triggered=not validation_passed,
         )
-        
+
     except Exception as e:
         # Create permissive fallback validation result
         fallback_result = CVValidationResult(
@@ -247,40 +247,40 @@ async def cv_validation_guardrail(ctx, agent, input_data):
 async def process_cv_workflow(file_path: str) -> Dict[str, Any]:
     """
     Complete CV processing workflow using OpenAI Agents SDK
-    
+
     Args:
         file_path: Path to the uploaded CV file
-        
+
     Returns:
         Dictionary containing processing results
     """
-    
+
     try:
         print(f"🚀 [WORKFLOW] Starting CV processing workflow for: {file_path}")
-        
+
         # Create input for the manager (just the file path)
         cv_input = f"Process this CV file: {file_path}"
-        
+
         print(f"🎯 [WORKFLOW] Calling Freelancer Profile Manager with input: {cv_input}")
         print(f"📋 [WORKFLOW] Manager has {len(freelancer_profile_manager.handoffs)} handoff agents available")
         print(f"🛠️ [WORKFLOW] Manager has {len(freelancer_profile_manager.tools)} tools available")
         print(f"🛡️ [WORKFLOW] Manager has {len(freelancer_profile_manager.input_guardrails)} guardrails configured")
-        
+
         # Run the workflow through the freelancer profile manager
         result = await Runner.run(freelancer_profile_manager, cv_input)
-        
+
         print(f"✅ [WORKFLOW] CV processing workflow completed successfully")
-        
+
         return {
             "success": True,
             "result": result.final_output if result.final_output else "CV processed successfully",
             "processing_notes": ["CV workflow completed successfully"]
         }
-        
+
     except Exception as e:
         error_msg = f"CV processing workflow failed: {str(e)}"
         print(f"❌ [WORKFLOW] {error_msg}")
-        
+
         return {
             "success": False,
             "error": error_msg,
@@ -289,30 +289,30 @@ async def process_cv_workflow(file_path: str) -> Dict[str, Any]:
 
 async def test_cv_agents():
     """Test the CV processing agents with SDK patterns"""
-    
+
     print("🧪 Testing CV processing agents (SDK patterns)...")
-    
+
     test_file = "test-cv.pdf"
     if not os.path.exists(test_file):
         print(f"⚠️ Test file {test_file} not found")
         return
-    
+
     try:
         # Test the complete workflow
         result = await process_cv_workflow(test_file)
-        
+
         print("\n📊 AGENT WORKFLOW RESULTS:")
         print("=" * 50)
         print(f"Success: {result.get('success', False)}")
-        
+
         if result.get('success'):
             print("✅ CV processing completed successfully")
             print(f"📋 Result: {result.get('result', 'No result')}")
         else:
             print(f"❌ Processing failed: {result.get('error', 'Unknown error')}")
-            
+
         print("=" * 50)
-        
+
     except Exception as e:
         print(f"❌ Agent test failed: {e}")
         import traceback
@@ -356,7 +356,7 @@ We have successfully modernized the CV extraction to use **OpenAI's latest Respo
 ### **📋 Current Status: READY FOR PRODUCTION**
 All Phase 1 components are implemented and tested:
 - ✅ **Updated to OpenAI Python Client v1.86.0** - Latest version with Responses API
-- ✅ **Implemented Native File Upload** - Using `purpose="vision"` for PDF processing  
+- ✅ **Implemented Native File Upload** - Using `purpose="vision"` for PDF processing
 - ✅ **Modern Agent Architecture** - Proper guardrails and tool integration
 - ✅ **Structured Output** - Pydantic models for consistent data extraction
 - ✅ **Error Handling** - Comprehensive error handling and cleanup
@@ -389,7 +389,7 @@ uv run python app_agents/cv_agents.py
 ```
 backend/
 ├── services/cv_extraction_service.py    # ✅ Responses API integration
-├── app_agents/cv_agents.py              # ✅ Agent definitions  
+├── app_agents/cv_agents.py              # ✅ Agent definitions
 ├── test_cv_agents_workflow.py           # ✅ Complete test suite
 ├── pyproject.toml                       # ✅ Updated dependencies
 └── docs/CV_Semantic_Search.md           # ✅ This documentation
@@ -423,7 +423,7 @@ This modernization positions the system for future OpenAI API enhancements and p
 Based on [Mistral's OCR announcement](https://mistral.ai/news/mistral-ocr), their model offers significant advantages for CV processing:
 
 **Mistral OCR Advantages:**
-- ✅ **94.89% Overall Accuracy** - outperforms GPT-4o (89.77%) and other OCR solutions  
+- ✅ **94.89% Overall Accuracy** - outperforms GPT-4o (89.77%) and other OCR solutions
 - ✅ **Superior Multilingual Support** - 99.02% fuzzy match across diverse languages
 - ✅ **Complex Document Understanding** - handles tables, equations, images natively
 - ✅ **Cost Effective** - 1000 pages per $1 (vs higher OpenAI costs)
@@ -454,7 +454,7 @@ class TextExtractionProvider(ABC):
     @abstractmethod
     async def extract_from_pdf(self, content: bytes) -> ExtractedContent:
         pass
-    
+
     @abstractmethod
     async def extract_from_docx(self, content: bytes) -> ExtractedContent:
         pass
@@ -466,7 +466,7 @@ class TextExtractionProvider(ABC):
 ```python
 class MistralOCRExtractor(TextExtractionProvider):
     """Uses Mistral OCR API for state-of-the-art document understanding"""
-    
+
     async def extract_from_pdf(self, content: bytes) -> ExtractedContent:
         # 1. Send PDF directly to Mistral OCR API
         # 2. Get structured text + embedded images extraction
@@ -479,7 +479,7 @@ class MistralOCRExtractor(TextExtractionProvider):
 ```python
 class OpenAITextExtractor(TextExtractionProvider):
     """Uses OpenAI GPT-4o for intelligent text extraction"""
-    
+
     async def extract_from_pdf(self, content: bytes) -> ExtractedContent:
         # 1. Use PyPDF2 for basic text extraction
         # 2. Pass extracted text to GPT-4o for structured extraction
@@ -491,7 +491,7 @@ class OpenAITextExtractor(TextExtractionProvider):
 ```python
 class SimplePyPDF2Extractor(TextExtractionProvider):
     """Uses PyPDF2 + regex for basic text extraction without LLM costs"""
-    
+
     async def extract_from_pdf(self, content: bytes) -> ExtractedContent:
         # 1. PyPDF2 for direct text extraction
         # 2. Regex patterns for skills detection (Python, React, etc.)
@@ -510,17 +510,17 @@ class TextExtractionService:
             'simple': SimplePyPDF2Extractor()
         }
         self.default_provider = os.getenv('TEXT_EXTRACTION_PROVIDER', 'mistral')
-    
+
     async def extract_cv_content(self, file_content: bytes, content_type: str) -> ExtractedContent:
         """Extract CV content with automatic fallback chain"""
         primary_provider = self.providers[self.default_provider]
-        
+
         try:
             # Try primary provider first
             return await primary_provider.extract_from_pdf(file_content)
         except Exception as e:
             print(f"⚠️ Primary provider {self.default_provider} failed: {e}")
-            
+
             # Try fallback providers
             fallback_order = ['mistral', 'openai', 'simple']
             for provider_name in fallback_order:
@@ -531,7 +531,7 @@ class TextExtractionService:
                     except Exception as fallback_error:
                         print(f"⚠️ Fallback {provider_name} also failed: {fallback_error}")
                         continue
-            
+
             raise Exception("All text extraction providers failed")
 ```
 
@@ -571,7 +571,7 @@ class CVEmbeddingOutput(BaseModel):
     processing_status: str
 
 cv_embedding_agent = Agent(
-    name="CV Embedding Generation Agent", 
+    name="CV Embedding Generation Agent",
     handoff_description="Specialist for creating semantic embeddings from CV content",
     instructions="""Create semantic embeddings from extracted CV content:
     - Generate embeddings for full text, skills, and experience sections
@@ -588,7 +588,7 @@ freelancer_profile_manager = Agent(
     name="Freelancer Profile Manager",
     instructions="""Coordinate CV processing workflow including:
     1. Content validation and extraction
-    2. Structured data parsing 
+    2. Structured data parsing
     3. Semantic embedding generation
     4. Profile completeness analysis
     Ensure high-quality, searchable freelancer profiles.""",
@@ -649,10 +649,10 @@ query_enhancement_agent = Agent(
 class SemanticSearchService:
     def __init__(self, embedding_service: EmbeddingService):
         self.embedding_service = embedding_service
-        
+
     async def search_experts(
-        self, 
-        query: str, 
+        self,
+        query: str,
         limit: int = 10,
         similarity_threshold: float = 0.7
     ) -> List[Dict[str, Any]]:
@@ -662,20 +662,20 @@ class SemanticSearchService:
         3. Rank results by similarity score
         4. Return expert profiles with relevance scores
         """
-        
+
         # Generate query embedding
         query_embedding = await self.embedding_service.create_embedding(query)
-        
+
         # Vector similarity search
         with engine.connect() as conn:
             result = conn.execute(
                 sa.text("""
-                SELECT 
+                SELECT
                     c.id, c.filename, c.uploaded_at,
                     ce.text_content, ce.content_type,
                     1 - (ce.embedding <=> :query_vector) as similarity
                 FROM cvs c
-                JOIN cv_embeddings ce ON c.id = ce.cv_id  
+                JOIN cv_embeddings ce ON c.id = ce.cv_id
                 WHERE 1 - (ce.embedding <=> :query_vector) > :threshold
                 ORDER BY ce.embedding <=> :query_vector
                 LIMIT :limit
@@ -686,7 +686,7 @@ class SemanticSearchService:
                     "limit": limit
                 }
             )
-            
+
             return [dict(row) for row in result]
 ```
 
@@ -700,20 +700,20 @@ class SemanticSearchService:
 async def process_cv_for_search(cv_id: int):
     """Extract text and create embeddings for existing CV"""
     # Use freelancer_profile_manager with new extraction/embedding agents
-    
+
 @app.get("/search-experts")
 async def search_experts(
-    query: str, 
+    query: str,
     limit: int = 10,
     threshold: float = 0.7
 ):
     """Semantic search for experts using natural language queries"""
     # Use expert_search_supervisor agent system
-    
+
 @app.get("/cv/{cv_id}/embeddings")
 async def get_cv_embeddings(cv_id: int):
     """Debug endpoint to view CV embeddings and extracted content"""
-    
+
 @app.post("/reprocess-all-cvs")
 async def reprocess_all_cvs():
     """Batch process all existing CVs for embeddings (admin only)"""
@@ -726,20 +726,20 @@ async def upload_cv(file: UploadFile = File(...)):
     """Enhanced CV upload with automatic embedding generation"""
     try:
         # ... existing file validation and storage ...
-        
+
         # Process with enhanced freelancer agent system
         cv_description = f"""
         CV file uploaded: {file.filename} ({file.content_type}, {len(file_content)} bytes).
-        
+
         Please:
         1. Validate this CV content
-        2. Extract structured information  
+        2. Extract structured information
         3. Generate semantic embeddings
         4. Create searchable profile
         """
-        
+
         result = await Runner.run(freelancer_profile_manager, cv_description)
-        
+
         return {
             "message": "CV uploaded and processed for semantic search!",
             "filename": file.filename,
@@ -779,16 +779,16 @@ class CVExtractionEvaluator:
         ]
         self.providers = ['mistral', 'openai', 'simple']
         self.results = []
-    
+
     async def run_evaluation(self) -> Dict[str, Any]:
         """Run all providers against all test CVs and collect metrics"""
         for cv_file in self.test_cvs:
             cv_content = self._load_cv_file(cv_file)
-            
+
             for provider in self.providers:
                 metrics = await self._evaluate_provider(provider, cv_file, cv_content)
                 self.results.append(metrics)
-        
+
         return self._generate_comparison_report()
 ```
 
@@ -803,7 +803,7 @@ def load_benchmark_data():
     """Load ground truth data from Phase 0"""
     with open('test_data/ground_truth.json', 'r') as f:
         ground_truth = json.load(f)
-    
+
     test_profiles = {}
     for filename, cv_data in ground_truth.items():
         test_profiles[filename] = {
@@ -831,22 +831,22 @@ async def evaluate_all_providers():
 async def get_evaluation_results():
     """Get latest evaluation results and comparison metrics"""
     # Return cached evaluation results
-    
+
 @app.post("/evaluate-single-cv")
 async def evaluate_single_cv(file: UploadFile = File(...)):
     """Test all three providers on a single uploaded CV"""
     cv_content = await file.read()
     results = {}
-    
+
     for provider in ['mistral', 'openai', 'simple']:
         os.environ['TEXT_EXTRACTION_PROVIDER'] = provider
         service = TextExtractionService()
-        
+
         try:
             start_time = time.time()
             extraction = await service.extract_cv_content(cv_content, file.content_type)
             processing_time = time.time() - start_time
-            
+
             results[provider] = {
                 "success": True,
                 "processing_time": processing_time,
@@ -861,7 +861,7 @@ async def evaluate_single_cv(file: UploadFile = File(...)):
                 "error": str(e),
                 "processing_time": None
             }
-    
+
     return {
         "filename": file.filename,
         "provider_results": results,
@@ -874,12 +874,12 @@ async def evaluate_single_cv(file: UploadFile = File(...)):
 class EvaluationReporter:
     def generate_comparison_report(self, results: List[ExtractionMetrics]) -> Dict[str, Any]:
         """Generate comprehensive comparison report"""
-        
+
         provider_stats = {}
-        
+
         for provider in ['mistral', 'openai', 'simple']:
             provider_results = [r for r in results if r.provider_name == provider]
-            
+
             provider_stats[provider] = {
                 "success_rate": len([r for r in provider_results if not r.error_occurred]) / len(provider_results),
                 "avg_processing_time": np.mean([r.extraction_time for r in provider_results if not r.error_occurred]),
@@ -888,10 +888,10 @@ class EvaluationReporter:
                 "total_cost": sum([r.cost_per_extraction for r in provider_results]),
                 "error_count": len([r for r in provider_results if r.error_occurred])
             }
-        
+
         # Determine recommended provider based on metrics
         recommendation = self._calculate_recommendation(provider_stats)
-        
+
         return {
             "evaluation_summary": provider_stats,
             "recommendation": recommendation,
@@ -943,7 +943,7 @@ async def test_semantic_expert_search():
 ```python
 async def test_full_cv_processing_pipeline():
     """Test complete flow from CV upload to searchable embedding"""
-    
+
     # 1. Upload CV
     # 2. Verify agent processing
     # 3. Check embedding creation
@@ -952,7 +952,7 @@ async def test_full_cv_processing_pipeline():
 
 async def test_agent_handoff_workflow():
     """Test OpenAI Agent SDK handoffs work correctly"""
-    
+
     # Test freelancer_profile_manager coordinates all specialists
     # Verify cv_extraction_agent → cv_embedding_agent handoff
     # Check error handling and guardrail behavior
@@ -963,7 +963,7 @@ async def test_agent_handoff_workflow():
 # Scenario 1: Upload multiple diverse CVs
 sample_cvs = [
     "python_ml_engineer.pdf",
-    "react_frontend_dev.pdf", 
+    "react_frontend_dev.pdf",
     "fullstack_node_developer.pdf",
     "data_scientist.pdf"
 ]
@@ -972,7 +972,7 @@ sample_cvs = [
 search_queries = [
     "Python developer with machine learning",
     "Frontend React expert",
-    "Full-stack JavaScript engineer", 
+    "Full-stack JavaScript engineer",
     "Data scientist with visualization skills"
 ]
 
@@ -989,7 +989,7 @@ search_queries = [
 #### **1. Start Simple, Scale Up**
 - **Phase 0**: Data preparation + Schema design (Foundation)
 - **Phase 1-2**: Database + Three text extraction providers
-- **Phase 3-4**: Agent integration + Basic search  
+- **Phase 3-4**: Agent integration + Basic search
 - **Phase 5-6**: API integration + Provider evaluation
 - **Phase 7**: Comprehensive testing + Final optimization
 
@@ -997,11 +997,11 @@ search_queries = [
 ```bash
 # Test different extraction providers
 export TEXT_EXTRACTION_PROVIDER=mistral   # Mistral OCR (state-of-the-art)
-export TEXT_EXTRACTION_PROVIDER=openai    # OpenAI GPT-4o (LLM-enhanced)  
+export TEXT_EXTRACTION_PROVIDER=openai    # OpenAI GPT-4o (LLM-enhanced)
 export TEXT_EXTRACTION_PROVIDER=simple    # PyPDF2 (baseline, no API costs)
 ```
 
-#### **3. Model Provider Flexibility**  
+#### **3. Model Provider Flexibility**
 ```bash
 # Test different embedding models
 export EMBEDDING_MODEL=text-embedding-ada-002     # OpenAI (default)
@@ -1056,8 +1056,8 @@ export TEXT_EXTRACTION_PROVIDER=mistral
 uv run python test_extraction.py sample_cv.pdf
 # Expected: High accuracy extraction (94.89%), multilingual support
 
-# Test OpenAI LLM-enhanced extraction  
-export TEXT_EXTRACTION_PROVIDER=openai  
+# Test OpenAI LLM-enhanced extraction
+export TEXT_EXTRACTION_PROVIDER=openai
 uv run python test_extraction.py sample_cv.pdf
 # Expected: Good quality extraction, structured output
 
@@ -1117,7 +1117,7 @@ curl "http://localhost:8000/evaluation-results"
 - ✅ **Search Performance**: <500ms response time for queries
 - ✅ **Agent Integration**: All handoffs work without errors
 
-### **Functional Metrics**  
+### **Functional Metrics**
 - ✅ **Search Relevance**: Correct CVs ranked in top 3 for test queries
 - ✅ **Provider Flexibility**: Can switch text extraction methods easily
 - ✅ **Agent Compatibility**: Works with existing OpenAI Agent SDK patterns
@@ -1128,4 +1128,3 @@ curl "http://localhost:8000/evaluation-results"
 - ✅ **Semantic Search**: "Find Python developer" returns Python CVs
 - ✅ **Ranking Quality**: Most relevant results appear first
 - ✅ **Error Handling**: Graceful fallbacks for unsupported files
-

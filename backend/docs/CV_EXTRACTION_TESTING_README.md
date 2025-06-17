@@ -42,7 +42,7 @@ Our PostgreSQL schema (defined in `cv_models.py`) includes:
 
 ### Core Tables
 - **CVPersonalInfo**: Comprehensive personal data, industries, skills summary, freelancer rates
-- **CVProfessionalServices**: Services offered based on industry selection  
+- **CVProfessionalServices**: Services offered based on industry selection
 - **CVEmployment**: Employment history with ordering and duration
 - **CVEducation**: Education background with ordering
 - **CVSkill**: Individual skills with categories and proficiency
@@ -85,7 +85,7 @@ The framework provides detailed metrics:
 
 - **Overall Accuracy**: Average similarity score across all fields
 - **Exact Matches**: Fields with ≥90% similarity
-- **Partial Matches**: Fields with 30-90% similarity  
+- **Partial Matches**: Fields with 30-90% similarity
 - **Missing Fields**: Fields with <30% similarity
 - **Field-by-Field Analysis**: Detailed comparison for each database field
 
@@ -100,7 +100,7 @@ The framework provides detailed metrics:
 
 📋 FIELD COMPARISON SUMMARY:
   ✅ Exact Matches: 15/32 (46.9%)
-  🟡 Partial Matches: 12/32 (37.5%)  
+  🟡 Partial Matches: 12/32 (37.5%)
   ❌ Missing/Poor: 5/32 (15.6%)
 
 🔍 DETAILED FIELD COMPARISONS:
@@ -188,7 +188,7 @@ result = await process_cv_workflow("Lisa.jpg")
 - Comprehensive evaluation framework
 - Testing infrastructure
 
-### 🔄 In Progress  
+### 🔄 In Progress
 - Testing with actual Lisa Shaw CV file
 - OpenAI API integration testing
 - Field-level accuracy optimization
@@ -203,8 +203,8 @@ result = await process_cv_workflow("Lisa.jpg")
 
 1. **Schema Alignment**: Perfect mapping between extraction and database storage
 2. **Evaluation Framework**: Automated testing with detailed metrics
-3. **Extensible Design**: Easy to add more CVs and test scenarios  
+3. **Extensible Design**: Easy to add more CVs and test scenarios
 4. **Production Ready**: Proper error handling and validation
 5. **Comprehensive Coverage**: Tests all database fields and relationships
 
-This framework provides a solid foundation for evaluating and improving CV extraction quality while ensuring compatibility with our PostgreSQL database schema. 
+This framework provides a solid foundation for evaluating and improving CV extraction quality while ensuring compatibility with our PostgreSQL database schema.

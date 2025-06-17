@@ -90,10 +90,10 @@ if [ -n "$PYTEST_SUMMARY" ]; then
     API_PASSED=$(echo "$PYTEST_SUMMARY" | grep -o "[0-9]\+ passed" | grep -o "[0-9]\+" || echo "0")
     API_FAILED=$(echo "$PYTEST_SUMMARY" | grep -o "[0-9]\+ failed" | grep -o "[0-9]\+" || echo "0")
     API_SKIPPED=$(echo "$PYTEST_SUMMARY" | grep -o "[0-9]\+ skipped" | grep -o "[0-9]\+" || echo "0")
-    
+
     # Calculate total tests (passed + failed + skipped)
     API_TOTAL=$((API_PASSED + API_FAILED + API_SKIPPED))
-    
+
     print_success "Parsed pytest results: $API_PASSED passed, $API_FAILED failed, $API_SKIPPED skipped (Total: $API_TOTAL)"
 else
     print_error "Could not parse pytest results from summary line"
@@ -166,7 +166,7 @@ if [ -n "$JEST_SUMMARY" ]; then
     FRONTEND_PASSED=$(echo "$JEST_SUMMARY" | grep -o "[0-9]\+ passed" | grep -o "[0-9]\+" || echo "0")
     FRONTEND_FAILED=$(echo "$JEST_SUMMARY" | grep -o "[0-9]\+ failed" | grep -o "[0-9]\+" || echo "0")
     FRONTEND_TOTAL=$(echo "$JEST_SUMMARY" | grep -o "[0-9]\+ total" | grep -o "[0-9]\+" || echo "38")
-    
+
     if [ "$JEST_EXIT_CODE" -eq 0 ]; then
         print_success "Frontend Jest tests completed"
     else
@@ -187,12 +187,12 @@ bunx playwright install --with-deps > /dev/null 2>&1 || print_warning "Playwrigh
 
 if timeout 180 bunx playwright test --reporter=list > "$TEMP_DIR/playwright.log" 2>&1; then
     print_success "E2E tests completed"
-    
+
     # Parse Playwright results
     PLAYWRIGHT_OUTPUT=$(cat "$TEMP_DIR/playwright.log")
     E2E_PASSED=$(echo "$PLAYWRIGHT_OUTPUT" | tail -5 | grep -o "[0-9]\+ passed" | head -1 | grep -o "[0-9]\+" || echo "0")
     E2E_FAILED=$(echo "$PLAYWRIGHT_OUTPUT" | tail -5 | grep -o "[0-9]\+ failed" | head -1 | grep -o "[0-9]\+" || echo "0")
-    
+
     E2E_TOTAL=$((E2E_PASSED + E2E_FAILED))
 else
     print_warning "E2E tests timed out or failed (backend may not be running)"
@@ -226,7 +226,7 @@ else
     echo -e "• ${BLUE}Frontend Testing${NC} - Jest + React Testing Library (${YELLOW}Not run${NC})"
 fi
 
-# E2E Testing  
+# E2E Testing
 if [ "$E2E_TOTAL" -gt 0 ]; then
     echo -e "• ${BLUE}E2E Testing${NC} - Playwright cross-browser testing (${GREEN}${E2E_PASSED}/${E2E_TOTAL}${NC} tests passing)"
 else
@@ -270,4 +270,4 @@ if [ "$TOTAL_TESTS" -gt 0 ]; then
 else
     echo -e "${RED}❌ No tests were executed successfully${NC}"
     exit 1
-fi 
+fi

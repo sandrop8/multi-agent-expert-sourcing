@@ -16,8 +16,10 @@ meta = sa.MetaData()
 # ---- ORM Setup (for new structured CV models) ----------------------------
 Base = declarative_base()
 
+
 class BaseModel(Base):
     """Abstract base model with common audit fields for ORM models"""
+
     __abstract__ = True
 
     id = mapped_column(Integer, primary_key=True, index=True)
@@ -29,19 +31,23 @@ class BaseModel(Base):
         nullable=False,
     )
 
+
 # ---- Legacy Core Functions (backwards compatibility) ---------------------
 def create_all_tables():
     """Create all tables defined in metadata (Core tables)"""
     meta.create_all(engine)
 
+
 def create_all_orm_tables():
     """Create all ORM model tables"""
     Base.metadata.create_all(engine)
+
 
 def get_engine():
     """Get database engine"""
     return engine
 
+
 def get_metadata():
     """Get database metadata (for Core tables)"""
-    return meta 
+    return meta

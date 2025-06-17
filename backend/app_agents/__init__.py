@@ -1,1 +1,1 @@
-# OpenAI Agents SDK agent definitions 
+# OpenAI Agents SDK agent definitions

@@ -27,4 +27,4 @@ ENV HOSTNAME=0.0.0.0
 EXPOSE 3000
 
 # Start command - Next.js will use environment variables
-CMD ["sh", "-c", "PORT=${PORT:-3000} bun start"] 
+CMD ["sh", "-c", "PORT=${PORT:-3000} bun start"]

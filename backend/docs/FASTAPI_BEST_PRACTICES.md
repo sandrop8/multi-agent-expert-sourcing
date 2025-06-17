@@ -34,7 +34,7 @@ multi-agent-expert-sourcing/
 │   │   ├── __init__.py
 │   │   └── v1/           # API versioning
 │   │       ├── __init__.py
-│   │       ├── cv.py     # CV-related endpointsSo as you have recreated the wrong backend structure before, you may need to now go back to the readme with fast API best practices with the project structure. And first, rearrange 
+│   │       ├── cv.py     # CV-related endpointsSo as you have recreated the wrong backend structure before, you may need to now go back to the readme with fast API best practices with the project structure. And first, rearrange
 │   │       ├── chat.py   # Chat endpoints
 │   │       └── health.py # Health check endpoints
 │   ├── core/             # Core application configuration
@@ -144,14 +144,14 @@ async def get_db() -> AsyncSession:
 
 #### **Why AsyncSession is “professional default” (2023‑2025)**
 
-* **Non‑blocking I/O** – `asyncpg`, `psycopg 3` and SQLAlchemy 2.x deliver full coroutine support; each Uvicorn worker now multiplexes hundreds of DB queries concurrently rather than one at a time.  
-* **Unified API** – the same `select()`/`update()` constructs work in both sync and async code; migrating old sync paths is mostly a find‑and‑replace of `.Session` → `.AsyncSession` plus `await`.  
-* **FastAPI docs & templates** – all official examples since FastAPI 0.110 yield an `AsyncSession` via dependency injection, so new hires (often coming from Django) instantly recognise the pattern.  
+* **Non‑blocking I/O** – `asyncpg`, `psycopg 3` and SQLAlchemy 2.x deliver full coroutine support; each Uvicorn worker now multiplexes hundreds of DB queries concurrently rather than one at a time.
+* **Unified API** – the same `select()`/`update()` constructs work in both sync and async code; migrating old sync paths is mostly a find‑and‑replace of `.Session` → `.AsyncSession` plus `await`.
+* **FastAPI docs & templates** – all official examples since FastAPI 0.110 yield an `AsyncSession` via dependency injection, so new hires (often coming from Django) instantly recognise the pattern.
 * **Testing & scripts** – you can still spin up a *sync* `Session` in a CLI script by binding a synchronous engine to the same declarative models. No duplication, maximum flexibility.
 
 ### **2. Model Definition Patterns**
 
-> **Declarative mapping is first‑class.**  
+> **Declarative mapping is first‑class.**
 > SQLAlchemy 2.x removed the old `mapper()` imperative API; declarative classes like `CVFile` *are* the canonical approach. Core `Table` objects are still available (and power the ORM behind the scenes) but you rarely need them unless writing raw SQL for analytics or pgvector similarity search.
 ```python
 # models/cv_models.py
@@ -163,7 +163,7 @@ from .base import BaseModel
 class CVFile(BaseModel):
     """CV file storage and metadata"""
     __tablename__ = "cv_files"
-    
+
     # File metadata
     filename = Column(String(255), nullable=False)
     original_filename = Column(String(255), nullable=False)
@@ -171,13 +171,13 @@ class CVFile(BaseModel):
     file_size = Column(Integer, nullable=False)
     content_type = Column(String(100), nullable=False)
     file_data = Column(LargeBinary, nullable=False)  # Binary file content
-    
+
     # Processing metadata
     processing_status = Column(String(50), default='pending', nullable=False)
     extraction_provider = Column(String(50), nullable=True)  # 'mistral', 'openai', 'simple'
     extraction_confidence = Column(DECIMAL(3,2), nullable=True)
     processed = Column(Boolean, default=False, nullable=False)
-    
+
     # Relationships
     personal_info = relationship("CVPersonalInfo", back_populates="cv_file", cascade="all, delete-orphan", uselist=False)
     employment = relationship("CVEmployment", back_populates="cv_file", cascade="all, delete-orphan")
@@ -190,48 +190,48 @@ class CVFile(BaseModel):
 class CVPersonalInfo(BaseModel):
     """Personal information extracted from CV"""
     __tablename__ = "cv_personal_info"
-    
+
     cv_file_id = Column(Integer, ForeignKey("cv_files.id", ondelete="CASCADE"), nullable=False)
-    
+
     # Personal details (all nullable as not all CVs contain all information)
     full_name = Column(String(255), nullable=True)
     email = Column(String(255), nullable=True)
     phone = Column(String(50), nullable=True)
     location = Column(String(255), nullable=True)
     professional_title = Column(String(255), nullable=True)
-    
+
     # Online presence (all optional)
     linkedin_url = Column(String(500), nullable=True)
     github_url = Column(String(500), nullable=True)
     portfolio_url = Column(String(500), nullable=True)
-    
+
     # Professional summary
     summary = Column(Text, nullable=True)
-    
+
     # Relationship
     cv_file = relationship("CVFile", back_populates="personal_info")
 
 class CVEmployment(BaseModel):
     """Employment history from CV"""
     __tablename__ = "cv_employment"
-    
+
     cv_file_id = Column(Integer, ForeignKey("cv_files.id", ondelete="CASCADE"), nullable=False)
-    
+
     # Job details
     company_name = Column(String(255), nullable=False)
     job_title = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     location = Column(String(255), nullable=True)
-    
+
     # Dates (nullable for incomplete information)
     start_date = Column(Date, nullable=True)
     end_date = Column(Date, nullable=True)
     is_current = Column(Boolean, default=False, nullable=False)
     duration_months = Column(Integer, nullable=True)  # Calculated field
-    
+
     # Ordering (0 = most recent)
     employment_order = Column(Integer, default=0, nullable=False)
-    
+
     # Relationship
     cv_file = relationship("CVFile", back_populates="employment")
 
@@ -290,7 +290,7 @@ class CVFileResponse(CVFileBase):
     processed: bool
     created_at: datetime
     updated_at: datetime
-    
+
     model_config = ConfigDict(from_attributes=True)  # SQLAlchemy compatibility
 
 class CVPersonalInfoCreate(BaseModel):
@@ -311,7 +311,7 @@ class CVPersonalInfoResponse(CVPersonalInfoCreate):
     cv_file_id: int
     created_at: datetime
     updated_at: datetime
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 # Employment schema with nullable fields
@@ -333,7 +333,7 @@ class CVEmploymentResponse(CVEmploymentCreate):
     cv_file_id: int
     created_at: datetime
     updated_at: datetime
-    
+
     model_config = ConfigDict(from_attributes=True)
 ```
 
@@ -347,7 +347,7 @@ class CVPersonalInfoCreate(BaseModel):
     full_name: Optional[str] = Field(None, max_length=255)
     email: Optional[EmailStr] = None
     phone: Optional[str] = Field(None, max_length=50)
-    
+
     @validator('phone')
     def validate_phone(cls, v):
         if v is not None:
@@ -356,7 +356,7 @@ class CVPersonalInfoCreate(BaseModel):
             if len(cleaned) < 10:
                 raise ValueError('Phone number too short')
         return v
-    
+
     @validator('full_name')
     def validate_name(cls, v):
         if v is not None:
@@ -477,7 +477,7 @@ messages = sa.Table(
 # New ORM approach
 class Message(BaseModel):
     __tablename__ = "messages"
-    
+
     role = Column(String(10), nullable=False)
     content = Column(Text, nullable=False)
     # id, created_at, updated_at inherited from BaseModel
@@ -561,19 +561,19 @@ from typing import Optional
 class Settings(BaseSettings):
     # Database
     database_url: str
-    
+
     # OpenAI
     openai_api_key: str
-    
+
     # File upload
     max_file_size: int = 10 * 1024 * 1024  # 10MB
     allowed_file_types: list = ["application/pdf", "application/msword"]
-    
+
     # CV Processing
     text_extraction_provider: str = "mistral"
     embedding_model: str = "text-embedding-3-large"
     similarity_threshold: float = 0.7
-    
+
     class Config:
         env_file = ".env"
         case_sensitive = False
@@ -581,7 +581,7 @@ class Settings(BaseSettings):
 settings = Settings()
 ```
 
-This architecture provides a robust, maintainable, and scalable foundation for your FastAPI application with proper database modeling, API design, and OpenAI Agents SDK integration. 
+This architecture provides a robust, maintainable, and scalable foundation for your FastAPI application with proper database modeling, API design, and OpenAI Agents SDK integration.
 # END OF FILE
 
 ---

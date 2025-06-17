@@ -43,4 +43,4 @@ global.IntersectionObserver = jest.fn().mockImplementation(() => ({
 }))
 
 // Mock scrollIntoView
-Element.prototype.scrollIntoView = jest.fn() 
+Element.prototype.scrollIntoView = jest.fn()

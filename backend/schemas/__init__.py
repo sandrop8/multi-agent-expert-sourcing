@@ -1,1 +1,1 @@
-# Pydantic schemas for API requests and responses 
+# Pydantic schemas for API requests and responses

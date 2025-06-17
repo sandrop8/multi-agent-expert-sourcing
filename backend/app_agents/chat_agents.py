@@ -24,6 +24,7 @@ project_refinement_agent = Agent(
     instructions="You help project owners refine and finalize their project descriptions. Identify missing information, suggest improvements, and ensure the project description is clear, complete, and attractive to potential freelancers.",
 )
 
+
 # ---- Guardrail Functions --------------------------------------------------
 async def expert_sourcing_guardrail(ctx, agent, input_data):
     """Guardrail to ensure only expert sourcing requests are processed"""
@@ -34,6 +35,7 @@ async def expert_sourcing_guardrail(ctx, agent, input_data):
         tripwire_triggered=not final_output.is_expert_sourcing,
     )
 
+
 supervisor_agent = Agent(
     name="Expert Sourcing Supervisor",
     instructions="You coordinate the project submission workflow by determining which specialist agent to use based on the client's needs - helping create project requirements or refining and finalizing project descriptions.",
@@ -41,4 +43,4 @@ supervisor_agent = Agent(
     input_guardrails=[
         InputGuardrail(guardrail_function=expert_sourcing_guardrail),
     ],
-) 
+)

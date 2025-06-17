@@ -95,4 +95,4 @@ If you prefer different setups, see the [main README](../README.md) for:
 
 ---
 
-**Next Step**: Add your OpenAI API key to the `.env` file and start developing! 🚀 
+**Next Step**: Add your OpenAI API key to the `.env` file and start developing! 🚀

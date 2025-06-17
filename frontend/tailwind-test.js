@@ -45,4 +45,4 @@ try {
     console.log('❌ package.json error:', e.message);
 }
 
-console.log('\n🎉 Tailwind CSS v4 test completed!'); 
+console.log('\n🎉 Tailwind CSS v4 test completed!');

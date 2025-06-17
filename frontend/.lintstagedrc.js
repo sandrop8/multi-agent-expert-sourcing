@@ -18,4 +18,4 @@ module.exports = {
 
     // Run type checking on all TypeScript files when any TS file changes
     '*.{ts,tsx}': () => 'tsc --noEmit',
-}; 
+};

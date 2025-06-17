@@ -1,0 +1,47 @@
+---
+description: Push to github with pre-commit hooks and optionally link a github issue
+globs: 
+alwaysApply: false
+---
+
+# Push to Github with optionally linking an Issue Number
+
+1. Explicit Trigger: Only ever push or commit to Github if the user explicitly ask to "push to GitHub", "commit and push", or mention linking/closing a specific issue. NEVER push code automatically.
+
+If the user asks to push to github, ALWAYS follow exactly these steps:
+
+**Scenario A (No Issue Mentioned)**: If the user just says "push to GitHub" (or similar) without mentioning an issue, I will not ask for an issue number. I will proceed directly to:
+1. Run git status (to show you the changes).
+2. Run pre-commit checks: `cd backend && uv run pre-commit run --all-files` (to ensure code quality)
+3. Run git add . (I need to always add all files instead of specific ones)
+4. Create a descriptive commit message summarizing the changes (without any closes #... part).
+5. If the user provides a commit message - use it.
+6. Run git commit -m "Descriptive summary of changes".
+7. Run git push.
+8. Confirm success.
+
+**Scenario B (Issue Mentioned/Requested)**: If the user explicitly asks to close or link a specific issue, or provides an issue number with your push request:
+1. Run git status.
+2. Run pre-commit checks: `cd backend && uv run pre-commit run --all-files` (to ensure code quality)
+3. Run git add .
+4. Create a descriptive commit message summarizing the changes and ending with "closes #issuenumber" (or closes #123, closes #456 if multiple issues are mentioned).
+5. If the user provides a commit message - use it and add the closes part at the end.
+6. Run git commit -m "Descriptive summary closes #issuenumber".
+7. Run git push.
+8. Confirm success.
+
+**Core Commands Preserved**: The sequence git status, pre-commit checks, git add ., git commit ..., git push will be maintained in both scenarios.
+
+```bash
+git status
+cd backend && uv run pre-commit run --all-files
+git add .
+git commit -m "Your descriptive message closes #issuenumber"
+git push
+```
+
+**Final Notes**:
+- Always assume we're working on the correct branch already, so branch switching is not required.
+- NEVER just push a specific file to github. ALWAYS use 'git add .'
+- Pre-commit hooks will run automatically during `git commit`, but we run them explicitly first for transparency and early error detection
+- If pre-commit checks fail, fix the issues before proceeding with the commit

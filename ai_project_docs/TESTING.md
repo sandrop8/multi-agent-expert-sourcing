@@ -33,18 +33,18 @@ cd frontend && bunx tsc --noEmit
 ```
 
 ### **📊 Current Test Status**
-✅ **67 Backend Tests** - pytest + FastAPI TestClient (working reliably)  
-✅ **Frontend Testing** - Jest + React Testing Library  
-✅ **E2E Testing** - Playwright cross-browser testing  
-✅ **Quality Assurance** - ESLint + TypeScript  
-✅ **CV Processing** - Core tests working, complex tests disabled  
+✅ **67 Backend Tests** - pytest + FastAPI TestClient (working reliably)
+✅ **Frontend Testing** - Jest + React Testing Library
+✅ **E2E Testing** - Playwright cross-browser testing
+✅ **Quality Assurance** - ESLint + TypeScript
+✅ **CV Processing** - Core tests working, complex tests disabled
 
 ### **⚡ Daily Workflow**
 ```bash
 # Before coding
 ./test-all.sh                    # Ensure clean start
 
-# During development  
+# During development
 cd frontend && bun run test:watch   # Watch mode
 cd backend && uv run pytest -v     # Quick backend check
 
@@ -60,7 +60,7 @@ cd backend && uv run pytest -v     # Quick backend check
 ```
     🏔️ E2E Tests (Playwright)
       - Full user workflows
-      - Cross-browser compatibility  
+      - Cross-browser compatibility
       - Mobile responsiveness
 
   🧱 Integration Tests (React Testing Library)
@@ -174,7 +174,7 @@ backend/tests/
 
 ### **Disabled Tests (For Future Integration)**
 - `test_cv_upload_database_storage` - Makes real OpenAI API calls (73+ seconds)
-- `test_cv_workflow_with_real_file` - Makes real OpenAI API calls (31+ seconds)  
+- `test_cv_workflow_with_real_file` - Makes real OpenAI API calls (31+ seconds)
 - `test_extraction_tools_functionality` - Broken mock (needs fixing)
 
 ### **Running Backend Tests**
@@ -246,25 +246,24 @@ cd backend && uv run pytest tests/test_cv_agents.py -v
 - **Conditional**: Real API tests when `OPENAI_API_KEY` is set
 - **Disabled**: Tests making expensive real API calls (marked for integration)
 
-## 🪝 **Pre-commit Options**
+## 🪝 **Pre-commit Integration**
 
-### **Recommended Approaches**
+**Current Setup**: Pre-commit hooks are configured and ready to use!
 
-**Manual (Recommended)**: Run `./test-all.sh` before each commit
-
-**VS Code Task**: Add to `.vscode/tasks.json`:
-```json
-{
-    "label": "Run All Tests",
-    "type": "shell", 
-    "command": "./test-all.sh"
-}
-```
-
-**Git Hook**: 
 ```bash
-echo '#!/bin/sh\n./test-all.sh' > .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+# Manual testing (comprehensive)
+./test-all.sh
+
+# Pre-commit hooks (fast quality checks)
+cd backend && uv run pre-commit run --all-files
 ```
+
+**What the hooks do:**
+- ✅ Backend: Ruff linting/formatting + quick tests (test_simple.py)
+- ✅ Frontend: ESLint + TypeScript + quick Jest tests
+- ✅ File validation: YAML, JSON, trailing whitespace
+
+> 📖 **Setup Guide**: See [Generic CI/CD Setup Guide](../ai_generic_docs/CI_CD_Setup.md) for detailed pre-commit installation and configuration
 
 ## 📊 **Coverage Requirements**
 
@@ -327,10 +326,10 @@ describe('Button Component', () => {
   it('calls onClick handler when clicked', async () => {
     const handleClick = jest.fn()
     render(<Button onClick={handleClick}>Click me</Button>)
-    
+
     const button = screen.getByRole('button')
     await userEvent.click(button)
-    
+
     expect(handleClick).toHaveBeenCalledTimes(1)
   })
 })
@@ -369,7 +368,7 @@ import { test, expect } from '@playwright/test'
 
 test('should complete chat workflow', async ({ page }) => {
   await page.goto('/')
-  
+
   // Mock API
   await page.route('**/chat', async route => {
     await route.fulfill({
@@ -382,7 +381,7 @@ test('should complete chat workflow', async ({ page }) => {
   // Test user interaction
   await page.fill('[placeholder="Ask me anything…"]', 'Test message')
   await page.click('button:has-text("Send")')
-  
+
   await expect(page.getByText('Mocked response')).toBeVisible()
 })
 ```
@@ -401,7 +400,7 @@ async def test_chat_endpoint():
             "/chat",
             json={"prompt": "Find me a developer"}
         )
-        
+
         assert response.status_code == 200
         data = response.json()
         assert "answer" in data
@@ -417,12 +416,12 @@ from main import app
 def test_cv_upload_success():
     client = TestClient(app)
     pdf_content = b"Mock PDF content"
-    
+
     response = client.post(
         "/upload-cv",
         files={"file": ("resume.pdf", io.BytesIO(pdf_content), "application/pdf")}
     )
-    
+
     assert response.status_code == 200
     data = response.json()
     assert data["message"] == "CV uploaded successfully"
@@ -431,45 +430,9 @@ def test_cv_upload_success():
 
 ## 🚀 **CI/CD Integration**
 
-### **GitHub Actions Example**
-```yaml
-# .github/workflows/test.yml
-name: Tests
-on: [push, pull_request]
+> 📖 **Full CI/CD Setup**: See [Generic CI/CD Setup Guide](../ai_generic_docs/CI_CD_Setup.md) for complete GitHub Actions workflows, protected branches, and deployment automation
 
-jobs:
-  frontend-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
-      
-      - name: Install dependencies
-        run: bun install
-        working-directory: ./frontend
-        
-      - name: Run tests
-        run: bun run test:all
-        working-directory: ./frontend
-        
-      - name: Run E2E tests
-        run: |
-          bunx playwright install --with-deps
-          bun run test:e2e
-        working-directory: ./frontend
-
-  backend-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v1
-      
-      - name: Run tests
-        run: |
-          uv sync --group test
-          uv run pytest --cov=. --cov-report=xml
-        working-directory: ./backend
-```
+**Current Status**: Ready for CI/CD implementation with existing test infrastructure
 
 ## 📝 **Best Practices**
 
@@ -604,7 +567,7 @@ cd backend && uv run python scripts/test_db.py
 cd frontend && bun install
 cd backend && uv sync
 
-# Database issues  
+# Database issues
 cd backend && uv run python scripts/test_db.py
 
 # Type errors
@@ -624,4 +587,4 @@ cd frontend && bunx tsc --noEmit
 
 ---
 
-**Happy Testing! 🎉** 
+**Happy Testing! 🎉**

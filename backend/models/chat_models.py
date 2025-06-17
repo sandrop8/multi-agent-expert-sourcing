@@ -15,4 +15,4 @@ messages = sa.Table(
     sa.Column("role", sa.String(10)),
     sa.Column("content", sa.Text),
     sa.Column("ts", sa.DateTime, default=dt.datetime.utcnow),
-) 
+)

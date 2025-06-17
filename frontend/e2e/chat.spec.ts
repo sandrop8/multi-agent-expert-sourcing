@@ -252,4 +252,4 @@ test.describe('Multi-Agent Chat Application', () => {
         await expect(input).toBeVisible();
         await expect(submitButton).toBeVisible();
     });
-}); 
+});
