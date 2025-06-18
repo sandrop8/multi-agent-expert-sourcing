@@ -25,7 +25,7 @@ const cardData = [
     description: "Looking for skilled freelancers? Describe your project requirements and let our AI help you find the perfect match for your needs.",
     features: ["AI-powered freelancer matching", "Detailed project requirement analysis", "Expert recommendations"],
     buttonText: "Submit Project",
-    href: "/project",
+    href: "/project-submission",
   },
   {
     icon: (
@@ -48,7 +48,7 @@ const cardData = [
     description: "Are you a skilled freelancer? Join our platform to discover exciting projects that match your expertise and grow your career.",
     features: ["Get feedback for your CV", "Connect with clients", "Apply for projects"],
     buttonText: "Join as Freelancer",
-    href: "/freelancer",
+    href: "/freelancer-registration",
   },
   {
     icon: (

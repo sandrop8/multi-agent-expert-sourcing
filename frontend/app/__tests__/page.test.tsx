@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import ProjectSubmissionPage from '../project/page'
+import ProjectSubmissionPage from '../(demand-side)/project-submission/page'
 
 // Mock fetch globally
 const mockFetch = jest.fn()

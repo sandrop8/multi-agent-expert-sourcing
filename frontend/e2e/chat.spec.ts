@@ -2,8 +2,8 @@ import { expect, test } from '@playwright/test';
 
 test.describe('Multi-Agent Chat Application', () => {
     test.beforeEach(async ({ page }) => {
-        // Navigate to the project chat page
-        await page.goto('/project');
+        // Navigate to the project submission chat page
+        await page.goto('/project-submission');
     });
 
     test('should load the chat interface correctly', async ({ page }) => {
