@@ -85,9 +85,9 @@ class TestCVAgentsWorkflow:
         ]
 
         for expected_agent in expected_agents:
-            assert (
-                expected_agent in handoff_names
-            ), f"Missing handoff agent: {expected_agent}"
+            assert expected_agent in handoff_names, (
+                f"Missing handoff agent: {expected_agent}"
+            )
 
     def test_agent_descriptions(self):
         """Test that agents have proper descriptions"""
@@ -196,14 +196,14 @@ class TestCVAgentStructureAnalysis:
         assert hasattr(freelancer_profile_manager, "tools")
 
         # Check that handoffs exist
-        assert (
-            len(freelancer_profile_manager.handoffs) >= 4
-        ), "Should have at least 4 specialist agents"
+        assert len(freelancer_profile_manager.handoffs) >= 4, (
+            "Should have at least 4 specialist agents"
+        )
 
         # Check that guardrails exist
-        assert (
-            len(freelancer_profile_manager.input_guardrails) >= 1
-        ), "Should have at least 1 input guardrail"
+        assert len(freelancer_profile_manager.input_guardrails) >= 1, (
+            "Should have at least 1 input guardrail"
+        )
 
     def test_specialist_agents_configuration(self):
         """Test that specialist agents are configured correctly"""

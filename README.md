@@ -1,10 +1,93 @@
 # Multi-Agent Expert Sourcing Demo
 
 Find the live demo here: https://poetic-optimism-production.up.railway.app
-A comprehensive multi-agent AI system showcasing **two different agent frameworks**: **OpenAI Agents SDK** for expert sourcing workflows and **CrewAI Framework** for company profiling, built with FastAPI backend and Next.js frontend.
+A comprehensive multi-agent AI system showcasing **two different agent frameworks**:
+- **OpenAI Agents SDK** for expert sourcing workflows
+- **CrewAI Framework** for company profiling
+
+## ⚡ AI Engineer Development Metrics
+
+This project demonstrates the power of AI Enginnering skills using **Cursor IDE**:
+
+- **👨‍💻 Human Time Investment**: ~20 hours of focused development and architecture decisions
+- **🤖 AI Code Generation**: 50,000+ lines of agent edits
+- **🎯 Productivity Multiplier**: **2,500 lines per human hour** through AI-human collaboration
+- **💰 AI Model Cost**: $65 for Sonnet 4.0 & Gemini 2.5 Pro in Cursor
+- **💯 Code Written by Cursor**: 100% of codebase generated through AI assistance
+- **🎤 Voice Development Share**: ~90% voice with superwhisper - keyboard only for @ files context
+- **🔄 Advanced Features**: Cursor background agents not used - implementation on June 19
+
+
+## 🛠️ **Tech Stack**
+
+### **Backend Technologies**
+- ✅ **Python 3.9+** - Modern async programming language
+- ✅ **FastAPI** - High-performance async web framework ([FastAPI Best Practices](backend/docs/FASTAPI_PRINCIPLES.md))
+- 🔄 **NestJS** - *Alternative backend framework to FastAPI*
+- 🔄 **Docker** - *Future containerization implementation*
+- 🔄 **NX** - *Advanced monorepo tooling for coordinated builds and shared libraries*
+
+### **API Design & Architecture**
+- ✅ **REST API** - Resource-oriented architecture ([REST API Principles](backend/docs/REST_API_PRINCIPLES.md))
+- ✅ **WebSockets** (`websockets>=11.0`) - Real-time bidirectional communication
+- 🔄 **GraphQL** - *Alternative API architecture (REST preferred for deterministic agent behavior)*
+- 🔄 **Webhooks** - *to be implemented soon*
+- 🔄 **MCP (Model Context Protocol)** - *to be implemented soon*
+
+### **Agentic AI Tools**
+- ✅ **CrewAI Framework** (`crewai>=0.130.0`) - Sequential crew-based agents for company profiling
+- ✅ **OpenAI Agents SDK** (`openai-agents>=0.0.16`) - Hierarchical multi-agent orchestration for expert sourcing
+- ✅ **OpenAI API** (`openai>=1.30`) - GPT models and AI capabilities
+- 🔄 **mastra** - *Alternative agent framework*
+- 🔄 **LangChain** - *Alternative agent framework*
+- 🔄 **AutoGPT** - *Alternative agent framework*
+
+### **Agent Concepts & Architecture**
+- ✅ **Reasoning & Prompt Engineering** - Custom agent instructions and handoff logic
+- ✅ **Agent Memory** - Persistent conversation and state management
+- ✅ **Task Planning & Decomposition** - Hierarchical agent workflows
+- ✅ **Non-blocking, Event-driven Systems** - Async FastAPI with NATS messaging
+- 🔄 **Comprehensive Agent Strategy** - *Overall system architecture and integration patterns under development* ([Agent Integration Guide](backend/docs/AGENT_INTEGRATION_GUIDE.md) | [Agent Architecture Principles](backend/docs/AGENT_ARCHITECTURE_PRINCIPLES.md))
+
+### **Databases**
+- ✅ **PostgreSQL** - Robust relational database for conversation and CV storage
+- ✅ **SQLAlchemy 2.x** - Modern ORM with async support
+- ✅ **pgvector** - Vector similarity search for CVs and projects
+- 🔄 **Prisma** - *Alternative TypeScript-first ORM (for NestJS backend implementation)*
+
+### **Task & Message Infrastructure**
+- ✅ **NATS** (currently using) - Event-driven messaging with JetStream support ([NATS Integration Guide](backend/docs/NATS_INTEGRATION_GUIDE.md))
+- 🔄 **Kafka** - *Alternative message bus to NATS*
+- 🔄 **Celery** - *Distributed task queue to be implemented*
+
+### **Frontend Technologies**
+- ✅ **TypeScript 5.0+** - Strict typing with comprehensive type definitions throughout codebase
+- ✅ **Next.js 15.0** - React framework with App Router and SSR
+- ✅ **React 19.0** - Modern component architecture with concurrent features
+- ✅ **Tailwind CSS 4.0** - Utility-first styling with PostCSS
+- ✅ **shadcn/ui** + **Radix UI** - Accessible component library
+- 🔄 **Socket.io Client** - *Real-time communication library (installed, pending implementation)*
+
+### **CI/CD Framework**
+- **Foundation**: Pre-commit hooks + Unified testing script + Coverage reporting
+- **Backend**: pytest + FastAPI TestClient + Ruff linting + Coverage
+- **Frontend**: Jest + React Testing Library + Playwright + ESLint + TypeScript
+- **Quality**: ESLint, TypeScript, Coverage Reports + Automated validation
+- 🔄 **GitHub Actions** - *Comprehensive CI/CD pipeline implementation pending* ([CI/CD Setup Guide](ai_generic_docs/CI_CD_Setup.md))
+
+### **Development Tools & Monorepo Management**
+- 🔄 **NX** - *Advanced monorepo tooling for coordinated builds and shared libraries*
+- **Current Setup**: Independent package managers with Makefile orchestration
+- **NX Benefits**: Shared TypeScript types, dependency graphs, coordinated testing across apps
+
+### **Package Management & Runtime**
+- **Backend**: `uv` with `uv.lock` for deterministic Python installs
+- **Frontend**: `bun` with `bun.lockb` for ultra-fast JavaScript dependency resolution
 
 ## 📑 Table of Contents
 
+- [⚡ AI-Human Development Metrics](#-ai-human-development-metrics)
+- [🛠️ Tech Stack](#️-tech-stack)
 - [🤖 Dual Agent Framework Architecture](#dual-agent-framework-architecture)
 - [🎯 Multi-Agent Architecture](#-multi-agent-architecture)
   - [🏢 CrewAI Company Service Workflow](#-crewai-company-service-workflow-newly-implemented)
@@ -418,65 +501,6 @@ Built-in tracing capabilities allow you to debug and monitor the complete agent 
 ![Agent Traces](traces.png)
 
 *Real-time traces show the complete agent execution flow: from Expert Sourcing Supervisor through guardrail validation to specialist agent handoffs.*
-
-## 🛠️ **Tech Stack**
-
-### **Backend**
-#### **Core Framework & Runtime**
-- **Python 3.9+** - Programming language with modern async support
-- **FastAPI** - High-performance Python web framework with automatic API docs
-- **Uvicorn** - Lightning-fast ASGI server with standard extras
-
-#### **API Design & Architecture Standards**
-- **RESTful API Design** - Following REST principles for resource-oriented architecture ([REST API Principles](backend/docs/REST_API_PRINCIPLES.md))
-- **[FastAPI Best Practices](backend/docs/FASTAPI_PRINCIPLES.md)** - Comprehensive guide for SQLAlchemy ORM, Pydantic schemas, and project structure
-
-#### **AI & Agent Systems**
-- **OpenAI Agents SDK** (`openai-agents>=0.0.16`) - Hierarchical multi-agent orchestration for expert sourcing
-- **CrewAI Framework** (`crewai>=0.130.0`) - Sequential crew-based agents for company profiling
-- **CrewAI Tools** (`crewai-tools>=0.47.1`) - Specialized tools for web scraping and search
-- **OpenAI API** (`openai>=1.30`) - GPT models and AI capabilities for both frameworks
-
-#### **Database & Data**
-- **PostgreSQL** - Robust relational database for conversation and CV storage
-- **SQLAlchemy 2.x** (`sqlalchemy>=2.0`) - Database ORM and abstraction layer (migrating from Core to ORM pattern)
-- **psycopg2-binary** - PostgreSQL database adapter
-
-#### **Development & Utilities**
-- **uv** - Ultra-fast Python package manager and resolver
-- **python-dotenv** - Environment variable management
-- **WebSockets** (`websockets>=11.0`) - Real-time communication support
-- **python-multipart** - File upload and form data handling
-
-### **Frontend**
-#### **Core Framework & Runtime**
-- **Next.js 15.0.0** - React framework with App Router and SSR
-- **React 19.0.0** - Latest React with concurrent features
-- **TypeScript 5.0+** - Type safety with strict mode configuration
-- **Bun 1.0.0** - Ultra-fast JavaScript runtime and package manager
-
-#### **Styling & UI Components**
-- **Tailwind CSS 4.0.0** - Utility-first CSS framework (latest v4)
-- **PostCSS 8.5.4+** - CSS post-processing with `@tailwindcss/postcss`
-- **Autoprefixer 10.4.21+** - Automatic vendor prefixing
-- **shadcn/ui** - Modern component library (Button, Card, Input, ScrollArea)
-- **Radix UI** - Headless UI primitives for accessibility
-- **Lucide React 0.377.0** - Beautiful icon system
-
-#### **State & Communication**
-- **Socket.io Client 4.8.1** - Real-time bidirectional communication
-- **UUID 11.1.0** - Unique identifier generation
-
-#### **Developer Experience**
-- **ESLint 8.0+** - Code linting with Next.js configuration
-- **Class Variance Authority** - Type-safe component variants
-- **Tailwind Merge** - Intelligent class merging
-- **CLSX** - Conditional CSS class composition
-
-### **Package Management**
-- **Backend**: `uv` with `uv.lock` for deterministic installs
-- **Frontend**: `bun` with `bun.lockb` for ultra-fast dependency resolution
-
 ## 🧪 **Testing Framework**
 
 **Comprehensive test suite with 220 total tests:**
@@ -535,15 +559,14 @@ cd backend && uv run pre-commit install
 
 # Test hooks manually
 cd backend && uv run pre-commit run --all-files
-
-# Run full test suite manually
-./test-all.sh
 ```
 
 **Pre-commit automatically runs:**
 - ✅ **Backend**: Ruff linting/formatting + quick tests
 - ✅ **Frontend**: ESLint + TypeScript checking + quick tests
 - ✅ **General**: File validation (YAML, JSON, trailing whitespace)
+
+*E2E tests require backend server running*
 
 ## 📚 **Documentation Structure**
 
@@ -629,125 +652,4 @@ cd backend && uv run pre-commit run --all-files
 ### 🛠️ Build System
 This project uses **Makefiles** for standardized development workflows:
 - **Root Makefile**: Cross-service orchestration (`make dev-all`, `make install-all`)
-- **Backend Makefile**: Python/uv specific commands (`make dev`, `make test-db`)
-- **Frontend Makefile**: Bun/Next.js specific commands (`make dev`, `make build`)
-
-### Starting Both Services
-
-**Option 1: Using Makefiles (Recommended)**
-```bash
-# From project root
-make dev-all          # Start both services
-make dev-backend      # Backend only
-make dev-frontend     # Frontend only
-
-# Service-specific commands
-cd backend && make help
-cd frontend && make help
-```
-
-**Option 2: Manual commands**
-```bash
-# Terminal 1 - Backend
-cd backend && uv run uvicorn main:app --reload
-
-# Terminal 2 - Frontend
-cd frontend && bun dev
-```
-
-### API Endpoints
-
-#### **CrewAI Framework Endpoints**
-- **POST** `/company/register` - Register company service provider (triggers CrewAI crew workflow)
-
-#### **OpenAI Agents SDK Endpoints**
-- **POST** `/chat` - Send message to AI agent (expert sourcing workflow)
-- **GET** `/history?limit=20` - Retrieve conversation history
-- **POST** `/upload-cv` - Upload CV files (PDF/Word, max 10MB)
-- **GET** `/cvs` - List uploaded CVs (debugging/management)
-
-#### **General**
-- **GET** `/docs` - FastAPI automatic documentation
-
-### Environment Variables
-
-**Backend (`backend/.env`):**
-- `OPENAI_API_KEY` - Your OpenAI API key (required for both frameworks)
-- `SERPER_API_KEY` - Serper API key for web search (optional, for CrewAI enhanced search)
-- `PG_URL` - PostgreSQL connection string
-
-**Frontend (environment variables):**
-- `NEXT_PUBLIC_API_URL` - Backend API URL (default: http://localhost:8000)
-
-## Production Deployment
-
-### Backend (Railway/Render/Heroku)
-1. Set environment variables in platform
-2. Connect PostgreSQL addon
-3. Deploy with `uv run uvicorn main:app --host 0.0.0.0 --port $PORT`
-
-### Frontend (Vercel/Netlify)
-1. Set `NEXT_PUBLIC_API_URL` to production backend URL
-2. Deploy with `bun build`
-
-## Project Structure
-
-```
-multi-agent-expert-sourcing/
-├── backend/                      # FastAPI backend
-│   ├── main.py                  # Main application with multi-agent system
-│   ├── pyproject.toml           # Python dependencies (uv)
-│   ├── uv.lock                  # Dependency lock file
-│   ├── test_db.py               # Database connection test
-│   ├── LOCAL_POSTGRES_SETUP.md  # Local Postgres.app setup guide
-│   └── .env                     # Environment variables
-├── frontend/                    # Next.js frontend
-│   ├── app/
-│   │   ├── page.tsx            # Main chat interface
-│   │   ├── test-styles/         # Tailwind test page
-│   │   └── globals.css         # Global styles (Tailwind v4)
-│   ├── components/
-│   │   └── ui/                 # shadcn/ui components
-│   │       ├── button.tsx      # Button component
-│   │       ├── card.tsx        # Card component
-│   │       ├── input.tsx       # Input component
-│   │       └── scroll-area.tsx # ScrollArea component
-│   ├── lib/utils.ts            # Utility functions
-│   ├── package.json            # Node dependencies (Bun)
-│   ├── bun.lockb               # Bun lock file
-│   ├── postcss.config.js       # PostCSS configuration (Tailwind v4)
-│   ├── components.json         # shadcn/ui configuration
-│   ├── next.config.js          # Next.js configuration
-│   ├── tsconfig.json           # TypeScript configuration
-│   ├── tailwind-test.js        # Tailwind configuration test
-│   └── TAILWIND_DEBUG_GUIDE.md # Tailwind v4 debugging guide
-├── example_chat.png            # Example chat interface
-├── traces.png                  # Agent workflow traces
-├── .gitignore                  # Git ignore rules
-└── README.md                   # Project documentation
-```
-
-## 🔧 Development Tips
-
-- **Quick Start**: `make help` (root) | `cd backend && make help` | `cd frontend && make help`
-- **Dependencies**: `make install-all` | `cd backend && make install` | `cd frontend && make install`
-- **Development**: `make dev-all` for both services | `make dev-backend` | `make dev-frontend`
-- **Testing**: `make test-all` | `cd backend && make test` | `cd frontend && make test`
-- **Cleanup**: `make clean-all` | `cd backend && make clean` | `cd frontend && make clean`
-- **Debugging**: Browser DevTools (frontend) | Terminal output (backend)
-
-### 🆘 Need Help?
-- **Testing Issues**: See [Testing Documentation](TESTING.md) troubleshooting section
-- **Styling Issues**: See [Tailwind Debug Guide](frontend/TAILWIND_DEBUG_GUIDE.md)
-- **Database Issues**: Check [Local Postgres Setup](backend/LOCAL_POSTGRES_SETUP.md)
-- **General Setup**: Verify environment variables and dependency installation
-
-## Contributing
-
-This is just an exmaple repo to demonstrate the implementation of Agent Frameworks like Open AI's Agent SDK.
-It is not under active development.
-
-## License
-
-This project is licensed under the MIT License.
-# Test commit
+- **Backend Makefile**: Python/uv specific commands (`make dev`, `
