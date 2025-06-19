@@ -1,7 +1,6 @@
 # Multi-Agent Expert Sourcing Demo
 
-Find the live demo here: https://poetic-optimism-production.up.railway.app
-A comprehensive multi-agent AI system showcasing **two different agent frameworks**:
+Find the live demo here: https://poetic-optimism-production.up.railway.app showcasing **two different agent frameworks**:
 - **OpenAI Agents SDK** for expert sourcing workflows
 - **CrewAI Framework** for company profiling
 
@@ -11,8 +10,8 @@ This project demonstrates the power of AI Enginnering skills using **Cursor IDE*
 
 - **👨‍💻 Human Time Investment**: ~20 hours of focused development and architecture decisions
 - **🤖 AI Code Generation**: 50,000+ lines of agent edits
-- **🎯 Productivity Multiplier**: **2,500 lines per human hour** through AI-human collaboration
-- **💰 AI Model Cost**: $65 for Sonnet 4.0 & Gemini 2.5 Pro in Cursor
+- **🎯 Productivity Multiplier**: **2,500 lines of agent edits per human hour** through AI-human collaboration
+- **💰 AI Model Cost**: $65 for Claude Sonnet 4.0 & Gemini 2.5 Pro in Cursor
 - **💯 Code Written by Cursor**: 100% of codebase generated through AI assistance
 - **🎤 Voice Development Share**: ~90% voice with superwhisper - keyboard only for @ files context
 - **🔄 Advanced Features**: Cursor background agents not used - implementation on June 19
@@ -46,7 +45,7 @@ This project demonstrates the power of AI Enginnering skills using **Cursor IDE*
 - ✅ **Agent Memory** - Persistent conversation and state management
 - ✅ **Task Planning & Decomposition** - Hierarchical agent workflows
 - ✅ **Non-blocking, Event-driven Systems** - Async FastAPI with NATS messaging
-- 🔄 **Comprehensive Agent Strategy** - *Overall system architecture and integration patterns under development* ([Agent Integration Guide](backend/docs/AGENT_INTEGRATION_GUIDE.md) | [Agent Architecture Principles](backend/docs/AGENT_ARCHITECTURE_PRINCIPLES.md))
+- 🔄 **Comprehensive Agent Strategy** - *Overall system architecture and integration patterns under development* ([Agent Framework Selection Guide](backend/docs/AGENT_FRAMEWORK_SELECTION_GUIDE.md) - generic evaluation of 11 frameworks across 12 lenses for any project | [Agent Implementation Guide](backend/docs/AGENT_IMPLEMENTATION_GUIDE.md) - project-specific implementation patterns once framework is chosen)
 
 ### **Databases**
 - ✅ **PostgreSQL** - Robust relational database for conversation and CV storage
@@ -82,7 +81,7 @@ This project demonstrates the power of AI Enginnering skills using **Cursor IDE*
 - **Backend**: `uv` with `uv.lock` for deterministic Python installs
 - **Frontend**: `bun` with `bun.lockb` for ultra-fast JavaScript dependency resolution
 
-## 📑 Furter Content
+## 📑 Further Content
 
 - [⚡ AI-Human Development Metrics](#-ai-human-development-metrics)
 - [🛠️ Tech Stack](#️-tech-stack)

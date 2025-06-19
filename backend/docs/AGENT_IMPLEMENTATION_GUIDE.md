@@ -1,8 +1,81 @@
-# Agent Integration Guide: Backend-Frontend Module Mapping
+# Agent Implementation Guide: Multi-Agent System Architecture Principles
 
 ## Overview
 
-This guide establishes the architectural alignment between **backend agent modules** and **frontend components** for our multi-agent marketplace platform. It ensures modular development where backend AI agents seamlessly integrate with frontend user experiences.
+This guide defines the architectural principles and implementation patterns for building modular, self-sustaining agent systems in our multi-agent marketplace platform. It establishes best practices for agent design, communication patterns, and system integration using **OpenAI Agents SDK** and **CrewAI Framework**.
+
+For framework selection guidance, see the [Agent Framework Selection Guide](AGENT_FRAMEWORK_SELECTION_GUIDE.md) for choosing appropriate frameworks for new projects.
+
+1. [Overview](#overview)
+2. [Core Implementation Principles & Development Guidelines](#core-implementation-principles--development-guidelines)
+3. [Agent Design Patterns (Real Framework Examples)](#agent-design-patterns-real-framework-examples)
+4. [Agent Lifecycle Management](#agent-lifecycle-management)
+5. [Current Architecture Mapping](#current-architecture-mapping)
+6. [Backend Agent Module Architecture](#backend-agent-module-architecture)
+7. [Agent-Component Integration Patterns](#agent-component-integration-patterns)
+8. [Implementation Roadmap](#implementation-roadmap)
+9. [Frontend Component Architecture Mapping](#frontend-component-architecture-mapping)
+
+---
+
+
+## Core Implementation Principles & Development Guidelines
+
+### **A. Agent Modularity & Self-Sufficiency**
+- **Single Responsibility**: Each agent handles one specific domain (CV processing, company profiling, project matching)
+- **Autonomous Operation**: Agents operate independently with minimal external dependencies
+- **Clear Interfaces**: Standardized input/output contracts for agent communication
+- **Error Resilience**: Built-in error handling and graceful degradation
+
+### **B. Framework-Agnostic Design**
+- **Abstraction Layers**: Common interfaces that work across OpenAI Agents SDK and CrewAI
+- **Pluggable Architecture**: Easy switching between agent frameworks
+- **Consistent Patterns**: Uniform agent behavior regardless of underlying framework
+- **Framework Selection**: Use [Agent Framework Selection Guide](AGENT_FRAMEWORK_SELECTION_GUIDE.md) for choosing appropriate frameworks
+
+### **C. Communication & Orchestration Patterns**
+- **Event-Driven Architecture**: NATS messaging for loose coupling
+- **Hierarchical Handoffs**: Clear supervisor/specialist relationships
+- **State Management**: Persistent state with clear lifecycle management
+- **Real-Time Updates**: WebSocket/NATS for frontend synchronization
+
+### **D. Development Guidelines & Standards**
+
+#### **Frontend-Backend Alignment Principles**
+1. **Component-Agent Mapping**: Each frontend feature component should have a corresponding backend agent module
+2. **Consistent Interfaces**: Standardized request/response patterns between frontend and agents
+3. **Real-Time Synchronization**: Use NATS for real-time status updates and coordination
+4. **Modular Development**: Components and agents can be developed independently with clear contracts
+5. **Testing Integration**: Component tests should mock agent responses, agent tests should validate component contracts
+
+#### **File Organization Standards**
+```
+# Backend
+backend/app_agents/{domain}/{specific_agent}.py
+backend/services/{domain}_service.py
+backend/tests/test_{domain}_agents.py
+
+# Frontend
+frontend/components/features/{domain}/{Component}.tsx
+frontend/hooks/use{Domain}Agent.ts
+frontend/__tests__/features/{domain}/{Component}.test.tsx
+```
+
+#### **Agent Implementation Best Practices**
+- **Dependency Injection**: Clear dependency management and service initialization
+- **Configuration Management**: Environment-based configuration with proper defaults
+- **Error Handling**: Comprehensive error handling with graceful degradation
+- **Monitoring Integration**: Built-in observability and performance tracking
+- **Resource Management**: Proper resource allocation and cleanup patterns
+
+## Brainstorming on different Agent Modules
+
+Module Name:
+Context where it is in the workflow.
+Agent pattern (hierachical, workflow etc. maybe a list to chosose from
+agent names, tools, high level one sentence tasks.
+
+
 
 ## Current Architecture Mapping
 
@@ -89,6 +162,71 @@ backend/app_agents/financial/
 ├── tax_calculator.py          # Tax calculation and compliance
 └── financial_reporter.py      # Earnings and expense reporting
 ```
+
+
+
+## Agent-Component Integration Patterns
+
+### **Pattern 1: Real-Time Status Integration**
+```typescript
+// Frontend Component
+const CVUploader = () => {
+  const { status, progress } = useAgentStatus(sessionId);
+  // Real-time updates from cv_agents.py via NATS
+};
+
+// Backend Agent
+class CVProcessingAgent:
+    async def process_cv(self, session_id: str):
+        await self.nats_service.publish_status(session_id, "processing", 25)
+```
+
+### **Pattern 2: Agent Handoff Coordination**
+```typescript
+// Frontend Component
+const ProjectSubmissionChat = () => {
+  const { response } = useChatAgent('expert_sourcing');
+  // Coordinated handoffs between agents
+};
+
+// Backend Agent System
+class ExpertSourcingAgent:
+    async def handle_query(self, query: str):
+        if needs_refinement:
+            return await self.handoff_to_refinement_agent(query)
+```
+
+### **Pattern 3: Multi-Framework Agent Integration**
+```typescript
+// Frontend knows about agent types but not implementation details
+const RegistrationRouter = () => {
+  const freelancerFlow = useOpenAIAgents(); // OpenAI Agents SDK
+  const companyFlow = useCrewAIAgents();    // CrewAI Framework
+};
+```
+
+## Implementation Roadmap
+
+### **Phase 1: Core Registration Enhancement** (Current → Next)
+- ✅ **Current**: Basic CV upload, company website analysis
+- 🔄 **Next**: Enhanced profile building, skill assessment components
+- **Backend**: Expand cv_agents.py and company_crew.py with advanced profiling
+- **Frontend**: Create registration/ feature components
+
+### **Phase 2: Matching & Discovery System**
+- **Backend**: Implement matching_agents/ module with ML-powered recommendations
+- **Frontend**: Create matching/ and projects/ feature components
+- **Integration**: Real-time matching results via WebSocket/NATS
+
+### **Phase 3: Project Management & Communication**
+- **Backend**: Build project_management_agents/ and communication_agents/
+- **Frontend**: Create chat/, notifications/, and project management components
+- **Integration**: Multi-channel communication (chat, video, file sharing)
+
+### **Phase 4: Financial & Advanced Features**
+- **Backend**: Implement financial_agents/ for payments and compliance
+- **Frontend**: Create payments/ feature components and advanced analytics
+- **Integration**: Secure payment processing with escrow management
 
 ## Frontend Component Architecture Mapping
 
@@ -179,91 +317,6 @@ frontend/components/features/payments/
 └── PayoutSettings.tsx           # Payment method configuration
 ```
 
-## Agent-Component Integration Patterns
-
-### **Pattern 1: Real-Time Status Integration**
-```typescript
-// Frontend Component
-const CVUploader = () => {
-  const { status, progress } = useAgentStatus(sessionId);
-  // Real-time updates from cv_agents.py via NATS
-};
-
-// Backend Agent
-class CVProcessingAgent:
-    async def process_cv(self, session_id: str):
-        await self.nats_service.publish_status(session_id, "processing", 25)
-```
-
-### **Pattern 2: Agent Handoff Coordination**
-```typescript
-// Frontend Component
-const ProjectSubmissionChat = () => {
-  const { response } = useChatAgent('expert_sourcing');
-  // Coordinated handoffs between agents
-};
-
-// Backend Agent System
-class ExpertSourcingAgent:
-    async def handle_query(self, query: str):
-        if needs_refinement:
-            return await self.handoff_to_refinement_agent(query)
-```
-
-### **Pattern 3: Multi-Framework Agent Integration**
-```typescript
-// Frontend knows about agent types but not implementation details
-const RegistrationRouter = () => {
-  const freelancerFlow = useOpenAIAgents(); // OpenAI Agents SDK
-  const companyFlow = useCrewAIAgents();    // CrewAI Framework
-};
-```
-
-## Implementation Roadmap
-
-### **Phase 1: Core Registration Enhancement** (Current → Next)
-- ✅ **Current**: Basic CV upload, company website analysis
-- 🔄 **Next**: Enhanced profile building, skill assessment components
-- **Backend**: Expand cv_agents.py and company_crew.py with advanced profiling
-- **Frontend**: Create registration/ feature components
-
-### **Phase 2: Matching & Discovery System**
-- **Backend**: Implement matching_agents/ module with ML-powered recommendations
-- **Frontend**: Create matching/ and projects/ feature components
-- **Integration**: Real-time matching results via WebSocket/NATS
-
-### **Phase 3: Project Management & Communication**
-- **Backend**: Build project_management_agents/ and communication_agents/
-- **Frontend**: Create chat/, notifications/, and project management components
-- **Integration**: Multi-channel communication (chat, video, file sharing)
-
-### **Phase 4: Financial & Advanced Features**
-- **Backend**: Implement financial_agents/ for payments and compliance
-- **Frontend**: Create payments/ feature components and advanced analytics
-- **Integration**: Secure payment processing with escrow management
-
-## Development Guidelines
-
-### **Frontend-Backend Alignment Principles**
-
-1. **Component-Agent Mapping**: Each frontend feature component should have a corresponding backend agent module
-2. **Consistent Interfaces**: Standardized request/response patterns between frontend and agents
-3. **Real-Time Synchronization**: Use NATS for real-time status updates and coordination
-4. **Modular Development**: Components and agents can be developed independently with clear contracts
-5. **Testing Integration**: Component tests should mock agent responses, agent tests should validate component contracts
-
-### **File Organization Standards**
-
-```
-# Backend
-backend/app_agents/{domain}/{specific_agent}.py
-backend/services/{domain}_service.py
-backend/tests/test_{domain}_agents.py
-
-# Frontend
-frontend/components/features/{domain}/{Component}.tsx
-frontend/hooks/use{Domain}Agent.ts
-frontend/__tests__/features/{domain}/{Component}.test.tsx
-```
+---
 
 This architecture ensures scalable, maintainable development where frontend user experiences seamlessly integrate with backend AI agent capabilities across both OpenAI Agents SDK and CrewAI frameworks.
