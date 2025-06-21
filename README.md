@@ -1,20 +1,19 @@
-# Multi-Agent Expert Sourcing Demo
+# Multi-Agent AI Recruiting Marketplace Demo
 
-Find the live demo here: https://poetic-optimism-production.up.railway.app showcasing **two different agent frameworks**:
-- **OpenAI Agents SDK** for expert sourcing workflows
-- **CrewAI Framework** for company profiling
+Find the live demo here: https://poetic-optimism-production.up.railway.app showcasing with different agent frameworks. We are investigating **25+ Agent Modules** powered by **120+ Individual Agents** across comprehensive recruiting workflows ([detailed brainstorming](backend/docs/AGENT_MODULE_OUTLINE.md)). These recruiting workflows are also inspired by the AI recruiting landscape, with detailed analysis available in our [AI Recruiting Landscape](backend/docs/AGENT_RECRUITING_LANDSCAPE.md) documentation.
+
 
 ## ⚡ AI Engineer Development Metrics
 
 This project demonstrates the power of AI Enginnering skills using **Cursor IDE**:
 
-- **👨‍💻 Human Time Investment**: ~20 hours of focused development and architecture decisions
-- **🤖 AI Code Generation**: 50,000+ lines of agent edits
-- **🎯 Productivity Multiplier**: **2,500 lines of agent edits per human hour** through AI-human collaboration
-- **💰 AI Model Cost**: $65 for Claude Sonnet 4.0 & Gemini 2.5 Pro in Cursor
+- **👨‍💻 Human Time Investment**: ~30 hours of focused development and architecture decisions (June 3 - June 21)
+- **🤖 AI Code Generation**: 75,000+ lines of agent edits
+- **🎯 Productivity Multiplier**: **~2,500 lines of agent edits per human hour** through AI-human collaboration
+- **💰 AI Model Cost**: $72 for Claude Sonnet 4.0 & Gemini 2.5 Pro in Cursor
 - **💯 Code Written by Cursor**: 100% of codebase generated through AI assistance
 - **🎤 Voice Development Share**: ~90% voice with superwhisper - keyboard only for @ files context
-- **🔄 Advanced Features**: Cursor background agents not used - implementation on June 19
+- **🔄 Advanced Features**: Cursor background agents not used - implementation end of June
 
 
 ## 🛠️ **Tech Stack**
@@ -106,7 +105,7 @@ This project demonstrates the power of AI Enginnering skills using **Cursor IDE*
 
 ## Dual Agent Framework Architecture
 
-This project demonstrates **two distinct agent frameworks** working in parallel to showcase different approaches to multi-agent AI systems:
+This project demonstrates **two distinct agent frameworks** working in parallel to showcase different approaches to multi-agent AI systems. For further framework investigation, we provide a detailed framework selection guide evaluating 13 frameworks across 12 different evaluation lenses ([Agent Framework Selection Guide](backend/docs/AGENT_FRAMEWORK_SELECTION_GUIDE.md)):
 
 ### 🎯 **CrewAI Framework** - Company Profiling & Web Scraping
 - **Purpose**: Automated company analysis through website scraping and data enrichment
@@ -124,7 +123,7 @@ This project demonstrates **two distinct agent frameworks** working in parallel 
 
 ### 🎯 **Multi-Agent Architecture**
 
-This system demonstrates a **triple-track agent architecture** showcasing two different frameworks:
+This multi-agent architecture covers **25+ Agent Modules** powered by **120+ Individual Agents** across comprehensive recruiting workflows ([detailed brainstorming](backend/docs/AGENT_MODULE_OUTLINE.md)). The system demonstrates a **triple-track agent architecture** showcasing two different frameworks:
 1. **CrewAI Framework** - Company service provider registration and profiling
 2. **OpenAI Agents SDK** - Project owners seeking experts
 3. **OpenAI Agents SDK** - Freelancers building their profiles
@@ -206,7 +205,7 @@ graph TD
 
 ---
 
-## 🎯 **OpenAI Agents SDK: Project Submission Track** *(Currently Implemented)*
+## 🎯 **OpenAI Agents SDK: Project Submission Track** *(initial implementation)*
 
 ### **Framework: OpenAI Agents SDK Hierarchical Architecture**
 
@@ -345,21 +344,21 @@ graph TD
 
 ### **Implemented Agent Roles & Responsibilities**
 
-#### 🎯 **Freelancer Profile Manager** (Main Coordinator) ✅ *Implemented*
+#### 🎯 **Freelancer Profile Orchestrator** ✅ *(initial implementation)*
 - **Role**: Central orchestrator for freelancer profile creation workflow using hierarchical handoffs
 - **SDK Features**: Uses OpenAI Agents SDK `handoffs` to route between 4 specialist CV processing agents
 - **Function**: Coordinates complete CV processing from stored Postgres data to final profile
 - **Workflow**: Processes `stored_cv_id:123` format, validates files, orchestrates specialist agents
 - **Tools**: `prepare_cv_file_for_processing` for file validation and preparation
 
-#### 🛡️ **CV Content Validator** (Input Guardrail) ✅ *Implemented*
+#### 🛡️ **CV Content Validator** ✅ *(initial implementation)*
 - **Role**: Content validation using OpenAI Agents SDK `InputGuardrail` pattern
 - **Function**: Validates stored CV identifiers and content relevance with enhanced permissive logic
 - **SDK Features**: Implements `guardrail_function` with confidence scoring (0.6+ threshold)
 - **Protection**: Ensures only valid CV processing requests enter the agent pipeline
 - **Features**: Fallback validation, detailed logging, and error handling
 
-#### 📄 **CV Parser Agent** (Document Specialist) ✅ *Implemented*
+#### 📄 **CV Parser Agent** ✅ *(initial implementation)*
 - **Role**: Document extraction specialist using OpenAI Files API for structured data extraction
 - **Function**: Extracts personal info, work experience, education, skills, and certifications
 - **SDK Features**: Uses `extract_cv_text_with_responses_api` tool with comprehensive JSON extraction
@@ -437,7 +436,7 @@ The high accuracy rate demonstrates the effectiveness of our OpenAI Files API in
 
 ### 🔄 **Triple-Track Workflow Logic**
 
-#### **CrewAI Company Service Flow** ✅ *(Implemented)*
+#### **CrewAI Company Service Flow** ✅ *(initial implementation)*
 1. **Company Registration** → Service provider submits website URL for analysis
 2. **CrewAI Crew Initialization** → Sequential crew of 3 specialized agents activated
 3. **Website Scraping** → Website Content Scraper extracts company information using `ScrapeWebsiteTool`
@@ -446,7 +445,7 @@ The high accuracy rate demonstrates the effectiveness of our OpenAI Files API in
 6. **Sequential Task Flow** → Each task builds on previous results in CrewAI's sequential process
 7. **Structured Output** → Final JSON with company details ready for service provider database
 
-#### **OpenAI Agents SDK: Project Submission Flow** ✅ *(Implemented)*
+#### **OpenAI Agents SDK: Project Submission Flow** ✅ *(initial implementation)*
 1. **Input Validation** → Expert Sourcing Validator ensures project-related queries
 2. **Intelligent Routing** → Expert Sourcing Supervisor routes to appropriate specialist
 3. **Specialized Processing** → Requirements Assistant or Refinement Specialist guides project description creation

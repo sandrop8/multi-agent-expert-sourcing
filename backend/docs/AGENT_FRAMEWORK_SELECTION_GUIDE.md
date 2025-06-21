@@ -18,6 +18,8 @@ This guide organizes frameworks into four distinct categories based on your orga
 
 **LLM-Agnostic Frameworks** (CrewAI, LangChain/LangGraph, PydanticAI, Agnos AI) are perfect for organizations wanting complete independence from any single LLM provider. These frameworks offer maximum flexibility to switch between models and vendors, protecting against vendor lock-in while providing extensive customization options for complex agent workflows. They prioritize developer control, type safety, and architectural flexibility over vendor-specific optimizations.
 
+**TypeScript-Native Development** (Mastra) serves as the go-to framework for teams building AI agents with TypeScript backends. While many frameworks offer TypeScript support, most prioritize Python with TypeScript as secondary - often through community-maintained libraries or third-party ports that may lack feature parity or maintenance consistency. Other frameworks like LangChain provide official dual-language support but require managing separate codebases and SDKs. Mastra offers a TypeScript-first approach with native MCP integration, type-safe tool definitions, and seamless integration with the broader JavaScript/Node.js ecosystem.
+
 **Developer-Focused Vendor-Based Solutions** (OpenAI Agents SDK, Mistral Agents API, Anthropic Claude Agents) serve teams wanting cutting-edge capabilities optimized for specific LLM providers. While these frameworks may offer some multi-provider support, they are fundamentally designed around their primary vendor's models and capabilities. They provide the fastest path to production with vendor-specific features but may limit long-term flexibility compared to truly agnostic alternatives.
 
 ---
@@ -42,6 +44,8 @@ This guide organizes frameworks into four distinct categories based on your orga
 
 **Agnos AI**: Layered architecture for gradual complexity scaling with strong multimodal capabilities and extensive model provider support
 
+**Mastra**: TypeScript-native framework with first-class MCP support, ideal for teams building AI agents with TypeScript backends
+
 **Flowise AI**: Low-code visual agent builder with LangChain compatibility, ideal for rapid prototyping and non-technical users
 
 **Dify**: Enterprise-ready visual workflow platform with extensive model provider support and marketplace ecosystem
@@ -62,6 +66,7 @@ This guide organizes frameworks into four distinct categories based on your orga
 - [Mistral Agents API](#mistral-agents-api-early-access)
 - [Anthropic Claude Agents](#anthropic-claude-agents-saas)
 - [Agnos AI](#agnos-ai-285k-)
+- [Mastra](#mastra-146k-)
 - [Flowise AI](#flowise-ai-403k-)
 - [Dify](#dify-104k-)
 - [n8n](#n8n)
@@ -367,6 +372,46 @@ Run in‑process, containerize with the **Agent API** FastAPI template (Docker C
 
 ### 12. Multimodal I/O
 Agents natively accept and emit **text, image, audio, and video**; recent releases add Gemini video inputs and Groq audio toolkits
+
+---
+
+## Mastra (14.6k ★)
+
+### 1. Programming model & primitives
+`Agent`, `Tool`, `Workflow`, `Rag`, `Integration`, and `Eval` objects. Each is type-safe and includes built-in OpenTelemetry spans.
+
+### 2. Built-in orchestration features
+Workflows are **durable graph-based state machines** with branching, parallelism, suspends, retries, human-in-the-loop, and a forthcoming visual editor. Steps can embed other workflows or agents.
+
+### 3. Model agnosticism
+Uses the **Vercel AI SDK** for routing, giving a unified interface to GPT-4 o, Claude, Gemini, Mistral, Groq, Llama and any provider you point it at.
+
+### 4. Inter‑agent protocol support
+Ships an **MCP server package** (`@mastra/mcp-docs-server`) so agents can publish/consume tools across frameworks; no native A2A yet.
+
+### 5. MCP support
+**Yes** (native `MastraMCPClient` with both stdio and SSE transport support; first-class MCP registry integration with `MCPConfiguration`)
+
+### 6. Tool / data connectors
+Typed `Tool` factories with Zod-validated inputs; auto-generated integrations for dozens of SaaS APIs plus vector/SQL/RAG loaders.
+
+### 7. Guardrails — response‑format safety
+Input and output schemas are declared with **Zod**; every tool/step validates at runtime, returning descriptive errors on mismatch.
+
+### 8. Enterprise safety & compliance
+Completely self-hostable or deploy to **Mastra Cloud** / any serverless platform, inheriting IAM & network boundaries from your chosen infra.
+
+### 9. Memory & state management
+Built-in **Memory API** (default LibSQL + `fastembed-js`) for persistent threads, semantic recall, and cross-agent shared context; pluggable stores like Postgres, Supabase, or any vector DB.
+
+### 10. Observability & evaluation
+One-liner **OpenTelemetry** setup; official guides for Langfuse and Arize export. Each agent/tool/workflow step auto-traces.
+
+### 11. Deployment & scaling model
+`npm create mastra@latest` for local dev; deploy via **Mastra Cloud** (Git-based), or platform-specific deployers for Vercel, Cloudflare Workers, Netlify; atomic serverless snapshots with auto-scale.
+
+### 12. Multimodal I/O
+Unified **Voice** system: STT, TTS, and real-time speech-to-speech via providers like OpenAI and Deepgram; image generation handled as tools; can combine with RAG.
 
 ---
 
